@@ -467,16 +467,17 @@ function computeMetrics(rawOhlcv, rawOverview, rawForeign, rawMarket, rawMeta = 
 
   const wyckoff = analyzeWyckoff(bars, baseMetrics);
   const primaryPlan = wyckoff.entry?.plans?.[0] || null;
-  const activeBuyPlans = (wyckoff.entry?.plans || []).filter((plan) => Number.isFinite(plan.price));
+  const activeBuyPlans = (wyckoff.entry?.plans || [])
+    .filter((plan) => Number.isFinite(plan.price) && (plan.kind === "buy" || plan.kind === "wait"));
   const entryLevels = activeBuyPlans.length
     ? activeBuyPlans.map((plan) => plan.price)
-    : baseMetrics.entry;
+    : [];
   const tpLevels = primaryPlan && Number.isFinite(primaryPlan.target1) && Number.isFinite(primaryPlan.target2)
     ? [primaryPlan.target1, primaryPlan.target2].sort((a, b) => a - b)
-    : baseMetrics.tp;
+    : [];
   const stopLevel = primaryPlan && Number.isFinite(primaryPlan.stop)
     ? primaryPlan.stop
-    : baseMetrics.sl;
+    : null;
 
   return {
     ...baseMetrics,

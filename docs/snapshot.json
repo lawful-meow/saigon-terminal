@@ -1,14 +1,14 @@
 {
-  "publishedAt": "2026-03-25T10:37:21.806Z",
-  "selectedTicker": "MWG",
+  "publishedAt": "2026-03-25T10:58:19.597Z",
+  "selectedTicker": "CTG",
   "snapshot": {
-    "generated": "2026-03-25T10:35:45.570Z",
+    "generated": "2026-03-25T10:58:15.347Z",
     "engine": "Saigon Terminal v2.0",
     "dataSource": "VPS + KBS",
     "note": "Board data is VPS-first. KBS now enriches fundamentals and ownership when available. Missing CAN SLIM factors still stay unknown instead of being faked as neutral. Wyckoff output is a daily-bar structural heuristic with explicit action steps and entry conditions.",
     "count": 5,
     "market": {
-      "asOf": "2026-03-25T10:35:45.552Z",
+      "asOf": "2026-03-25T10:58:15.336Z",
       "session": "closed",
       "regime": "bearish",
       "indexes": {
@@ -150,7 +150,7 @@
         "ticker": "CTG",
         "name": "VietinBank",
         "sector": "BANK",
-        "scanTime": "2026-03-25T10:35:45.552Z",
+        "scanTime": "2026-03-25T10:58:15.336Z",
         "price": 34050,
         "open": 33750,
         "high": 34100,
@@ -197,17 +197,17 @@
         "observedCanSlimMax": 70,
         "coveragePct": 100,
         "volumeSignal": "NORMAL",
-        "wyckoffPhase": "Markdown",
-        "wyckoffStage": "Phase E",
-        "wyckoffBias": "avoid",
+        "wyckoffPhase": "Accumulation",
+        "wyckoffStage": "Phase B",
+        "wyckoffBias": "wait",
         "wyckoff": {
-          "phase": "Markdown",
-          "stage": "Phase E",
-          "label": "Markdown Phase E - Active Downtrend",
-          "code": "markdown",
-          "confidence": 54,
+          "phase": "Accumulation",
+          "stage": "Phase B",
+          "label": "Accumulation Phase B - Early Base Repair",
+          "code": "acc_b",
+          "confidence": 56,
           "confidenceLabel": "low",
-          "bias": "avoid",
+          "bias": "wait",
           "levels": {
             "support": 32000,
             "resistance": 39700,
@@ -261,31 +261,36 @@
             }
           },
           "action": {
-            "label": "No long entries in active markdown",
-            "summary": "Trend and structure are both hostile. The correct action is patience.",
+            "label": "Stay on watch, not on full risk",
+            "summary": "The stock is building a box. That is useful, but it is not yet a valid expansion move.",
             "steps": [
-              "Stand aside while price stays below key moving averages and keeps making weak rebounds.",
-              "Wait for stopping action, a spring, or a new range before reconsidering any long.",
-              "Do not treat 32.000 as stable support if price is already below it.",
-              "Keep the name on a watchlist, not in a fresh long position."
+              "Track whether price respects the lower half of the range around 32.000.",
+              "Wait for volume to dry up on pullbacks and expand on up days.",
+              "Prepare two triggers: spring confirmation and breakout confirmation.",
+              "Keep powder dry until one of those triggers appears."
             ],
             "shouldAvoid": [
-              "Do not catch a falling knife in Phase E markdown.",
-              "Do not set a buy just because RSI looks low without structural repair."
+              "Do not buy the middle of the range without a trigger.",
+              "Do not average down if support fails."
             ]
           },
           "entry": {
-            "status": "avoid",
-            "summary": "Do not buy into active markdown. Wait for stopping action or a spring first.",
+            "status": "wait",
+            "summary": "This looks more like an early base repair than a confirmed trend reversal. Stay on watch until price reclaims repair levels, then the range ceiling.",
             "plans": [],
             "watch": [
               {
-                "label": "Only reconsider long if demand wins",
+                "label": "Early repair trigger",
+                "price": 35080,
+                "why": "A reclaim of 35.080 would be the first sign that sellers are losing control, but it is still not the full breakout."
+              },
+              {
+                "label": "Full demand confirmation",
                 "price": 39898,
-                "why": "A decisive move through 39.898 is needed before the structure becomes a real buy setup."
+                "why": "A decisive move through 39.898 is still needed before this becomes a real long setup."
               }
             ],
-            "invalidation": "A clean move below 31.840 keeps the structure defensive."
+            "invalidation": "If price loses 32.000 again, the base attempt is not mature enough."
           },
           "reasoning": [
             {
@@ -306,7 +311,7 @@
             {
               "step": 4,
               "title": "Phase Decision",
-              "detail": "The structure is classified as Markdown Phase E - Active Downtrend because the stock is still below trend support and no convincing stopping or spring event has appeared yet."
+              "detail": "The structure is classified as Accumulation Phase B - Early Base Repair because selling pressure is drying up, relative strength is holding better than the market, and price is trying to stabilize instead of extending the markdown."
             }
           ],
           "context": {
@@ -363,7 +368,7 @@
           }
         },
         "quality": {
-          "score": 100,
+          "score": 94,
           "label": "high",
           "coveragePct": 100,
           "coverageLabel": "strong",
@@ -408,16 +413,15 @@
             }
           },
           "warnings": [
-            "Foreign flow unavailable",
-            "Wyckoff read is low-confidence"
+            "Foreign flow unavailable"
           ]
         },
         "explain": {
-          "ruleRead": "Bearish Bias",
+          "ruleRead": "Neutral / Mixed",
           "ruleStrength": {
             "score": 4,
             "label": "low conviction",
-            "rawScore": 32
+            "rawScore": 45
           },
           "driversPositive": [
             "RS vs VNINDEX 3M +0.9%",
@@ -427,7 +431,6 @@
             "Price -9.1% vs SMA50",
             "Volume only 0.5x avg20",
             "Market regime bearish",
-            "Wyckoff Markdown Phase E - Active Downtrend",
             "Foreign flow unavailable"
           ],
           "factorBreakdown": {
@@ -749,31 +752,36 @@
           },
           "normalizedCanSlim": 42,
           "wyckoffAction": {
-            "label": "No long entries in active markdown",
-            "summary": "Trend and structure are both hostile. The correct action is patience.",
+            "label": "Stay on watch, not on full risk",
+            "summary": "The stock is building a box. That is useful, but it is not yet a valid expansion move.",
             "steps": [
-              "Stand aside while price stays below key moving averages and keeps making weak rebounds.",
-              "Wait for stopping action, a spring, or a new range before reconsidering any long.",
-              "Do not treat 32.000 as stable support if price is already below it.",
-              "Keep the name on a watchlist, not in a fresh long position."
+              "Track whether price respects the lower half of the range around 32.000.",
+              "Wait for volume to dry up on pullbacks and expand on up days.",
+              "Prepare two triggers: spring confirmation and breakout confirmation.",
+              "Keep powder dry until one of those triggers appears."
             ],
             "shouldAvoid": [
-              "Do not catch a falling knife in Phase E markdown.",
-              "Do not set a buy just because RSI looks low without structural repair."
+              "Do not buy the middle of the range without a trigger.",
+              "Do not average down if support fails."
             ]
           },
           "wyckoffEntry": {
-            "status": "avoid",
-            "summary": "Do not buy into active markdown. Wait for stopping action or a spring first.",
+            "status": "wait",
+            "summary": "This looks more like an early base repair than a confirmed trend reversal. Stay on watch until price reclaims repair levels, then the range ceiling.",
             "plans": [],
             "watch": [
               {
-                "label": "Only reconsider long if demand wins",
+                "label": "Early repair trigger",
+                "price": 35080,
+                "why": "A reclaim of 35.080 would be the first sign that sellers are losing control, but it is still not the full breakout."
+              },
+              {
+                "label": "Full demand confirmation",
                 "price": 39898,
-                "why": "A decisive move through 39.898 is needed before the structure becomes a real buy setup."
+                "why": "A decisive move through 39.898 is still needed before this becomes a real long setup."
               }
             ],
-            "invalidation": "A clean move below 31.840 keeps the structure defensive."
+            "invalidation": "If price loses 32.000 again, the base attempt is not mature enough."
           },
           "wyckoffReasoning": [
             {
@@ -794,47 +802,18 @@
             {
               "step": 4,
               "title": "Phase Decision",
-              "detail": "The structure is classified as Markdown Phase E - Active Downtrend because the stock is still below trend support and no convincing stopping or spring event has appeared yet."
+              "detail": "The structure is classified as Accumulation Phase B - Early Base Repair because selling pressure is drying up, relative strength is holding better than the market, and price is trying to stabilize instead of extending the markdown."
             }
           ]
         },
-        "entry": [
-          34050,
-          33507,
-          32615
-        ],
-        "tp": [
-          35679,
-          36764,
-          39836
-        ],
-        "sl": 31457,
-        "signal": "SELL",
+        "entry": [],
+        "tp": [],
+        "sl": null,
+        "signal": "HOLD",
         "confidence": 4,
-        "rawScore": 32,
-        "delta": "signal HOLD→SELL",
+        "rawScore": 45,
+        "delta": "no change",
         "historyMini": [
-          {
-            "timestamp": "2026-03-25T09:05:49.310Z",
-            "price": 34050,
-            "signal": "HOLD",
-            "confidence": 5,
-            "observedPct": 0.6
-          },
-          {
-            "timestamp": "2026-03-25T09:14:28.980Z",
-            "price": 34050,
-            "signal": "HOLD",
-            "confidence": 5,
-            "observedPct": 0.6
-          },
-          {
-            "timestamp": "2026-03-25T09:16:35.962Z",
-            "price": 34050,
-            "signal": "HOLD",
-            "confidence": 5,
-            "observedPct": 0.6
-          },
           {
             "timestamp": "2026-03-25T09:37:02.456Z",
             "price": 34050,
@@ -848,6 +827,27 @@
             "signal": "SELL",
             "confidence": 4,
             "observedPct": 0.6
+          },
+          {
+            "timestamp": "2026-03-25T10:52:18.115Z",
+            "price": 34050,
+            "signal": "HOLD",
+            "confidence": 4,
+            "observedPct": 0.6
+          },
+          {
+            "timestamp": "2026-03-25T10:53:36.561Z",
+            "price": 34050,
+            "signal": "HOLD",
+            "confidence": 4,
+            "observedPct": 0.6
+          },
+          {
+            "timestamp": "2026-03-25T10:58:15.336Z",
+            "price": 34050,
+            "signal": "HOLD",
+            "confidence": 4,
+            "observedPct": 0.6
           }
         ]
       },
@@ -855,7 +855,7 @@
         "ticker": "MWG",
         "name": "Thế Giới Di Động",
         "sector": "RETAIL",
-        "scanTime": "2026-03-25T10:35:45.261Z",
+        "scanTime": "2026-03-25T10:58:15.228Z",
         "price": 79200,
         "open": 77000,
         "high": 79500,
@@ -994,7 +994,12 @@
             "plans": [],
             "watch": [
               {
-                "label": "Only reconsider long if demand wins",
+                "label": "Early repair / stop bleeding trigger",
+                "price": 83560,
+                "why": "A reclaim of 83.560 would only improve the tape from damaged to repair mode. It is not the same as a confirmed buy yet."
+              },
+              {
+                "label": "Full demand confirmation",
                 "price": 94771,
                 "why": "A decisive move through 94.771 is needed before the structure becomes a real buy setup."
               }
@@ -1077,7 +1082,7 @@
           }
         },
         "quality": {
-          "score": 100,
+          "score": 96,
           "label": "high",
           "coveragePct": 100,
           "coverageLabel": "strong",
@@ -1126,11 +1131,11 @@
           ]
         },
         "explain": {
-          "ruleRead": "Bearish Bias",
+          "ruleRead": "Strong Bearish Bias",
           "ruleStrength": {
-            "score": 4,
-            "label": "low conviction",
-            "rawScore": 32
+            "score": 7,
+            "label": "moderate conviction",
+            "rawScore": 19
           },
           "driversPositive": [
             "RSI 42.7 in healthy range"
@@ -1480,7 +1485,12 @@
             "plans": [],
             "watch": [
               {
-                "label": "Only reconsider long if demand wins",
+                "label": "Early repair / stop bleeding trigger",
+                "price": 83560,
+                "why": "A reclaim of 83.560 would only improve the tape from damaged to repair mode. It is not the same as a confirmed buy yet."
+              },
+              {
+                "label": "Full demand confirmation",
                 "price": 94771,
                 "why": "A decisive move through 94.771 is needed before the structure becomes a real buy setup."
               }
@@ -1510,43 +1520,14 @@
             }
           ]
         },
-        "entry": [
-          79200,
-          77429,
-          75700
-        ],
-        "tp": [
-          84514,
-          88057,
-          97843
-        ],
-        "sl": 72429,
-        "signal": "SELL",
-        "confidence": 4,
-        "rawScore": 32,
-        "delta": "signal HOLD→SELL",
+        "entry": [],
+        "tp": [],
+        "sl": null,
+        "signal": "STRONG_SELL",
+        "confidence": 7,
+        "rawScore": 19,
+        "delta": "no change",
         "historyMini": [
-          {
-            "timestamp": "2026-03-25T09:05:48.991Z",
-            "price": 79200,
-            "signal": "HOLD",
-            "confidence": 5,
-            "observedPct": 0.6
-          },
-          {
-            "timestamp": "2026-03-25T09:14:28.558Z",
-            "price": 79200,
-            "signal": "HOLD",
-            "confidence": 5,
-            "observedPct": 0.6
-          },
-          {
-            "timestamp": "2026-03-25T09:16:35.772Z",
-            "price": 79200,
-            "signal": "HOLD",
-            "confidence": 5,
-            "observedPct": 0.6
-          },
           {
             "timestamp": "2026-03-25T09:37:02.137Z",
             "price": 79200,
@@ -1560,6 +1541,27 @@
             "signal": "SELL",
             "confidence": 4,
             "observedPct": 0.6
+          },
+          {
+            "timestamp": "2026-03-25T10:52:17.748Z",
+            "price": 79200,
+            "signal": "STRONG_SELL",
+            "confidence": 7,
+            "observedPct": 0.6
+          },
+          {
+            "timestamp": "2026-03-25T10:53:36.274Z",
+            "price": 79200,
+            "signal": "STRONG_SELL",
+            "confidence": 7,
+            "observedPct": 0.6
+          },
+          {
+            "timestamp": "2026-03-25T10:58:15.228Z",
+            "price": 79200,
+            "signal": "STRONG_SELL",
+            "confidence": 7,
+            "observedPct": 0.6
           }
         ]
       },
@@ -1567,7 +1569,7 @@
         "ticker": "HDB",
         "name": "HDBank",
         "sector": "BANK",
-        "scanTime": "2026-03-25T10:35:45.008Z",
+        "scanTime": "2026-03-25T10:58:14.731Z",
         "price": 24900,
         "open": 24500,
         "high": 25000,
@@ -1697,7 +1699,12 @@
             "plans": [],
             "watch": [
               {
-                "label": "Only reconsider long if demand wins",
+                "label": "Early repair / stop bleeding trigger",
+                "price": 25820,
+                "why": "A reclaim of 25.820 would only improve the tape from damaged to repair mode. It is not the same as a confirmed buy yet."
+              },
+              {
+                "label": "Full demand confirmation",
                 "price": 28994,
                 "why": "A decisive move through 28.994 is needed before the structure becomes a real buy setup."
               }
@@ -1780,7 +1787,7 @@
           }
         },
         "quality": {
-          "score": 100,
+          "score": 93,
           "label": "high",
           "coveragePct": 100,
           "coverageLabel": "strong",
@@ -1830,11 +1837,11 @@
           ]
         },
         "explain": {
-          "ruleRead": "Bearish Bias",
+          "ruleRead": "Strong Bearish Bias",
           "ruleStrength": {
-            "score": 4,
-            "label": "low conviction",
-            "rawScore": 31
+            "score": 5,
+            "label": "moderate conviction",
+            "rawScore": 19
           },
           "driversPositive": [
             "RSI 40.9 in healthy range"
@@ -2184,7 +2191,12 @@
             "plans": [],
             "watch": [
               {
-                "label": "Only reconsider long if demand wins",
+                "label": "Early repair / stop bleeding trigger",
+                "price": 25820,
+                "why": "A reclaim of 25.820 would only improve the tape from damaged to repair mode. It is not the same as a confirmed buy yet."
+              },
+              {
+                "label": "Full demand confirmation",
                 "price": 28994,
                 "why": "A decisive move through 28.994 is needed before the structure becomes a real buy setup."
               }
@@ -2214,43 +2226,14 @@
             }
           ]
         },
-        "entry": [
-          24900,
-          24477,
-          24130
-        ],
-        "tp": [
-          26170,
-          27016,
-          29396
-        ],
-        "sl": 23377,
-        "signal": "SELL",
-        "confidence": 4,
-        "rawScore": 31,
-        "delta": "signal HOLD→SELL",
+        "entry": [],
+        "tp": [],
+        "sl": null,
+        "signal": "STRONG_SELL",
+        "confidence": 5,
+        "rawScore": 19,
+        "delta": "no change",
         "historyMini": [
-          {
-            "timestamp": "2026-03-25T09:05:48.642Z",
-            "price": 24900,
-            "signal": "HOLD",
-            "confidence": 5,
-            "observedPct": 0.57
-          },
-          {
-            "timestamp": "2026-03-25T09:14:28.131Z",
-            "price": 24900,
-            "signal": "HOLD",
-            "confidence": 5,
-            "observedPct": 0.57
-          },
-          {
-            "timestamp": "2026-03-25T09:16:35.381Z",
-            "price": 24900,
-            "signal": "HOLD",
-            "confidence": 5,
-            "observedPct": 0.57
-          },
           {
             "timestamp": "2026-03-25T09:37:01.818Z",
             "price": 24900,
@@ -2264,6 +2247,27 @@
             "signal": "SELL",
             "confidence": 4,
             "observedPct": 0.57
+          },
+          {
+            "timestamp": "2026-03-25T10:52:17.550Z",
+            "price": 24900,
+            "signal": "STRONG_SELL",
+            "confidence": 5,
+            "observedPct": 0.57
+          },
+          {
+            "timestamp": "2026-03-25T10:53:35.973Z",
+            "price": 24900,
+            "signal": "STRONG_SELL",
+            "confidence": 5,
+            "observedPct": 0.57
+          },
+          {
+            "timestamp": "2026-03-25T10:58:14.731Z",
+            "price": 24900,
+            "signal": "STRONG_SELL",
+            "confidence": 5,
+            "observedPct": 0.57
           }
         ]
       },
@@ -2271,7 +2275,7 @@
         "ticker": "TCB",
         "name": "Techcombank",
         "sector": "BANK",
-        "scanTime": "2026-03-25T10:35:44.574Z",
+        "scanTime": "2026-03-25T10:58:14.457Z",
         "price": 30800,
         "open": 30300,
         "high": 30900,
@@ -2401,7 +2405,12 @@
             "plans": [],
             "watch": [
               {
-                "label": "Only reconsider long if demand wins",
+                "label": "Early repair / stop bleeding trigger",
+                "price": 31920,
+                "why": "A reclaim of 31.920 would only improve the tape from damaged to repair mode. It is not the same as a confirmed buy yet."
+              },
+              {
+                "label": "Full demand confirmation",
                 "price": 36632,
                 "why": "A decisive move through 36.632 is needed before the structure becomes a real buy setup."
               }
@@ -2484,7 +2493,7 @@
           }
         },
         "quality": {
-          "score": 100,
+          "score": 93,
           "label": "high",
           "coveragePct": 100,
           "coverageLabel": "strong",
@@ -2534,11 +2543,11 @@
           ]
         },
         "explain": {
-          "ruleRead": "Bearish Bias",
+          "ruleRead": "Strong Bearish Bias",
           "ruleStrength": {
-            "score": 4,
-            "label": "low conviction",
-            "rawScore": 30
+            "score": 5,
+            "label": "moderate conviction",
+            "rawScore": 19
           },
           "driversPositive": [
             "RSI 42.6 in healthy range"
@@ -2888,7 +2897,12 @@
             "plans": [],
             "watch": [
               {
-                "label": "Only reconsider long if demand wins",
+                "label": "Early repair / stop bleeding trigger",
+                "price": 31920,
+                "why": "A reclaim of 31.920 would only improve the tape from damaged to repair mode. It is not the same as a confirmed buy yet."
+              },
+              {
+                "label": "Full demand confirmation",
                 "price": 36632,
                 "why": "A decisive move through 36.632 is needed before the structure becomes a real buy setup."
               }
@@ -2918,43 +2932,14 @@
             }
           ]
         },
-        "entry": [
-          30800,
-          30323,
-          29470
-        ],
-        "tp": [
-          32230,
-          33184,
-          37404
-        ],
-        "sl": 28423,
-        "signal": "SELL",
-        "confidence": 4,
-        "rawScore": 30,
-        "delta": "signal HOLD→SELL",
+        "entry": [],
+        "tp": [],
+        "sl": null,
+        "signal": "STRONG_SELL",
+        "confidence": 5,
+        "rawScore": 19,
+        "delta": "no change",
         "historyMini": [
-          {
-            "timestamp": "2026-03-25T09:05:48.247Z",
-            "price": 30800,
-            "signal": "HOLD",
-            "confidence": 5,
-            "observedPct": 0.54
-          },
-          {
-            "timestamp": "2026-03-25T09:14:27.646Z",
-            "price": 30800,
-            "signal": "HOLD",
-            "confidence": 5,
-            "observedPct": 0.54
-          },
-          {
-            "timestamp": "2026-03-25T09:16:35.133Z",
-            "price": 30800,
-            "signal": "HOLD",
-            "confidence": 5,
-            "observedPct": 0.54
-          },
           {
             "timestamp": "2026-03-25T09:37:01.596Z",
             "price": 30800,
@@ -2968,6 +2953,27 @@
             "signal": "SELL",
             "confidence": 4,
             "observedPct": 0.54
+          },
+          {
+            "timestamp": "2026-03-25T10:52:17.253Z",
+            "price": 30800,
+            "signal": "STRONG_SELL",
+            "confidence": 5,
+            "observedPct": 0.54
+          },
+          {
+            "timestamp": "2026-03-25T10:53:35.836Z",
+            "price": 30800,
+            "signal": "STRONG_SELL",
+            "confidence": 5,
+            "observedPct": 0.54
+          },
+          {
+            "timestamp": "2026-03-25T10:58:14.457Z",
+            "price": 30800,
+            "signal": "STRONG_SELL",
+            "confidence": 5,
+            "observedPct": 0.54
           }
         ]
       },
@@ -2975,7 +2981,7 @@
         "ticker": "FPT",
         "name": "FPT Corp",
         "sector": "TECH",
-        "scanTime": "2026-03-25T10:35:44.319Z",
+        "scanTime": "2026-03-25T10:58:14.166Z",
         "price": 77000,
         "open": 76200,
         "high": 77000,
@@ -3114,7 +3120,12 @@
             "plans": [],
             "watch": [
               {
-                "label": "Only reconsider long if demand wins",
+                "label": "Early repair / stop bleeding trigger",
+                "price": 83720,
+                "why": "A reclaim of 83.720 would only improve the tape from damaged to repair mode. It is not the same as a confirmed buy yet."
+              },
+              {
+                "label": "Full demand confirmation",
                 "price": 102409,
                 "why": "A decisive move through 102.409 is needed before the structure becomes a real buy setup."
               }
@@ -3197,7 +3208,7 @@
           }
         },
         "quality": {
-          "score": 100,
+          "score": 96,
           "label": "high",
           "coveragePct": 100,
           "coverageLabel": "strong",
@@ -3246,11 +3257,11 @@
           ]
         },
         "explain": {
-          "ruleRead": "Bearish Bias",
+          "ruleRead": "Strong Bearish Bias",
           "ruleStrength": {
-            "score": 3,
-            "label": "low conviction",
-            "rawScore": 24
+            "score": 6,
+            "label": "moderate conviction",
+            "rawScore": 11
           },
           "driversPositive": [],
           "driversNegative": [
@@ -3598,7 +3609,12 @@
             "plans": [],
             "watch": [
               {
-                "label": "Only reconsider long if demand wins",
+                "label": "Early repair / stop bleeding trigger",
+                "price": 83720,
+                "why": "A reclaim of 83.720 would only improve the tape from damaged to repair mode. It is not the same as a confirmed buy yet."
+              },
+              {
+                "label": "Full demand confirmation",
                 "price": 102409,
                 "why": "A decisive move through 102.409 is needed before the structure becomes a real buy setup."
               }
@@ -3628,43 +3644,14 @@
             }
           ]
         },
-        "entry": [
-          77000,
-          75511,
-          73220
-        ],
-        "tp": [
-          81468,
-          84446,
-          96479
-        ],
-        "sl": 70111,
-        "signal": "SELL",
-        "confidence": 3,
-        "rawScore": 24,
+        "entry": [],
+        "tp": [],
+        "sl": null,
+        "signal": "STRONG_SELL",
+        "confidence": 6,
+        "rawScore": 11,
         "delta": "no change",
         "historyMini": [
-          {
-            "timestamp": "2026-03-25T09:14:27.045Z",
-            "price": 77000,
-            "signal": "SELL",
-            "confidence": 4,
-            "observedPct": 0.46
-          },
-          {
-            "timestamp": "2026-03-25T09:14:27.062Z",
-            "price": 77000,
-            "signal": "SELL",
-            "confidence": 4,
-            "observedPct": 0.46
-          },
-          {
-            "timestamp": "2026-03-25T09:16:34.642Z",
-            "price": 77000,
-            "signal": "SELL",
-            "confidence": 4,
-            "observedPct": 0.46
-          },
           {
             "timestamp": "2026-03-25T09:37:01.250Z",
             "price": 77000,
@@ -3678,10 +3665,31 @@
             "signal": "SELL",
             "confidence": 3,
             "observedPct": 0.46
+          },
+          {
+            "timestamp": "2026-03-25T10:52:17.033Z",
+            "price": 77000,
+            "signal": "STRONG_SELL",
+            "confidence": 6,
+            "observedPct": 0.46
+          },
+          {
+            "timestamp": "2026-03-25T10:53:35.722Z",
+            "price": 77000,
+            "signal": "STRONG_SELL",
+            "confidence": 6,
+            "observedPct": 0.46
+          },
+          {
+            "timestamp": "2026-03-25T10:58:14.166Z",
+            "price": 77000,
+            "signal": "STRONG_SELL",
+            "confidence": 6,
+            "observedPct": 0.46
           }
         ]
       }
     ]
   },
-  "prompt": "I have 5 Vietnam stocks monitored by my local Saigon Terminal snapshot (2026-03-25T10:35:45.570Z).\n\nRules:\n- VPS is the live market source.\n- KBS enriches fundamentals and ownership when reachable.\n- Missing CAN SLIM factors are unknown, not neutral.\n- Confidence is a rule-strength score, not certainty.\n\nMarket:\n- Session: closed\n- Regime: bearish\n- Breadth: 5 up / 0 down / 0 flat\n- Turnover: 2.0T\n\nPlease validate the rule reads, flag weak data coverage, and identify the strongest and weakest setups.\n\n▸ CTG (VietinBank, BANK)\n  Price: 34.050 (+1.49%) | Value: 211.6B | Vol 6.2M (0.5x avg)\n  Relative: 1W -2.7% | 1M -10.9% | 3M -3.3% | vs VNINDEX +0.9% | vs VN30 +4.4%\n  Wyckoff: Markdown Phase E - Active Downtrend | Bias avoid | Confidence 54 | Action No long entries in active markdown\n  Wyckoff plan: Do not buy into active markdown. Wait for stopping action or a spring first.\n  Observed CAN SLIM: 42/70 | Coverage 100% [C:6 A:10 N:4 S:4 L:6 I:10 M:2]\n  Rule Read: Bearish Bias | Rule Strength: 4/10 (low conviction)\n  Positive drivers: RS vs VNINDEX 3M +0.9%; RSI 40.3 in healthy range\n  Negative drivers: Price -9.1% vs SMA50; Volume only 0.5x avg20; Market regime bearish; Wyckoff Markdown Phase E - Active Downtrend; Foreign flow unavailable\n  Warnings: Foreign flow unavailable; Wyckoff read is low-confidence\n  Heuristic levels: Entry 34.050/33.507/32.615 | TP 35.679/36.764/39.836 | SL 31.457\n\n▸ MWG (Thế Giới Di Động, RETAIL)\n  Price: 79.200 (+4.21%) | Value: 592.4B | Vol 7.6M (0.78x avg)\n  Relative: 1W -5.4% | 1M -14.1% | 3M -9.0% | vs VNINDEX -4.8% | vs VN30 -1.3%\n  Wyckoff: Markdown Phase E - Active Downtrend | Bias avoid | Confidence 72 | Action No long entries in active markdown\n  Wyckoff plan: Do not buy into active markdown. Wait for stopping action or a spring first.\n  Observed CAN SLIM: 42/70 | Coverage 100% [C:4 A:10 N:6 S:6 L:4 I:10 M:2]\n  Rule Read: Bearish Bias | Rule Strength: 4/10 (low conviction)\n  Positive drivers: RSI 42.7 in healthy range\n  Negative drivers: RS vs VNINDEX 3M -4.8%; Price -8.6% vs SMA50; Market regime bearish; Wyckoff Markdown Phase E - Active Downtrend; Foreign flow unavailable\n  Warnings: Foreign flow unavailable\n  Heuristic levels: Entry 79.200/77.429/75.700 | TP 84.514/88.057/97.843 | SL 72.429\n\n▸ HDB (HDBank, BANK)\n  Price: 24.900 (+2.47%) | Value: 274.3B | Vol 11.1M (0.72x avg)\n  Relative: 1W -3.1% | 1M -12.6% | 3M -9.8% | vs VNINDEX -5.6% | vs VN30 -2.1%\n  Wyckoff: Markdown Phase E - Active Downtrend | Bias avoid | Confidence 54 | Action No long entries in active markdown\n  Wyckoff plan: Do not buy into active markdown. Wait for stopping action or a spring first.\n  Observed CAN SLIM: 40/70 | Coverage 100% [C:10 A:10 N:6 S:6 L:4 I:2 M:2]\n  Rule Read: Bearish Bias | Rule Strength: 4/10 (low conviction)\n  Positive drivers: RSI 40.9 in healthy range\n  Negative drivers: RS vs VNINDEX 3M -5.6%; Price -8.6% vs SMA50; Market regime bearish; Wyckoff Markdown Phase E - Active Downtrend; Foreign flow unavailable\n  Warnings: Foreign flow unavailable; Wyckoff read is low-confidence\n  Heuristic levels: Entry 24.900/24.477/24.130 | TP 26.170/27.016/29.396 | SL 23.377\n\n▸ TCB (Techcombank, BANK)\n  Price: 30.800 (+3.18%) | Value: 305.3B | Vol 10.0M (0.68x avg)\n  Relative: 1W +1.7% | 1M -14.0% | 3M -9.1% | vs VNINDEX -5.0% | vs VN30 -1.5%\n  Wyckoff: Markdown Phase E - Active Downtrend | Bias avoid | Confidence 54 | Action No long entries in active markdown\n  Wyckoff plan: Do not buy into active markdown. Wait for stopping action or a spring first.\n  Observed CAN SLIM: 38/70 | Coverage 100% [C:4 A:8 N:6 S:4 L:4 I:10 M:2]\n  Rule Read: Bearish Bias | Rule Strength: 4/10 (low conviction)\n  Positive drivers: RSI 42.6 in healthy range\n  Negative drivers: RS vs VNINDEX 3M -5.0%; Price -9.3% vs SMA50; Volume only 0.68x avg20; Market regime bearish; Wyckoff Markdown Phase E - Active Downtrend\n  Warnings: Foreign flow unavailable; Wyckoff read is low-confidence\n  Heuristic levels: Entry 30.800/30.323/29.470 | TP 32.230/33.184/37.404 | SL 28.423\n\n▸ FPT (FPT Corp, TECH)\n  Price: 77.000 (+2.12%) | Value: 567.7B | Vol 7.4M (0.52x avg)\n  Relative: 1W -2.0% | 1M -16.8% | 3M -16.8% | vs VNINDEX -12.6% | vs VN30 -9.1%\n  Wyckoff: Markdown Phase E - Active Downtrend | Bias avoid | Confidence 72 | Action No long entries in active markdown\n  Wyckoff plan: Do not buy into active markdown. Wait for stopping action or a spring first.\n  Observed CAN SLIM: 32/70 | Coverage 100% [C:6 A:4 N:4 S:4 L:2 I:10 M:2]\n  Rule Read: Bearish Bias | Rule Strength: 3/10 (low conviction)\n  Positive drivers: —\n  Negative drivers: RS vs VNINDEX 3M -12.6%; Price -16.6% vs SMA50; Volume only 0.52x avg20; Market regime bearish; Wyckoff Markdown Phase E - Active Downtrend\n  Warnings: Foreign flow unavailable\n  Heuristic levels: Entry 77.000/75.511/73.220 | TP 81.468/84.446/96.479 | SL 70.111"
+  "prompt": "I have 5 Vietnam stocks monitored by my local Saigon Terminal snapshot (2026-03-25T10:58:15.347Z).\n\nRules:\n- VPS is the live market source.\n- KBS enriches fundamentals and ownership when reachable.\n- Missing CAN SLIM factors are unknown, not neutral.\n- CAN SLIM ranks ticker strength; Wyckoff governs timing, entry, and exit bias.\n- Confidence is a rule-strength score, not certainty.\n\nMarket:\n- Session: closed\n- Regime: bearish\n- Breadth: 5 up / 0 down / 0 flat\n- Turnover: 2.0T\n\nPlease validate the rule reads, flag weak data coverage, and identify the strongest and weakest setups.\n\n▸ CTG (VietinBank, BANK)\n  Price: 34.050 (+1.49%) | Value: 211.6B | Vol 6.2M (0.5x avg)\n  Relative: 1W -2.7% | 1M -10.9% | 3M -3.3% | vs VNINDEX +0.9% | vs VN30 +4.4%\n  Wyckoff: Accumulation Phase B - Early Base Repair | Bias wait | Confidence 56 | Action Stay on watch, not on full risk\n  Wyckoff plan: This looks more like an early base repair than a confirmed trend reversal. Stay on watch until price reclaims repair levels, then the range ceiling.\n  Observed CAN SLIM: 42/70 | Coverage 100% [C:6 A:10 N:4 S:4 L:6 I:10 M:2]\n  Rule Read: Neutral / Mixed | Rule Strength: 4/10 (low conviction)\n  Positive drivers: RS vs VNINDEX 3M +0.9%; RSI 40.3 in healthy range\n  Negative drivers: Price -9.1% vs SMA50; Volume only 0.5x avg20; Market regime bearish; Foreign flow unavailable\n  Warnings: Foreign flow unavailable\n  No active long entry yet. Watch: Early repair trigger 35.080 | Full demand confirmation 39.898\n\n▸ MWG (Thế Giới Di Động, RETAIL)\n  Price: 79.200 (+4.21%) | Value: 592.4B | Vol 7.6M (0.78x avg)\n  Relative: 1W -5.4% | 1M -14.1% | 3M -9.0% | vs VNINDEX -4.8% | vs VN30 -1.3%\n  Wyckoff: Markdown Phase E - Active Downtrend | Bias avoid | Confidence 72 | Action No long entries in active markdown\n  Wyckoff plan: Do not buy into active markdown. Wait for stopping action or a spring first.\n  Observed CAN SLIM: 42/70 | Coverage 100% [C:4 A:10 N:6 S:6 L:4 I:10 M:2]\n  Rule Read: Strong Bearish Bias | Rule Strength: 7/10 (moderate conviction)\n  Positive drivers: RSI 42.7 in healthy range\n  Negative drivers: RS vs VNINDEX 3M -4.8%; Price -8.6% vs SMA50; Market regime bearish; Wyckoff Markdown Phase E - Active Downtrend; Foreign flow unavailable\n  Warnings: Foreign flow unavailable\n  No active long entry yet. Watch: Early repair / stop bleeding trigger 83.560 | Full demand confirmation 94.771\n\n▸ HDB (HDBank, BANK)\n  Price: 24.900 (+2.47%) | Value: 274.3B | Vol 11.1M (0.72x avg)\n  Relative: 1W -3.1% | 1M -12.6% | 3M -9.8% | vs VNINDEX -5.6% | vs VN30 -2.1%\n  Wyckoff: Markdown Phase E - Active Downtrend | Bias avoid | Confidence 54 | Action No long entries in active markdown\n  Wyckoff plan: Do not buy into active markdown. Wait for stopping action or a spring first.\n  Observed CAN SLIM: 40/70 | Coverage 100% [C:10 A:10 N:6 S:6 L:4 I:2 M:2]\n  Rule Read: Strong Bearish Bias | Rule Strength: 5/10 (moderate conviction)\n  Positive drivers: RSI 40.9 in healthy range\n  Negative drivers: RS vs VNINDEX 3M -5.6%; Price -8.6% vs SMA50; Market regime bearish; Wyckoff Markdown Phase E - Active Downtrend; Foreign flow unavailable\n  Warnings: Foreign flow unavailable; Wyckoff read is low-confidence\n  No active long entry yet. Watch: Early repair / stop bleeding trigger 25.820 | Full demand confirmation 28.994\n\n▸ TCB (Techcombank, BANK)\n  Price: 30.800 (+3.18%) | Value: 305.3B | Vol 10.0M (0.68x avg)\n  Relative: 1W +1.7% | 1M -14.0% | 3M -9.1% | vs VNINDEX -5.0% | vs VN30 -1.5%\n  Wyckoff: Markdown Phase E - Active Downtrend | Bias avoid | Confidence 54 | Action No long entries in active markdown\n  Wyckoff plan: Do not buy into active markdown. Wait for stopping action or a spring first.\n  Observed CAN SLIM: 38/70 | Coverage 100% [C:4 A:8 N:6 S:4 L:4 I:10 M:2]\n  Rule Read: Strong Bearish Bias | Rule Strength: 5/10 (moderate conviction)\n  Positive drivers: RSI 42.6 in healthy range\n  Negative drivers: RS vs VNINDEX 3M -5.0%; Price -9.3% vs SMA50; Volume only 0.68x avg20; Market regime bearish; Wyckoff Markdown Phase E - Active Downtrend\n  Warnings: Foreign flow unavailable; Wyckoff read is low-confidence\n  No active long entry yet. Watch: Early repair / stop bleeding trigger 31.920 | Full demand confirmation 36.632\n\n▸ FPT (FPT Corp, TECH)\n  Price: 77.000 (+2.12%) | Value: 567.7B | Vol 7.4M (0.52x avg)\n  Relative: 1W -2.0% | 1M -16.8% | 3M -16.8% | vs VNINDEX -12.6% | vs VN30 -9.1%\n  Wyckoff: Markdown Phase E - Active Downtrend | Bias avoid | Confidence 72 | Action No long entries in active markdown\n  Wyckoff plan: Do not buy into active markdown. Wait for stopping action or a spring first.\n  Observed CAN SLIM: 32/70 | Coverage 100% [C:6 A:4 N:4 S:4 L:2 I:10 M:2]\n  Rule Read: Strong Bearish Bias | Rule Strength: 6/10 (moderate conviction)\n  Positive drivers: —\n  Negative drivers: RS vs VNINDEX 3M -12.6%; Price -16.6% vs SMA50; Volume only 0.52x avg20; Market regime bearish; Wyckoff Markdown Phase E - Active Downtrend\n  Warnings: Foreign flow unavailable\n  No active long entry yet. Watch: Early repair / stop bleeding trigger 83.720 | Full demand confirmation 102.409"
 }

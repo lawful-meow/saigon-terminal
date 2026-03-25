@@ -72,6 +72,15 @@ function qualityScore(metrics, scores) {
   if (!metrics.meta.snapshotOverlayUsed) score -= 10;
   if (metrics.meta.freshnessSec != null && metrics.meta.freshnessSec > 180) score -= 10;
   if (metrics.meta.snapshotFailed) score -= 6;
+  if (String(metrics.meta.sourceFlags.fundamentals).includes("unavailable")) score -= 6;
+  if (String(metrics.meta.sourceFlags.ownership).includes("unavailable")) score -= 6;
+  if (metrics.meta.sourceFlags.foreign === "unavailable") score -= 4;
+  if (metrics.wyckoff?.confidence != null && metrics.wyckoff.confidence < 70) {
+    score -= Math.max(2, Math.round((70 - metrics.wyckoff.confidence) / 6));
+  }
+  if ((metrics.meta.overviewWarnings || []).length) {
+    score -= Math.min(6, metrics.meta.overviewWarnings.length * 2);
+  }
   return Math.max(0, Math.min(100, score));
 }
 
@@ -471,6 +480,18 @@ function factorPromptLine(stock) {
     .join(" ");
 }
 
+function promptLevelsLine(stock) {
+  if (!stock.entry.length || !stock.tp.length || stock.sl == null) {
+    const watchItems = stock.wyckoff?.entry?.watch || [];
+    if (watchItems.length) {
+      return `  No active long entry yet. Watch: ${watchItems.map((item) => `${item.label} ${item.price?.toLocaleString("vi-VN") || "n/a"}`).join(" | ")}`;
+    }
+    return "  No active long entry yet. Wait for a Wyckoff repair or confirmation trigger.";
+  }
+
+  return `  Planned levels: Entry ${stock.entry.map((value) => value.toLocaleString("vi-VN")).join("/")} | TP ${stock.tp.map((value) => value.toLocaleString("vi-VN")).join("/")} | SL ${stock.sl.toLocaleString("vi-VN")}`;
+}
+
 function claudePrompt(snapshot) {
   const stockSummaries = snapshot.stocks
     .map((stock) => [
@@ -485,7 +506,7 @@ function claudePrompt(snapshot) {
       `  Positives: ${stock.explain.driversPositive.join("; ") || "—"}`,
       `  Negatives: ${stock.explain.driversNegative.join("; ") || "—"}`,
       `  Warnings: ${stock.quality.warnings.join("; ") || "—"}`,
-      `  Heuristic levels: Entry ${stock.entry.map((value) => value.toLocaleString("vi-VN")).join("/")} | TP ${stock.tp.map((value) => value.toLocaleString("vi-VN")).join("/")} | SL ${stock.sl.toLocaleString("vi-VN")}`,
+      promptLevelsLine(stock),
       `  Delta: ${stock.delta}`,
     ].join("\n"))
     .join("\n\n");
@@ -495,6 +516,7 @@ function claudePrompt(snapshot) {
 Data policy:
 - Realtime market/price context is VPS-based.
 - Missing CAN SLIM factors are shown as unknown, not neutral.
+- CAN SLIM is used to rank ticker strength; Wyckoff is used to time entries, exits, and watch states.
 - Confidence is a rule-strength score from 1-10, not certainty.
 - Fundamentals/ownership are enriched by KBS when reachable.
 

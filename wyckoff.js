@@ -177,6 +177,11 @@ function buildCommonLevels(context, metrics) {
   const rangeHeight = Math.max(atr, context.resistance - context.support);
   const breakoutTrigger = roundPrice(Math.max(context.resistance * (1 + config.wyckoff.breakoutPct), context.recentHigh));
   const breakdownTrigger = roundPrice(Math.min(context.support * (1 - config.wyckoff.breakoutPct), context.recentLow));
+  const repairTrigger = roundPrice(Math.max(
+    metrics.sma20 || 0,
+    context.support + (context.resistance - context.support) * 0.4,
+    context.recentLow + atr * 0.8
+  ));
   const pullbackBand = {
     low: roundPrice(Math.max(context.support, context.resistance - atr * 0.4)),
     high: roundPrice(context.resistance + atr * 0.3),
@@ -189,6 +194,7 @@ function buildCommonLevels(context, metrics) {
     rangeHeight,
     breakoutTrigger,
     breakdownTrigger,
+    repairTrigger,
     pullbackBand,
     stopBelowSupport,
     stopBelowRecentLow,
@@ -283,8 +289,26 @@ function buildEntryPlan(classification, context, events, metrics) {
       riskReward2: rr(levels.trendPullback, stop, roundPrice((context.recentHigh || metrics.price) + Math.max(levels.atr * 2, (context.resistance - context.support) * 0.6))),
       why: `Best Wyckoff continuation entries in markup come from backing into support, usually near SMA20 / last point of support, not from buying a stretched candle.`,
     });
+  } else if (classification.code === "acc_a" || classification.code === "acc_b") {
+    status = "wait";
+    summary = classification.code === "acc_a"
+      ? "Stopping action may be forming, but this is not a proper long until price starts reclaiming repair levels."
+      : "This looks more like an early base repair than a confirmed trend reversal. Stay on watch until price reclaims repair levels, then the range ceiling.";
+    invalidation = `If price loses ${roundPrice(context.support).toLocaleString("vi-VN")} again, the base attempt is not mature enough.`;
+
+    watch.push({
+      label: "Early repair trigger",
+      price: levels.repairTrigger,
+      why: `A reclaim of ${levels.repairTrigger.toLocaleString("vi-VN")} would be the first sign that sellers are losing control, but it is still not the full breakout.`,
+    });
+    watch.push({
+      label: "Full demand confirmation",
+      price: levels.breakoutTrigger,
+      why: `A decisive move through ${levels.breakoutTrigger.toLocaleString("vi-VN")} is still needed before this becomes a real long setup.`,
+    });
   } else {
     const buyTrigger = levels.breakoutTrigger;
+    const repairTrigger = levels.repairTrigger;
     const abortTrigger = classification.phase === "Markdown"
       ? levels.breakdownTrigger
       : roundPrice(context.support);
@@ -297,8 +321,16 @@ function buildEntryPlan(classification, context, events, metrics) {
         : "Range is not ready. Keep it on the watchlist and wait for a real trigger.";
     invalidation = `A clean move below ${abortTrigger.toLocaleString("vi-VN")} keeps the structure defensive.`;
 
+    if (Number.isFinite(repairTrigger) && repairTrigger < buyTrigger) {
+      watch.push({
+        label: classification.phase === "Markdown" ? "Early repair / stop bleeding trigger" : "Early repair trigger",
+        price: repairTrigger,
+        why: `A reclaim of ${repairTrigger.toLocaleString("vi-VN")} would only improve the tape from damaged to repair mode. It is not the same as a confirmed buy yet.`,
+      });
+    }
+
     watch.push({
-      label: "Only reconsider long if demand wins",
+      label: "Full demand confirmation",
       price: buyTrigger,
       why: `A decisive move through ${buyTrigger.toLocaleString("vi-VN")} is needed before the structure becomes a real buy setup.`,
     });
@@ -459,6 +491,7 @@ function buildActionPlan(classification, entry, context) {
 function classify(context, events, metrics) {
   const basing = context.rangeWidthPct <= 0.18 || (context.volumeDry && Math.abs(context.ret20 || 0) <= 0.08);
   const stallingHigh = metrics.nearHigh && (metrics.priceStalling || metrics.volSpike);
+  const relativeVsIndex = metrics.relative?.vsVNINDEX3m ?? null;
   const emergingSos = context.pricePositionPct >= 0.78 &&
     (context.ret20 || 0) >= 0.05 &&
     context.latestVolRatio >= (config.wyckoff.expansionVolumeRatio || 1.25) &&
@@ -467,6 +500,16 @@ function classify(context, events, metrics) {
     (context.ret20 || 0) <= -0.05 &&
     context.latestVolRatio >= (config.wyckoff.expansionVolumeRatio || 1.25) &&
     metrics.price < (metrics.sma20 || Number.MAX_SAFE_INTEGER);
+  const repairBase = context.trendBias === "downtrend" &&
+    !events.sow.active &&
+    !events.spring.active &&
+    context.volumeDry &&
+    context.pricePositionPct >= 0.2 &&
+    context.pricePositionPct <= 0.55 &&
+    context.ret20 >= context.ret40 + 0.025 &&
+    relativeVsIndex != null &&
+    relativeVsIndex >= -0.01 &&
+    context.priceVsSma50Pct >= -12;
 
   if (context.trendBias === "downtrend") {
     if (events.sos.active || events.backup.active || emergingSos) {
@@ -494,6 +537,15 @@ function classify(context, events, metrics) {
         label: "Accumulation Phase A - Stopping Action",
         code: "acc_a",
         because: "heavy stopping-style demand appeared after a decline, but the range is still immature",
+      };
+    }
+    if (repairBase) {
+      return {
+        phase: "Accumulation",
+        stage: "Phase B",
+        label: "Accumulation Phase B - Early Base Repair",
+        code: "acc_b",
+        because: "selling pressure is drying up, relative strength is holding better than the market, and price is trying to stabilize instead of extending the markdown",
       };
     }
     if (basing && context.pricePositionPct >= 0.25) {

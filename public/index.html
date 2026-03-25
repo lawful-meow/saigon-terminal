@@ -993,6 +993,15 @@ function buildPrompt(snapshot) {
     const factors = Object.entries(stock.explain.factorBreakdown)
       .map(([factor, detail]) => `${factor}:${detail.score == null ? "?" : detail.score}`)
       .join(" ");
+    const levelLine = (!stock.entry.length || !stock.tp.length || stock.sl == null)
+      ? (() => {
+          const watchItems = stock.wyckoff?.entry?.watch || [];
+          if (watchItems.length) {
+            return `  No active long entry yet. Watch: ${watchItems.map((item) => `${item.label} ${item.price ? fNum(item.price) : "n/a"}`).join(" | ")}`;
+          }
+          return "  No active long entry yet. Wait for a Wyckoff repair or confirmation trigger.";
+        })()
+      : `  Planned levels: Entry ${stock.entry.map(fNum).join("/")} | TP ${stock.tp.map(fNum).join("/")} | SL ${fNum(stock.sl)}`;
     return [
       `▸ ${stock.ticker} (${stock.name}, ${stock.sector})`,
       `  Price: ${fNum(stock.price)} (${stock.changePct >= 0 ? "+" : ""}${stock.changePct}%) | Value: ${fK(stock.tradedValue)} | Vol ${fK(stock.volume)} (${stock.volRatio}x avg)`,
@@ -1004,7 +1013,7 @@ function buildPrompt(snapshot) {
       `  Positive drivers: ${stock.explain.driversPositive.join("; ") || "—"}`,
       `  Negative drivers: ${stock.explain.driversNegative.join("; ") || "—"}`,
       `  Warnings: ${stock.quality.warnings.join("; ") || "—"}`,
-      `  Heuristic levels: Entry ${stock.entry.map(fNum).join("/")} | TP ${stock.tp.map(fNum).join("/")} | SL ${fNum(stock.sl)}`,
+      levelLine,
     ].join("\n");
   }).join("\n\n");
 
@@ -1014,6 +1023,7 @@ Rules:
 - VPS is the live market source.
 - KBS enriches fundamentals and ownership when reachable.
 - Missing CAN SLIM factors are unknown, not neutral.
+- CAN SLIM ranks ticker strength; Wyckoff governs timing, entry, and exit bias.
 - Confidence is a rule-strength score, not certainty.
 
 Market:
@@ -1638,12 +1648,22 @@ function renderDetail() {
 
     <div class="section">
       <h3>Heuristic Levels</h3>
+      ${stock.entry.length && stock.tp.length && stock.sl != null ? `
       <div class="kv-grid">
         <div class="kv"><div class="k">Entry</div><div class="v mono">${stock.entry.map(fNum).join(" / ")}</div></div>
         <div class="kv"><div class="k">Take Profit</div><div class="v mono">${stock.tp.map(fNum).join(" / ")}</div></div>
         <div class="kv"><div class="k">Stop Loss</div><div class="v mono">${fNum(stock.sl)}</div></div>
         <div class="kv"><div class="k">Delta vs prior scan</div><div class="v">${stock.delta}</div></div>
       </div>
+      ` : `
+      <div class="empty-state">
+        No active long entry yet. Use the Wyckoff watch triggers above until repair or breakout confirmation appears.
+      </div>
+      <div style="height:10px"></div>
+      <div class="kv-grid">
+        <div class="kv"><div class="k">Delta vs prior scan</div><div class="v">${stock.delta}</div></div>
+      </div>
+      `}
     </div>
 
     <div class="section">

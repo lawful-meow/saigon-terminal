@@ -81,62 +81,95 @@ function normalizedCanSlimTotal(canslim) {
 }
 
 function computeSignal(canslim, metrics) {
-  let score = 0;
+  const strengthScore = normalizedCanSlimTotal(canslim);
+  const wyckoff = metrics.wyckoff || {};
+  const wyckoffBias = wyckoff.bias || "wait";
+  const wyckoffCode = wyckoff.code || null;
+  const wyckoffConfidence = wyckoff.confidence == null ? 55 : wyckoff.confidence;
+  const relVsIndex = metrics.relative?.vsVNINDEX3m ?? metrics.rs3m ?? null;
+  const priceVsSma20 = metrics.relative?.priceVsSma20Pct ?? null;
+  const priceVsSma50 = metrics.relative?.priceVsSma50Pct ?? null;
+  const marketRegime = metrics.marketContext?.regime || "unknown";
 
-  score += normalizedCanSlimTotal(canslim) / 2;
+  const strongTicker = strengthScore >= 48;
+  const provenLeader = relVsIndex != null && relVsIndex >= 0.05;
+  const severeWeakness = (relVsIndex != null && relVsIndex <= -0.08) ||
+    (priceVsSma50 != null && priceVsSma50 <= -12);
+  const trendSupportive = metrics.aboveSMA50 && metrics.sma20AboveSMA50;
+  const trendDamaged = metrics.belowSMA50 && metrics.sma20BelowSMA50;
+  const repairing = wyckoffCode === "acc_b" || wyckoffCode === "acc_c" || wyckoffCode === "acc_d";
 
-  const rsi = metrics.rsi14 || 50;
-  if (rsi >= 40 && rsi <= 60) score += 10;
-  else if (rsi >= 30 && rsi <= 70) score += 7;
-  else if (rsi < 30) score += 12;
-  else score += 3;
+  let rawScore = 50;
+  if (wyckoffBias === "buy" || wyckoffBias === "buy_pullback") rawScore += 22;
+  else if (wyckoffBias === "buy_pilot") rawScore += 14;
+  else if (wyckoffBias === "wait_pullback") rawScore += 6;
+  else if (wyckoffBias === "avoid") rawScore -= 22;
 
-  if (metrics.aboveSMA50 && metrics.sma20AboveSMA50) score += 15;
-  else if (metrics.aboveSMA50) score += 10;
-  else if (metrics.belowSMA50 && metrics.sma20BelowSMA50) score += 2;
-  else score += 6;
+  if (strongTicker) rawScore += 8;
+  else if (strengthScore < 28) rawScore -= 8;
 
-  const volSig = classifyVolume(metrics);
-  if (volSig === "ABOVE_AVG" && metrics.aboveSMA50) score += 10;
-  else if (volSig === "NORMAL") score += 6;
-  else if (volSig === "CLIMAX") score += 4;
-  else score += 2;
+  if (provenLeader) rawScore += 6;
+  else if (severeWeakness) rawScore -= 8;
 
-  const wyckoffBias = metrics.wyckoff?.bias || "wait";
-  if (wyckoffBias === "buy" || wyckoffBias === "buy_pullback") score += 8;
-  else if (wyckoffBias === "buy_pilot") score += 5;
-  else if (wyckoffBias === "wait_pullback") score += 2;
-  else if (wyckoffBias === "avoid") score -= 7;
+  if (trendSupportive) rawScore += 5;
+  else if (trendDamaged) rawScore -= 5;
 
-  if (canslim.coveragePct < 40) score -= 4;
-  else if (canslim.coveragePct < 70) score -= 2;
+  if (marketRegime === "bullish" || marketRegime === "constructive") rawScore += 4;
+  else if (marketRegime === "defensive") rawScore -= 2;
+  else if (marketRegime === "bearish") rawScore -= 4;
 
-  const pct = score / 75;
-  let signal;
-  let confidence;
+  if (repairing && wyckoffBias === "wait" && relVsIndex != null && relVsIndex >= -0.01) rawScore += 4;
 
-  if (pct >= 0.85) {
-    signal = "STRONG_BUY";
-    confidence = Math.min(10, Math.round(pct * 10));
-  } else if (pct >= 0.70) {
+  if (canslim.coveragePct < 40) rawScore -= 4;
+  else if (canslim.coveragePct < 70) rawScore -= 2;
+
+  let signal = "HOLD";
+  if (wyckoffBias === "buy" || wyckoffBias === "buy_pullback" || wyckoffBias === "buy_pilot") {
     signal = "BUY";
-    confidence = Math.round(pct * 10);
-  } else if (pct >= 0.45) {
+    if ((wyckoffBias === "buy" || wyckoffBias === "buy_pullback") &&
+      (strongTicker || provenLeader) &&
+      trendSupportive &&
+      marketRegime !== "bearish") {
+      signal = "STRONG_BUY";
+    }
+  } else if (wyckoffBias === "avoid") {
+    signal = severeWeakness || marketRegime === "bearish" ? "STRONG_SELL" : "SELL";
+  } else if (wyckoffBias === "wait" || wyckoffBias === "wait_pullback") {
     signal = "HOLD";
-    confidence = Math.round(pct * 10);
-  } else if (pct >= 0.30) {
-    signal = "SELL";
-    confidence = Math.round(pct * 10);
-  } else {
-    signal = "STRONG_SELL";
-    confidence = Math.round(pct * 10);
   }
+
+  let conviction = wyckoffConfidence / 10;
+  if (strongTicker) conviction += 1.2;
+  else if (strengthScore < 28) conviction -= 1.0;
+
+  if (provenLeader) conviction += 0.8;
+  else if (severeWeakness) conviction -= 0.8;
+
+  if (trendSupportive) conviction += 0.8;
+  else if (trendDamaged) conviction -= 0.8;
+
+  if (marketRegime === "bullish" || marketRegime === "constructive") {
+    conviction += signal.includes("BUY") ? 0.8 : 0.4;
+  } else if (marketRegime === "defensive") {
+    conviction += signal.includes("SELL") ? 0.4 : -0.4;
+  } else if (marketRegime === "bearish") {
+    conviction += signal.includes("SELL") ? 0.8 : -0.8;
+  }
+
+  if (canslim.coveragePct < 40) conviction -= 1.0;
+  else if (canslim.coveragePct < 70) conviction -= 0.5;
+
+  if (wyckoffBias === "wait" || wyckoffBias === "wait_pullback") {
+    conviction = Math.min(conviction, 6.5);
+  }
+
+  const confidence = Math.max(1, Math.min(10, Math.round(conviction)));
 
   return {
     signal,
-    confidence: Math.max(1, Math.min(10, confidence)),
-    rawScore: +score.toFixed(1),
-    normalizedCanSlim: normalizedCanSlimTotal(canslim),
+    confidence,
+    rawScore: +rawScore.toFixed(1),
+    normalizedCanSlim: strengthScore,
   };
 }
 

@@ -7,10 +7,13 @@ const fs = require("fs");
 const path = require("path");
 const config = require("./config");
 
-const WATCHLIST_PATH = path.resolve(__dirname, config.store.watchlistPath || "./data/watchlist.json");
+function watchlistPath() {
+  const override = process.env.SAIGON_WATCHLIST_PATH;
+  return path.resolve(__dirname, override || config.store.watchlistPath || "./data/watchlist.json");
+}
 
 function ensureDir() {
-  const dir = path.dirname(WATCHLIST_PATH);
+  const dir = path.dirname(watchlistPath());
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 }
 
@@ -49,10 +52,11 @@ function defaults() {
 
 function load() {
   ensureDir();
-  if (!fs.existsSync(WATCHLIST_PATH)) return defaults();
+  const target = watchlistPath();
+  if (!fs.existsSync(target)) return defaults();
 
   try {
-    const data = JSON.parse(fs.readFileSync(WATCHLIST_PATH, "utf8"));
+    const data = JSON.parse(fs.readFileSync(target, "utf8"));
     if (!Array.isArray(data)) return defaults();
     const normalized = data.map((stock) => normalizeStock(stock));
     return dedupe(normalized);
@@ -65,7 +69,7 @@ function load() {
 function save(stocks) {
   ensureDir();
   const normalized = dedupe((stocks || []).map((stock) => normalizeStock(stock)));
-  fs.writeFileSync(WATCHLIST_PATH, JSON.stringify(normalized, null, 2), "utf8");
+  fs.writeFileSync(watchlistPath(), JSON.stringify(normalized, null, 2), "utf8");
   return normalized;
 }
 

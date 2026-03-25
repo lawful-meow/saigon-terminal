@@ -443,13 +443,13 @@ function average(values) {
   return values.reduce((sum, value) => sum + value, 0) / values.length;
 }
 
-function buildMarketSummary(results) {
-  const first = results[0] || null;
+function buildMarketSummary(displayResults, summaryResults = displayResults) {
+  const first = summaryResults[0] || displayResults[0] || null;
   const indexes = first?.market?.indexes || {};
   const pulse = first?.market?.pulse || null;
-  const turnover = results.reduce((sum, stock) => sum + (stock.tradedValue || 0), 0);
-  const breadth = breadthSummary(results);
-  const sectors = sectorSummary(results);
+  const turnover = summaryResults.reduce((sum, stock) => sum + (stock.tradedValue || 0), 0);
+  const breadth = breadthSummary(summaryResults);
+  const sectors = sectorSummary(summaryResults);
 
   return {
     asOf: first?.scanTime || new Date().toISOString(),
@@ -467,6 +467,7 @@ function fullSnapshot(results, meta = {}) {
   const activeProviders = Object.entries(config.sources.roadmap || {})
     .filter(([, detail]) => detail?.status === "active")
     .map(([provider]) => provider);
+  const summaryStocks = meta.summaryStocks || results;
 
   return {
     generated: new Date().toISOString(),
@@ -481,7 +482,7 @@ function fullSnapshot(results, meta = {}) {
     scanMode: meta.scanMode || "watchlist",
     topN: meta.topN || null,
     throttleMs: meta.delayMs || 0,
-    market: buildMarketSummary(results),
+    market: buildMarketSummary(results, summaryStocks),
     providers: {
       active: ["vps", ...activeProviders],
       roadmap: config.sources.roadmap,

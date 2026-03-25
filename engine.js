@@ -44,6 +44,14 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+function buildScanSnapshot(results, options = {}) {
+  const displayStocks = options.topN ? results.slice(0, options.topN) : results;
+  return fullSnapshot(displayStocks, {
+    ...options,
+    summaryStocks: options.summaryStocks || results,
+  });
+}
+
 async function scanAll(options = {}) {
   const stocks = options.stocks || watchlist.getAll();
   const results = [];
@@ -95,8 +103,7 @@ async function scanAll(options = {}) {
 
   const requestedCount = stocks.length;
   const scannedCount = results.length;
-  const finalResults = options.topN ? results.slice(0, options.topN) : results;
-  const snapshot = fullSnapshot(finalResults, {
+  const snapshot = buildScanSnapshot(results, {
     universeCount: requestedCount,
     requestedCount,
     scannedCount,
@@ -125,4 +132,11 @@ function getAllHistory() {
   return store.getAll();
 }
 
-module.exports = { scanOne, scanAll, getClaudePrompt, getHistory, getAllHistory };
+module.exports = {
+  scanOne,
+  scanAll,
+  getClaudePrompt,
+  getHistory,
+  getAllHistory,
+  buildScanSnapshot,
+};

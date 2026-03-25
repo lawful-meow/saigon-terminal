@@ -8,19 +8,24 @@ const fs = require("fs");
 const path = require("path");
 const config = require("./config");
 
-const STORE_PATH = path.resolve(__dirname, config.store.path);
 const MAX = config.store.maxScansPerTicker;
 
+function storePath() {
+  const override = process.env.SAIGON_STORE_PATH;
+  return path.resolve(__dirname, override || config.store.path);
+}
+
 function ensureDir() {
-  const dir = path.dirname(STORE_PATH);
+  const dir = path.dirname(storePath());
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 }
 
 function load() {
   ensureDir();
-  if (!fs.existsSync(STORE_PATH)) return {};
+  const target = storePath();
+  if (!fs.existsSync(target)) return {};
   try {
-    return JSON.parse(fs.readFileSync(STORE_PATH, "utf8"));
+    return JSON.parse(fs.readFileSync(target, "utf8"));
   } catch (e) {
     console.error("[store] corrupt file, resetting:", e.message);
     return {};
@@ -29,7 +34,7 @@ function load() {
 
 function save(data) {
   ensureDir();
-  fs.writeFileSync(STORE_PATH, JSON.stringify(data, null, 2), "utf8");
+  fs.writeFileSync(storePath(), JSON.stringify(data, null, 2), "utf8");
 }
 
 // ── Public interface ──

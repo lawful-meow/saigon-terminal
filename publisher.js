@@ -6,10 +6,12 @@
 const fs = require("fs");
 const path = require("path");
 
-const DOCS_DIR = path.resolve(__dirname, "docs");
+function docsDir() {
+  return path.resolve(__dirname, process.env.SAIGON_DOCS_DIR || "docs");
+}
 
 function ensureDocsDir() {
-  fs.mkdirSync(DOCS_DIR, { recursive: true });
+  fs.mkdirSync(docsDir(), { recursive: true });
 }
 
 function safeJson(value) {
@@ -691,9 +693,9 @@ renderFocus();
 function publishSnapshot(snapshot, options = {}) {
   ensureDocsDir();
   const html = buildPage(snapshot, options);
-  const outputPath = path.join(DOCS_DIR, "index.html");
-  const jsonPath = path.join(DOCS_DIR, "snapshot.json");
-  const noJekyllPath = path.join(DOCS_DIR, ".nojekyll");
+  const outputPath = path.join(docsDir(), "index.html");
+  const jsonPath = path.join(docsDir(), "snapshot.json");
+  const noJekyllPath = path.join(docsDir(), ".nojekyll");
   const publishedAt = new Date().toISOString();
 
   fs.writeFileSync(outputPath, html, "utf8");

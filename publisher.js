@@ -110,7 +110,7 @@ a{color:#d9fff1;text-decoration:none}
 .hero-price{font-size:42px;font-weight:900;line-height:1;letter-spacing:-.03em;margin:8px 0 10px}
 .mono{font-family:"IBM Plex Mono","SFMono-Regular","Menlo",monospace;font-variant-numeric:tabular-nums}
 .chip-row,.market-grid,.kv-grid,.history-strip{display:flex;gap:8px;flex-wrap:wrap}
-.chip,.signal-chip,.quality-chip,.breakout-chip{
+.chip,.signal-chip,.quality-chip,.breakout-chip,.execution-chip{
   display:inline-flex;align-items:center;min-height:30px;padding:0 10px;border-radius:999px;
   border:1px solid rgba(40,69,81,.8);font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
 }
@@ -126,6 +126,9 @@ a{color:#d9fff1;text-decoration:none}
 .breakout-chip[data-state="arming"]{background:rgba(255,200,105,.12);color:#ffecc7}
 .breakout-chip[data-state="extended"]{background:rgba(255,133,115,.12);color:#ffd4ce}
 .breakout-chip[data-state="not_ready"]{background:rgba(143,167,181,.12);color:#dbe6ec}
+.execution-chip[data-risk="tradeable"]{background:rgba(92,225,184,.12);color:#ddfff3}
+.execution-chip[data-risk="caution"]{background:rgba(255,200,105,.12);color:#ffecc7}
+.execution-chip[data-risk="trap_risk"]{background:rgba(255,133,115,.12);color:#ffd4ce}
 .tone-good{color:var(--good)}
 .tone-bad{color:var(--bad)}
 .detail-grid,.kv-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}
@@ -287,6 +290,13 @@ function qualityTone(label) {
 
 function breakoutLabel(state) {
   return String(state || "not_ready")
+    .split("_")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
+function executionLabel(label) {
+  return String(label || "trap_risk")
     .split("_")
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join(" ");
@@ -517,7 +527,7 @@ function renderBoard() {
               <td><span class="chip">\${strengthText}</span><div style="color:var(--muted);font-size:12px;margin-top:5px">\${stock.strength?.label || "n/a"}</div></td>
               <td><span class="chip">\${observedPct}</span></td>
               <td><span class="signal-chip" data-signal="\${stock.signal}">\${signalLabel(stock.signal)}</span></td>
-              <td><span class="quality-chip" data-tone="\${qualityTone(stock.quality.label)}">\${stock.quality.label}</span><div style="color:var(--muted);font-size:12px;margin-top:5px">\${warningSummary(stock)}</div></td>
+              <td><span class="quality-chip" data-tone="\${qualityTone(stock.quality.label)}">\${stock.quality.label}</span><div style="margin-top:5px"><span class="execution-chip" data-risk="\${stock.executionRisk?.liquidityLabel || "trap_risk"}">Exec \${executionLabel(stock.executionRisk?.liquidityLabel)}</span></div><div style="color:var(--muted);font-size:12px;margin-top:5px">\${warningSummary(stock)}</div></td>
             </tr>
           \`;
         }).join("")}
@@ -630,6 +640,7 @@ function renderFocus() {
           <span class="quality-chip" data-tone="\${qualityTone(stock.quality.label)}">\${stock.quality.label} 路 \${stock.coveragePct}%</span>
           <span class="chip">Observed \${stock.observedCanSlimTotal}/\${stock.observedCanSlimMax || 0}</span>
           <span class="breakout-chip" data-state="\${stock.breakout?.state || "not_ready"}">\${breakoutLabel(stock.breakout?.state)}</span>
+          <span class="execution-chip" data-risk="\${stock.executionRisk?.liquidityLabel || "trap_risk"}">Exec \${executionLabel(stock.executionRisk?.liquidityLabel)}</span>
           <span class="chip">RS vs VNINDEX \${fPct(stock.relative.vsVNINDEX3m, 100)}</span>
           <span class="chip">\${wyckoff.stage || stock.wyckoffStage || stock.wyckoffPhase || "Wyckoff n/a"}</span>
           <span class="chip">Wyckoff \${wyckoff.confidence || "鈥?}/100</span>
@@ -641,6 +652,7 @@ function renderFocus() {
         <div class="stat-card"><div class="stat-k">Wyckoff Action</div><div class="stat-v">\${wyckoff.action?.label || "No action"}</div><div>\${wyckoff.action?.summary || wyckoff.entry?.summary || "No Wyckoff action summary."}</div></div>
         <div class="stat-card"><div class="stat-k">Primary Entry</div><div>\${primaryPlanText}</div><div>\${primaryPlan ? \`T1 \${fNum(primaryPlan.target1)} 路 T2 \${fNum(primaryPlan.target2)}\` : invalidationText}</div></div>
         <div class="stat-card"><div class="stat-k">Breakout Readiness</div><div class="stat-v">\${breakoutLabel(stock.breakout?.state)}</div><div>\${stock.breakout?.distancePct == null ? stock.breakout?.reason || "No trigger available." : \`\${stock.breakout.distancePct >= 0 ? "+" : ""}\${stock.breakout.distancePct}% vs \${fNum(stock.breakout.triggerPrice)} 路 \${stock.breakout.reason}\`}</div></div>
+        <div class="stat-card"><div class="stat-k">Execution Risk</div><div class="stat-v">\${executionLabel(stock.executionRisk?.liquidityLabel)}</div><div>\${stock.executionRisk?.status === "ready" ? \`Pilot \${fNum(stock.executionRisk.pilotShares)} 路 Full \${fNum(stock.executionRisk.fullShares)} 路 Stop \${stock.executionRisk.stopDistancePct}%\` : stock.executionRisk?.reason || "No safe sizing available."}</div></div>
         <div class="stat-card"><div class="stat-k">Delta</div><div>\${stock.delta}</div></div>
       </div>
     </div>
@@ -703,6 +715,20 @@ function renderFocus() {
     <div class="section-card" style="margin-top:14px">
       <div class="eyebrow">Watch Triggers</div>
       <div class="list" style="margin-top:12px">\${watchItems}</div>
+    </div>
+
+    <div class="section-card" style="margin-top:14px">
+      <div class="eyebrow">Execution Risk</div>
+      <div class="kv-grid" style="margin-top:12px">
+        <div class="kv"><div class="k">Status</div><div class="v">\${stock.executionRisk?.status || "unavailable"}</div></div>
+        <div class="kv"><div class="k">Liquidity</div><div class="v">\${executionLabel(stock.executionRisk?.liquidityLabel)}</div></div>
+        <div class="kv"><div class="k">Traded / Avg Value20</div><div class="v mono">\${fK(stock.executionRisk?.tradedValue)} / \${fK(stock.executionRisk?.avgValue20)}</div></div>
+        <div class="kv"><div class="k">Stop Distance</div><div class="v mono">\${stock.executionRisk?.stopDistancePct == null ? "N/A" : \`\${stock.executionRisk.stopDistancePct}% · \${stock.executionRisk.stopDistanceAtr ?? "N/A"} ATR\`}</div></div>
+        <div class="kv"><div class="k">Risk / Reward</div><div class="v mono">\${stock.executionRisk?.riskReward1 == null ? "N/A" : \`\${stock.executionRisk.riskReward1}R / \${stock.executionRisk.riskReward2 ?? "N/A"}R\`}</div></div>
+        <div class="kv"><div class="k">Pilot / Full Size</div><div class="v mono">\${fNum(stock.executionRisk?.pilotShares)} / \${fNum(stock.executionRisk?.fullShares)} shares</div></div>
+        <div class="kv"><div class="k">Pilot / Full Notional</div><div class="v mono">\${fK(stock.executionRisk?.pilotNotional)} / \${fK(stock.executionRisk?.fullNotional)}</div></div>
+        <div class="kv"><div class="k">Read</div><div class="v">\${stock.executionRisk?.reason || "No execution read available."}</div></div>
+      </div>
     </div>
 
     <div class="detail-grid" style="margin-top:14px">

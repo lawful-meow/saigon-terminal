@@ -387,7 +387,8 @@ td{
 .score-chip,
 .signal-chip,
 .quality-chip,
-.breakout-chip{
+.breakout-chip,
+.execution-chip{
   display:inline-flex;
   align-items:center;
   min-height:28px;
@@ -411,6 +412,9 @@ td{
 .breakout-chip[data-state="arming"]{background:rgba(255,200,105,.12);color:#ffecc7}
 .breakout-chip[data-state="extended"]{background:rgba(255,133,115,.12);color:#ffd4ce}
 .breakout-chip[data-state="not_ready"]{background:rgba(143,167,181,.12);color:#dbe6ec}
+.execution-chip[data-risk="tradeable"]{background:rgba(92,225,184,.12);color:#ddfff3}
+.execution-chip[data-risk="caution"]{background:rgba(255,200,105,.12);color:#ffecc7}
+.execution-chip[data-risk="trap_risk"]{background:rgba(255,133,115,.12);color:#ffd4ce}
 .warning-stack{
   display:grid;
   gap:4px;
@@ -1059,6 +1063,13 @@ function breakoutLabel(stateName) {
     .join(" ");
 }
 
+function executionLabel(label) {
+  return String(label || "trap_risk")
+    .split("_")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
 function factorScoreTone(detail) {
   if (detail.score == null) return "unknown";
   return detail.score >= 8 ? "strong" : "weak";
@@ -1678,6 +1689,7 @@ function boardRows(stocks) {
           <td>
             <div class="warning-stack">
               <span class="quality-chip" data-tone="${qualityTone(stock.quality.label)}">${stock.quality.label} · ${stock.quality.coveragePct}%</span>
+              <span class="execution-chip" data-risk="${stock.executionRisk?.liquidityLabel || "trap_risk"}">Exec ${executionLabel(stock.executionRisk?.liquidityLabel)}</span>
               <span class="warning-line">${warningSummary(stock)}</span>
             </div>
           </td>
@@ -1943,6 +1955,13 @@ function renderDetail() {
             <div>${stock.breakout?.distancePct == null ? stock.breakout?.reason || "No trigger available." : `${stock.breakout.distancePct >= 0 ? "+" : ""}${stock.breakout.distancePct}% vs ${fNum(stock.breakout.triggerPrice)} · ${stock.breakout.reason}`}</div>
           </div>
           <div class="stat-card">
+            <div class="stat-k">Execution Risk</div>
+            <div class="stat-v">${executionLabel(stock.executionRisk?.liquidityLabel)}</div>
+            <div>${stock.executionRisk?.status === "ready"
+              ? `Pilot ${fNum(stock.executionRisk.pilotShares)} · Full ${fNum(stock.executionRisk.fullShares)} · Stop ${stock.executionRisk.stopDistancePct}%`
+              : stock.executionRisk?.reason || "No safe sizing available."}</div>
+          </div>
+          <div class="stat-card">
             <div class="stat-k">Delta</div>
             <div>${stock.delta}</div>
           </div>
@@ -2010,6 +2029,20 @@ function renderDetail() {
     <div class="section">
       <h3>Watch Triggers</h3>
       <div class="driver-list">${watchItems}</div>
+    </div>
+
+    <div class="section">
+      <h3>Execution Risk</h3>
+      <div class="kv-grid">
+        <div class="kv"><div class="k">Status</div><div class="v">${stock.executionRisk?.status || "unavailable"}</div></div>
+        <div class="kv"><div class="k">Liquidity</div><div class="v">${executionLabel(stock.executionRisk?.liquidityLabel)}</div></div>
+        <div class="kv"><div class="k">Traded / Avg Value20</div><div class="v mono">${fK(stock.executionRisk?.tradedValue)} / ${fK(stock.executionRisk?.avgValue20)}</div></div>
+        <div class="kv"><div class="k">Stop Distance</div><div class="v mono">${stock.executionRisk?.stopDistancePct == null ? "N/A" : `${stock.executionRisk.stopDistancePct}% · ${stock.executionRisk.stopDistanceAtr ?? "N/A"} ATR`}</div></div>
+        <div class="kv"><div class="k">Risk / Reward</div><div class="v mono">${stock.executionRisk?.riskReward1 == null ? "N/A" : `${stock.executionRisk.riskReward1}R / ${stock.executionRisk.riskReward2 ?? "N/A"}R`}</div></div>
+        <div class="kv"><div class="k">Pilot / Full Size</div><div class="v mono">${fNum(stock.executionRisk?.pilotShares)} / ${fNum(stock.executionRisk?.fullShares)} shares</div></div>
+        <div class="kv"><div class="k">Pilot / Full Notional</div><div class="v mono">${fK(stock.executionRisk?.pilotNotional)} / ${fK(stock.executionRisk?.fullNotional)}</div></div>
+        <div class="kv"><div class="k">Read</div><div class="v">${stock.executionRisk?.reason || "No execution read available."}</div></div>
+      </div>
     </div>
 
     <div class="section">

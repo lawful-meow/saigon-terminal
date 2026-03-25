@@ -23,6 +23,18 @@ function rankSnapshot(stock) {
   };
 }
 
+function createScanRunId() {
+  return `watchlist-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+}
+
+function createUniverseKey(stocks) {
+  return stocks
+    .map((stock) => String(stock?.ticker || "").trim().toUpperCase())
+    .filter(Boolean)
+    .sort()
+    .join("|");
+}
+
 async function scanOne(stockInfo, options = {}) {
   const { ticker } = stockInfo;
   const raw = await fetcher.fetchAll(ticker, { marketBundle: options.marketBundle });
@@ -34,8 +46,16 @@ async function scanOne(stockInfo, options = {}) {
   const history = historyEntry?.scans || [];
 
   const snapshot = tickerSnapshot(ticker, stockInfo, metrics, scores, prevScan, history);
+  snapshot.scanRunId = options.scanRunId || null;
   if (options.persist !== false) {
-    store.addScan(ticker, snapshot, { name: stockInfo.name, sector: stockInfo.sector });
+    store.addScan(ticker, {
+      ...snapshot,
+      _scanMode: options.scanMode || null,
+      _scanUniverseKey: options.scanUniverseKey || null,
+    }, {
+      name: stockInfo.name,
+      sector: stockInfo.sector,
+    });
   }
   return snapshot;
 }
@@ -49,6 +69,7 @@ function buildScanSnapshot(results, options = {}) {
   return fullSnapshot(displayStocks, {
     ...options,
     summaryStocks: options.summaryStocks || results,
+    previousSummaryStocks: options.previousSummaryStocks || null,
   });
 }
 
@@ -58,13 +79,21 @@ async function scanAll(options = {}) {
   const errors = [];
   const marketBundle = await fetcher.fetchMarketBundle();
   const delayMs = Math.max(0, Number(options.delayMs) || 0);
+  const scanMode = options.scanMode || "watchlist";
+  const persist = options.persist !== false;
+  const comparableWatchlistRun = scanMode === "watchlist" && persist;
+  const scanRunId = comparableWatchlistRun ? createScanRunId() : null;
+  const scanUniverseKey = comparableWatchlistRun ? createUniverseKey(stocks) : null;
 
   for (let i = 0; i < stocks.length; i++) {
     const stock = stocks[i];
     try {
       const snapshot = await scanOne(stock, {
         marketBundle,
-        persist: options.persist,
+        persist,
+        scanMode,
+        scanRunId,
+        scanUniverseKey,
       });
       results.push(snapshot);
       if (options.onProgress) {
@@ -103,14 +132,23 @@ async function scanAll(options = {}) {
 
   const requestedCount = stocks.length;
   const scannedCount = results.length;
+  const previousSummaryStocks = comparableWatchlistRun && scannedCount === requestedCount
+    ? store.getPreviousRunStocks({
+        currentRunId: scanRunId,
+        scanMode,
+        universeKey: scanUniverseKey,
+      })
+    : null;
   const snapshot = buildScanSnapshot(results, {
     universeCount: requestedCount,
     requestedCount,
     scannedCount,
     errorCount: errors.length,
-    scanMode: options.scanMode || "watchlist",
+    scanMode,
     topN: options.topN || null,
     delayMs,
+    scanRunId,
+    previousSummaryStocks,
   });
   return { snapshot, errors };
 }

@@ -84,4 +84,57 @@ function clear() {
   save({});
 }
 
-module.exports = { getAll, getTicker, getLatest, addScan, clear };
+function expectedRunCount(universeKey) {
+  if (!universeKey) return null;
+  return universeKey
+    .split("|")
+    .map((ticker) => ticker.trim())
+    .filter(Boolean)
+    .length || null;
+}
+
+function getPreviousRunStocks({ currentRunId, scanMode, universeKey } = {}) {
+  const db = load();
+  const runs = new Map();
+  const expectedCount = expectedRunCount(universeKey);
+
+  for (const entry of Object.values(db)) {
+    for (const scan of entry.scans || []) {
+      const runId = scan.scanRunId;
+      if (!runId || runId === currentRunId) continue;
+      if (scanMode && scan._scanMode !== scanMode) continue;
+      if (universeKey && scan._scanUniverseKey !== universeKey) continue;
+
+      if (!runs.has(runId)) {
+        runs.set(runId, {
+          runId,
+          timestamp: scan.scanTime || scan.timestamp || "",
+          stocks: [],
+        });
+      }
+
+      const run = runs.get(runId);
+      run.stocks.push(scan);
+      const stamp = scan.scanTime || scan.timestamp || "";
+      if (stamp > run.timestamp) run.timestamp = stamp;
+    }
+  }
+
+  return Array.from(runs.values())
+    .filter((run) => {
+      if (!expectedCount) return run.stocks.length > 0;
+      const uniqueTickers = new Set(run.stocks.map((stock) => stock.ticker));
+      return uniqueTickers.size === expectedCount;
+    })
+    .sort((a, b) => String(b.timestamp).localeCompare(String(a.timestamp)))[0]
+    ?.stocks || null;
+}
+
+module.exports = {
+  getAll,
+  getTicker,
+  getLatest,
+  addScan,
+  clear,
+  getPreviousRunStocks,
+};

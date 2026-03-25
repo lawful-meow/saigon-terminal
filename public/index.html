@@ -878,6 +878,7 @@ td{
         <div class="toolbar-row">
           <div class="sort-pills">
             <button class="btn" data-quick-sort="strengthScore">Strength</button>
+            <button class="btn" data-quick-sort="sectorRotationScore">Sector Rotation</button>
             <button class="btn" data-quick-sort="breakoutScore">Breakout</button>
             <button class="btn" data-quick-sort="observedScore">Observed Score</button>
             <button class="btn" data-quick-sort="rs">RS</button>
@@ -938,10 +939,10 @@ td{
       <section class="panel utility-panel">
         <div class="panel-head">
           <div>
-            <div class="eyebrow">Sector Drilldown</div>
-            <div class="panel-title">Current basket leadership</div>
+            <div class="eyebrow">Sector Rotation</div>
+            <div class="panel-title">Ranked sector matrix</div>
           </div>
-          <div class="panel-copy" id="sectorMeta">Run a scan to load sector drilldown.</div>
+          <div class="panel-copy" id="sectorMeta">Run a scan to load sector rotation.</div>
         </div>
         <div class="utility-grid" id="sectorPanel"></div>
       </section>
@@ -1068,6 +1069,21 @@ function executionLabel(label) {
     .split("_")
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join(" ");
+}
+
+function rankDeltaLabel(rankDelta) {
+  if (rankDelta == null) return "Drift unavailable";
+  if (rankDelta > 0) return `Up ${rankDelta}`;
+  if (rankDelta < 0) return `Down ${Math.abs(rankDelta)}`;
+  return "Flat";
+}
+
+function sectorState(sectorName) {
+  return state.snapshot?.market?.sectors?.all?.find((sector) => sector.sector === sectorName) || null;
+}
+
+function stockSectorState(stock) {
+  return sectorState(stock?.sector);
 }
 
 function factorScoreTone(detail) {
@@ -1221,19 +1237,19 @@ function renderSectorPanel(snapshot) {
   if (!sectors.length) {
     root.innerHTML = `
       <div class="stat-card">
-        <div class="stat-k">Sector Drilldown</div>
-        <div>Current-scan sector breadth, score, and RS load here after a scan.</div>
+        <div class="stat-k">Sector Rotation</div>
+        <div>Sector rank, breadth, and drift load here after a comparable watchlist scan.</div>
       </div>
     `;
-    meta.textContent = "Run a scan to load sector drilldown.";
+    meta.textContent = "Run a scan to load sector rotation.";
     return;
   }
 
   meta.textContent = `${sectors.length} sectors in current snapshot${state.sector !== "ALL" ? ` · focus ${state.sector}` : ""}`;
   root.innerHTML = sectors.map((sector) => `
     <button class="stat-card sector-card ${state.sector === sector.sector ? "active" : ""}" data-sector-focus="${sector.sector}">
-      <div class="stat-k">${sector.sector}</div>
-      <div class="stat-v mono">${sector.count} names</div>
+      <div class="stat-k">#${sector.rank} | ${sector.sector}</div>
+      <div class="stat-v mono">${sector.rotationScore}/100</div>
       <div>${sector.advancers}/${sector.decliners} adv/dec · ${sector.avgChangePct >= 0 ? "+" : ""}${sector.avgChangePct}%</div>
       <div class="tool-note">Observed ${sector.avgObservedScorePct ?? "n/a"}% · RS ${fPct(sector.avgRsVsVNINDEX3m, 100)}</div>
     </button>
@@ -1323,7 +1339,7 @@ function renderMarket(snapshot) {
   const sectorLaggard = market.sectors?.laggards?.[0];
   const sectorSummary = `
     <div class="market-card">
-      <div class="market-k">Sector Pulse</div>
+      <div class="market-k">Sector Rotation</div>
       <div class="market-v">${sectorLeader ? sectorLeader.sector : "N/A"}</div>
       <div class="market-s">Leader ${sectorLeader ? `${sectorLeader.avgChangePct}%` : "—"} · Laggard ${sectorLaggard ? `${sectorLaggard.sector} ${sectorLaggard.avgChangePct}%` : "—"}</div>
       <div class="market-mini">
@@ -1353,9 +1369,12 @@ function filteredStocks() {
 }
 
 function sortValue(stock, key) {
+  const sector = stockSectorState(stock);
   switch (key) {
     case "ticker": return stock.ticker;
     case "sector": return stock.sector;
+    case "sectorRotationScore": return sector?.rotationScore;
+    case "sectorRank": return sector?.rank == null ? null : -sector.rank;
     case "last": return stock.price;
     case "strengthScore": return stock.strength?.score;
     case "breakoutScore": return stock.breakout?.score;
@@ -1644,6 +1663,7 @@ function boardRows(stocks) {
       const selected = state.selectedTicker === stock.ticker ? "active" : "";
       const changeClass = (stock.changePct || 0) >= 0 ? "tone-good" : "tone-bad";
       const pinned = state.pins.has(stock.ticker);
+      const sector = stockSectorState(stock);
       const observedPct = stock.observedCanSlimMax > 0
         ? `${stock.observedCanSlimTotal}/${stock.observedCanSlimMax} · ${stock.coveragePct}%`
         : `N/A · ${stock.coveragePct}%`;
@@ -1662,7 +1682,7 @@ function boardRows(stocks) {
               </div>
             </div>
           </td>
-          <td>${stock.sector}</td>
+          <td><div>${stock.sector}</div><div class="warning-line">${sector ? `#${sector.rank} | Rot ${sector.rotationScore}/100` : "Rotation n/a"}</div></td>
           <td class="mono">${fNum(stock.price)}</td>
           <td class="mono ${changeClass}">${stock.changePct >= 0 ? "+" : ""}${stock.changePct}%</td>
           <td class="mono">${fK(stock.tradedValue)}</td>
@@ -1873,6 +1893,7 @@ function renderDetail() {
   const avoidSteps = renderActionItems(wyckoff.action?.shouldAvoid, "No avoid list recorded.");
   const testItems = renderWyckoffTests(wyckoff);
   const bankBasket = stock.sector === "BANK" ? bankBasketSummary(state.snapshot) : null;
+  const sectorRankState = stockSectorState(stock);
 
   root.innerHTML = `
     <div class="sheet-nav-wrap">
@@ -1923,6 +1944,7 @@ function renderDetail() {
             <span class="quality-chip" data-tone="${qualityTone(stock.quality.label)}">${stock.quality.label} · ${stock.coveragePct}%</span>
             <span class="breakout-chip" data-state="${stock.breakout?.state || "not_ready"}">${breakoutLabel(stock.breakout?.state)}</span>
             <span class="mini-chip">RS vs VNINDEX ${fPct(stock.relative.vsVNINDEX3m, 100)}</span>
+            <span class="mini-chip">${sectorRankState ? `Sector #${sectorRankState.rank} | ${rankDeltaLabel(sectorRankState.rankDelta)}` : "Sector drift unavailable"}</span>
             <span class="mini-chip">RSI ${stock.rsi14 ?? "—"}</span>
             <span class="mini-chip">${wyckoff.stage || stock.wyckoffStage || stock.wyckoffPhase || "Wyckoff n/a"}</span>
             <span class="mini-chip">Wyckoff ${wyckoff.confidence || "—"}/100</span>
@@ -1953,6 +1975,13 @@ function renderDetail() {
             <div class="stat-k">Breakout Readiness</div>
             <div class="stat-v">${breakoutLabel(stock.breakout?.state)}</div>
             <div>${stock.breakout?.distancePct == null ? stock.breakout?.reason || "No trigger available." : `${stock.breakout.distancePct >= 0 ? "+" : ""}${stock.breakout.distancePct}% vs ${fNum(stock.breakout.triggerPrice)} · ${stock.breakout.reason}`}</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-k">Sector Rotation</div>
+            <div class="stat-v">${sectorRankState ? `#${sectorRankState.rank}` : "n/a"}</div>
+            <div>${sectorRankState
+              ? `${sectorRankState.rotationScore}/100 | ${sectorRankState.prevRank == null ? "Drift unavailable" : `Prev #${sectorRankState.prevRank} | ${rankDeltaLabel(sectorRankState.rankDelta)}`}`
+              : "No sector rotation read available."}</div>
           </div>
           <div class="stat-card">
             <div class="stat-k">Execution Risk</div>
@@ -2226,24 +2255,29 @@ document.getElementById("btnBatchScan").addEventListener("click", batchScanTopSt
 document.getElementById("searchInput").addEventListener("input", (event) => {
   state.query = event.target.value || "";
   renderBoard();
+  renderDetail();
 });
 document.getElementById("watchlistSelect").addEventListener("change", syncWatchFormFromSelection);
 document.getElementById("sectorFilter").addEventListener("change", (event) => {
   state.sector = event.target.value;
   renderSectorPanel(state.snapshot);
   renderBoard();
+  renderDetail();
 });
 document.getElementById("breakoutFilter").addEventListener("change", (event) => {
   state.breakoutFilter = event.target.value;
   renderBoard();
+  renderDetail();
 });
 document.getElementById("groupBy").addEventListener("change", (event) => {
   state.groupBy = event.target.value;
   renderBoard();
+  renderDetail();
 });
 document.getElementById("pinnedOnly").addEventListener("change", (event) => {
   state.pinnedOnly = event.target.checked;
   renderBoard();
+  renderDetail();
 });
 document.querySelectorAll("[data-quick-sort]").forEach((button) => {
   button.addEventListener("click", () => {
@@ -2251,6 +2285,7 @@ document.querySelectorAll("[data-quick-sort]").forEach((button) => {
     state.sortKey = key;
     state.sortDir = key === "coverage" ? "asc" : "desc";
     renderBoard();
+    renderDetail();
   });
 });
 

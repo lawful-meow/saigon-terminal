@@ -746,6 +746,15 @@ td{
   display:grid;
   gap:10px;
 }
+.sector-card{
+  text-align:left;
+  border:1px solid rgba(40,69,81,.8);
+  background:rgba(11,20,26,.88);
+}
+.sector-card.active{
+  border-color:rgba(92,225,184,.34);
+  box-shadow:inset 0 0 0 1px rgba(92,225,184,.12);
+}
 .utility-note{
   color:var(--muted);
   font-size:12px;
@@ -920,6 +929,17 @@ td{
           <div class="panel-copy" id="marketMeta">No scan loaded yet.</div>
         </div>
         <div class="market-grid" id="marketGrid"></div>
+      </section>
+
+      <section class="panel utility-panel">
+        <div class="panel-head">
+          <div>
+            <div class="eyebrow">Sector Drilldown</div>
+            <div class="panel-title">Current basket leadership</div>
+          </div>
+          <div class="panel-copy" id="sectorMeta">Run a scan to load sector drilldown.</div>
+        </div>
+        <div class="utility-grid" id="sectorPanel"></div>
       </section>
 
       <section class="panel utility-panel">
@@ -1161,6 +1181,65 @@ function renderUtility() {
   ].join("");
 }
 
+function bankBasketSummary(snapshot) {
+  const banks = (snapshot?.stocks || []).filter((stock) => stock.sector === "BANK");
+  if (!banks.length) return null;
+
+  const avgChangePct = banks.reduce((sum, stock) => sum + (stock.changePct || 0), 0) / banks.length;
+  const avgRsVsVNINDEX3m = banks.reduce((sum, stock) => sum + (stock.relative?.vsVNINDEX3m || 0), 0) / banks.length;
+  const advancers = banks.filter((stock) => (stock.changePct || 0) > 0).length;
+  const decliners = banks.filter((stock) => (stock.changePct || 0) < 0).length;
+  const leader = banks.slice().sort((a, b) => (b.relative?.vsVNINDEX3m || -999) - (a.relative?.vsVNINDEX3m || -999))[0] || null;
+  const laggard = banks.slice().sort((a, b) => (a.relative?.vsVNINDEX3m || 999) - (b.relative?.vsVNINDEX3m || 999))[0] || null;
+
+  return {
+    advancers,
+    decliners,
+    avgChangePct: +avgChangePct.toFixed(2),
+    avgRsVsVNINDEX3m: +avgRsVsVNINDEX3m.toFixed(4),
+    leader,
+    laggard,
+  };
+}
+
+function renderSectorPanel(snapshot) {
+  const root = document.getElementById("sectorPanel");
+  const meta = document.getElementById("sectorMeta");
+  const sectors = snapshot?.market?.sectors?.all || [];
+
+  if (!sectors.length) {
+    root.innerHTML = `
+      <div class="stat-card">
+        <div class="stat-k">Sector Drilldown</div>
+        <div>Current-scan sector breadth, score, and RS load here after a scan.</div>
+      </div>
+    `;
+    meta.textContent = "Run a scan to load sector drilldown.";
+    return;
+  }
+
+  meta.textContent = `${sectors.length} sectors in current snapshot${state.sector !== "ALL" ? ` · focus ${state.sector}` : ""}`;
+  root.innerHTML = sectors.map((sector) => `
+    <button class="stat-card sector-card ${state.sector === sector.sector ? "active" : ""}" data-sector-focus="${sector.sector}">
+      <div class="stat-k">${sector.sector}</div>
+      <div class="stat-v mono">${sector.count} names</div>
+      <div>${sector.advancers}/${sector.decliners} adv/dec · ${sector.avgChangePct >= 0 ? "+" : ""}${sector.avgChangePct}%</div>
+      <div class="tool-note">Observed ${sector.avgObservedScorePct ?? "n/a"}% · RS ${fPct(sector.avgRsVsVNINDEX3m, 100)}</div>
+    </button>
+  `).join("");
+
+  root.querySelectorAll("[data-sector-focus]").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.sector = button.dataset.sectorFocus;
+      const select = document.getElementById("sectorFilter");
+      if (select) select.value = state.sector;
+      renderSectorPanel(state.snapshot);
+      renderBoard();
+      renderDetail();
+    });
+  });
+}
+
 function renderMarket(snapshot) {
   const market = snapshot?.market;
   const grid = document.getElementById("marketGrid");
@@ -1387,7 +1466,7 @@ function renderWyckoffTests(wyckoff) {
 function sectorOptions(snapshot) {
   const select = document.getElementById("sectorFilter");
   const sectors = Array.from(new Set((snapshot?.stocks || []).map((stock) => stock.sector))).sort();
-  select.innerHTML = [`<option value="ALL">All sectors</option>`]
+  select.innerHTML = [`<option value="ALL">Focus: All sectors</option>`]
     .concat(sectors.map((sector) => `<option value="${sector}">${sector}</option>`))
     .join("");
   select.value = state.sector;
@@ -1781,6 +1860,7 @@ function renderDetail() {
   const actionSteps = renderActionItems(wyckoff.action?.steps, "No action steps recorded.");
   const avoidSteps = renderActionItems(wyckoff.action?.shouldAvoid, "No avoid list recorded.");
   const testItems = renderWyckoffTests(wyckoff);
+  const bankBasket = stock.sector === "BANK" ? bankBasketSummary(state.snapshot) : null;
 
   root.innerHTML = `
     <div class="sheet-nav-wrap">
@@ -1796,6 +1876,29 @@ function renderDetail() {
         </div>
         <span class="signal-chip" data-signal="${stock.signal}">${signalLabel(stock.signal)}</span>
       </div>
+      ${bankBasket ? `
+      <div class="detail-grid">
+        <div class="stat-card">
+          <div class="stat-k">BANK Basket</div>
+          <div class="stat-v mono">${bankBasket.advancers} / ${bankBasket.decliners}</div>
+          <div>Advancers / decliners in current bank basket</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-k">BANK Avg Change</div>
+          <div class="stat-v mono">${bankBasket.avgChangePct >= 0 ? "+" : ""}${bankBasket.avgChangePct}%</div>
+          <div>Average change across bank names</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-k">BANK Avg RS</div>
+          <div class="stat-v mono">${fPct(bankBasket.avgRsVsVNINDEX3m, 100)}</div>
+          <div>Average RS vs VNINDEX</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-k">Leader / Laggard</div>
+          <div>${bankBasket.leader?.ticker || "n/a"} / ${bankBasket.laggard?.ticker || "n/a"}</div>
+          <div>${bankBasket.leader ? `${fPct(bankBasket.leader.relative?.vsVNINDEX3m, 100)} vs ${fPct(bankBasket.laggard?.relative?.vsVNINDEX3m, 100)}` : "Current bank basket leadership"}</div>
+        </div>
+      </div>` : ""}
       <div class="detail-hero">
         <div class="hero-slab">
           <div class="eyebrow">Main Sheet</div>
@@ -1973,6 +2076,7 @@ function renderDetail() {
 function renderAll() {
   renderMarket(state.snapshot);
   renderUtility();
+  renderSectorPanel(state.snapshot);
   sectorOptions(state.snapshot);
   renderWatchlistManager();
   renderBoard();
@@ -2093,6 +2197,7 @@ document.getElementById("searchInput").addEventListener("input", (event) => {
 document.getElementById("watchlistSelect").addEventListener("change", syncWatchFormFromSelection);
 document.getElementById("sectorFilter").addEventListener("change", (event) => {
   state.sector = event.target.value;
+  renderSectorPanel(state.snapshot);
   renderBoard();
 });
 document.getElementById("breakoutFilter").addEventListener("change", (event) => {
@@ -2118,6 +2223,7 @@ document.querySelectorAll("[data-quick-sort]").forEach((button) => {
 
 renderMarket(null);
 renderUtility();
+renderSectorPanel(null);
 renderWatchlistManager();
 loadWatchlist().catch((error) => {
   document.getElementById("watchlistMeta").textContent = error.message;

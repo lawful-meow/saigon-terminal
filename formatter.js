@@ -236,6 +236,12 @@ function driverText(metrics, scores, warnings) {
     negatives.push(`Market regime ${metrics.marketContext.regime}`);
   }
 
+  if (scores.strength?.label === "Elite Leader" || scores.strength?.label === "Strong") {
+    positives.push(`CAN SLIM strength ${scores.strength.label} (${scores.strength.score}/100)`);
+  } else if (scores.strength?.label === "Weak") {
+    negatives.push(`CAN SLIM strength ${scores.strength.label} (${scores.strength.score}/100)`);
+  }
+
   if (metrics.wyckoff?.bias === "buy" || metrics.wyckoff?.bias === "buy_pullback" || metrics.wyckoff?.bias === "buy_pilot") {
     positives.push(`Wyckoff ${metrics.wyckoff.label}`);
   } else if (metrics.wyckoff?.phase === "Distribution" || metrics.wyckoff?.phase === "Markdown") {
@@ -340,6 +346,7 @@ function tickerSnapshot(ticker, stockInfo, metrics, scores, prevScan, history = 
     observedCanSlimTotal: scores.observedCanSlimTotal,
     observedCanSlimMax: scores.observedCanSlimMax,
     coveragePct: scores.coveragePct,
+    strength: scores.strength,
     volumeSignal: scores.volumeSignal,
     wyckoffPhase: scores.wyckoffPhase,
     wyckoffStage: scores.wyckoffStage,
@@ -439,6 +446,7 @@ function average(values) {
 function buildMarketSummary(results) {
   const first = results[0] || null;
   const indexes = first?.market?.indexes || {};
+  const pulse = first?.market?.pulse || null;
   const turnover = results.reduce((sum, stock) => sum + (stock.tradedValue || 0), 0);
   const breadth = breadthSummary(results);
   const sectors = sectorSummary(results);
@@ -447,6 +455,7 @@ function buildMarketSummary(results) {
     asOf: first?.scanTime || new Date().toISOString(),
     session: first?.market?.session || "unknown",
     regime: first?.market?.regime || "unknown",
+    pulse,
     indexes,
     breadth,
     turnover,
@@ -463,7 +472,7 @@ function fullSnapshot(results) {
     generated: new Date().toISOString(),
     engine: "Saigon Terminal v2.0",
     dataSource: "VPS + KBS",
-    note: "Board data is VPS-first. KBS now enriches fundamentals and ownership when available. Missing CAN SLIM factors still stay unknown instead of being faked as neutral. Wyckoff output is a daily-bar structural heuristic with explicit action steps and entry conditions.",
+    note: "Board data is VPS-first. KBS enriches fundamentals and ownership when available. CAN SLIM is the ticker-strength layer, while Wyckoff handles timing and entry logic. Market direction now includes an IBD-style pulse proxy and Wyckoff output includes a test checklist.",
     count: results.length,
     market: buildMarketSummary(results),
     providers: {
@@ -497,9 +506,12 @@ function claudePrompt(snapshot) {
     .map((stock) => [
       `▸ ${stock.ticker} (${stock.name}, ${stock.sector})`,
       `  Price: ${stock.price.toLocaleString("vi-VN")} (${stock.changePct >= 0 ? "+" : ""}${stock.changePct}%) | Value: ${fmtK(stock.tradedValue)} | Vol: ${fmtK(stock.volume)} (${stock.volRatio}x avg)`,
+      `  Strength: ${stock.strength?.label || "n/a"}${stock.strength?.score == null ? "" : ` ${stock.strength.score}/100`}${stock.strength?.rank ? ` | Rank #${stock.strength.rank}` : ""}`,
       `  Relative: 1W ${fmtPct(stock.relative.ret1w)} | 1M ${fmtPct(stock.relative.ret1m)} | 3M ${fmtPct(stock.relative.ret3m)} | vs VNINDEX ${fmtPct(stock.relative.vsVNINDEX3m)} | vs VN30 ${fmtPct(stock.relative.vsVN303m)}`,
       `  Technical: SMA20 ${fmtK(stock.sma20)} | SMA50 ${fmtK(stock.sma50)} | RSI ${stock.rsi14 ?? "—"} | MACD ${fmtK(stock.macd)}`,
+      `  Market pulse: ${snapshot.market.pulse?.status || "unknown"} | Exposure ${snapshot.market.pulse?.exposure || "n/a"} | Dist days ${snapshot.market.pulse?.distributionDays ?? "n/a"}${snapshot.market.pulse?.followThrough?.date ? ` | FTD ${snapshot.market.pulse.followThrough.date}` : ""}`,
       `  Wyckoff: ${stock.wyckoff?.label || stock.wyckoffPhase} | Bias ${stock.wyckoff?.bias || "n/a"} | Confidence ${stock.wyckoff?.confidence || "n/a"} | Action ${stock.wyckoff?.action?.label || "n/a"}`,
+      `  Wyckoff tests: ${stock.wyckoff?.tests?.summary || "n/a"}`,
       `  Wyckoff plan: ${stock.wyckoff?.entry?.summary || "No active plan"}${stock.wyckoff?.entry?.plans?.[0]?.price ? ` | Primary entry ${stock.wyckoff.entry.plans[0].price.toLocaleString("vi-VN")}` : ""}${stock.wyckoff?.entry?.plans?.[0]?.stop ? ` | Stop ${stock.wyckoff.entry.plans[0].stop.toLocaleString("vi-VN")}` : ""}`,
       `  Observed CAN SLIM: ${stock.observedCanSlimTotal}/${stock.observedCanSlimMax || 0} | Coverage ${stock.coveragePct}% [${factorPromptLine(stock)}]`,
       `  Rule Read: ${stock.explain.ruleRead} | Rule Strength: ${stock.confidence}/10 (${confidenceLabel(stock.confidence)})`,
@@ -523,6 +535,7 @@ Data policy:
 Market header:
 - Session: ${snapshot.market.session}
 - Regime: ${snapshot.market.regime}
+- Pulse: ${snapshot.market.pulse?.status || "unknown"} | Exposure ${snapshot.market.pulse?.exposure || "n/a"} | Dist days ${snapshot.market.pulse?.distributionDays ?? "n/a"}${snapshot.market.pulse?.followThrough?.date ? ` | Follow-through ${snapshot.market.pulse.followThrough.date}` : ""}
 - Breadth: ${snapshot.market.breadth.advancers} up / ${snapshot.market.breadth.decliners} down / ${snapshot.market.breadth.unchanged} flat
 - Turnover (scan universe): ${fmtK(snapshot.market.turnover)}
 

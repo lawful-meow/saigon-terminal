@@ -836,6 +836,7 @@ td{
         </div>
         <div class="toolbar-row">
           <div class="sort-pills">
+            <button class="btn" data-quick-sort="strengthScore">Strength</button>
             <button class="btn" data-quick-sort="observedScore">Observed Score</button>
             <button class="btn" data-quick-sort="rs">RS</button>
             <button class="btn" data-quick-sort="volume">Volume</button>
@@ -928,7 +929,7 @@ const state = {
   prompt: "",
   selectedTicker: null,
   publishInfo: null,
-  sortKey: "observedScore",
+  sortKey: "strengthScore",
   sortDir: "desc",
   sector: "ALL",
   query: "",
@@ -1005,8 +1006,11 @@ function buildPrompt(snapshot) {
     return [
       `▸ ${stock.ticker} (${stock.name}, ${stock.sector})`,
       `  Price: ${fNum(stock.price)} (${stock.changePct >= 0 ? "+" : ""}${stock.changePct}%) | Value: ${fK(stock.tradedValue)} | Vol ${fK(stock.volume)} (${stock.volRatio}x avg)`,
+      `  Strength: ${stock.strength?.label || "n/a"}${stock.strength?.score == null ? "" : ` ${stock.strength.score}/100`} ${stock.strength?.rank ? `| Rank #${stock.strength.rank}` : ""}`.trim(),
       `  Relative: 1W ${fPct(stock.relative.ret1w, 100)} | 1M ${fPct(stock.relative.ret1m, 100)} | 3M ${fPct(stock.relative.ret3m, 100)} | vs VNINDEX ${fPct(stock.relative.vsVNINDEX3m, 100)} | vs VN30 ${fPct(stock.relative.vsVN303m, 100)}`,
+      `  Market pulse: ${snapshot.market.pulse?.status || "unknown"} | Exposure ${snapshot.market.pulse?.exposure || "n/a"} | Dist days ${snapshot.market.pulse?.distributionDays ?? "n/a"}${snapshot.market.pulse?.followThrough?.date ? ` | FTD ${snapshot.market.pulse.followThrough.date}` : ""}`,
       `  Wyckoff: ${stock.wyckoff?.label || stock.wyckoffPhase || "n/a"} | Bias ${stock.wyckoff?.bias || "n/a"} | Confidence ${stock.wyckoff?.confidence || "n/a"} | Action ${stock.wyckoff?.action?.label || "n/a"}`,
+      `  Wyckoff tests: ${stock.wyckoff?.tests?.summary || "n/a"}`,
       `  Wyckoff plan: ${stock.wyckoff?.entry?.summary || "No active plan"}${stock.wyckoff?.entry?.plans?.[0]?.price ? ` | Primary entry ${fNum(stock.wyckoff.entry.plans[0].price)}` : ""}${stock.wyckoff?.entry?.plans?.[0]?.stop ? ` | Stop ${fNum(stock.wyckoff.entry.plans[0].stop)}` : ""}`,
       `  Observed CAN SLIM: ${stock.observedCanSlimTotal}/${stock.observedCanSlimMax || 0} | Coverage ${stock.coveragePct}% [${factors}]`,
       `  Rule Read: ${stock.explain.ruleRead} | Rule Strength: ${stock.confidence}/10 (${stock.explain.ruleStrength.label})`,
@@ -1029,6 +1033,7 @@ Rules:
 Market:
 - Session: ${snapshot.market.session}
 - Regime: ${snapshot.market.regime}
+- Pulse: ${snapshot.market.pulse?.status || "unknown"} | Exposure ${snapshot.market.pulse?.exposure || "n/a"} | Dist days ${snapshot.market.pulse?.distributionDays ?? "n/a"}${snapshot.market.pulse?.followThrough?.date ? ` | Follow-through ${snapshot.market.pulse.followThrough.date}` : ""}
 - Breadth: ${snapshot.market.breadth.advancers} up / ${snapshot.market.breadth.decliners} down / ${snapshot.market.breadth.unchanged} flat
 - Turnover: ${fK(snapshot.market.turnover)}
 
@@ -1135,6 +1140,19 @@ function renderMarket(snapshot) {
     </div>
   `;
 
+  const pulse = `
+    <div class="market-card">
+      <div class="market-k">Market Pulse</div>
+      <div class="market-v">${market.pulse?.status || "unknown"}</div>
+      <div class="market-s">${market.pulse?.note || "No pulse note available."}</div>
+      <div class="market-mini">
+        <span class="mini-chip">Exposure ${market.pulse?.exposure || "n/a"}</span>
+        <span class="mini-chip">Dist ${market.pulse?.distributionDays ?? "n/a"}</span>
+        ${market.pulse?.followThrough?.date ? `<span class="mini-chip">FTD ${market.pulse.followThrough.date}</span>` : ""}
+      </div>
+    </div>
+  `;
+
   const turnover = `
     <div class="market-card">
       <div class="market-k">Turnover</div>
@@ -1159,7 +1177,7 @@ function renderMarket(snapshot) {
     </div>
   `;
 
-  grid.innerHTML = indexes + breadth + turnover + sectorSummary;
+  grid.innerHTML = indexes + pulse + breadth + turnover + sectorSummary;
 }
 
 function filteredStocks() {
@@ -1183,10 +1201,15 @@ function sortValue(stock, key) {
     case "ticker": return stock.ticker;
     case "sector": return stock.sector;
     case "last": return stock.price;
+    case "strengthScore": return stock.strength?.score;
+    case "strengthRank": return stock.strength?.rank == null ? null : -stock.strength.rank;
     case "changePct": return stock.changePct;
-    case "tradedValue": return stock.tradedValue;
-    case "volRatio": return stock.volRatio;
+    case "tradedValue":
+    case "value": return stock.tradedValue;
+    case "volRatio":
+    case "volume": return stock.volRatio;
     case "rsi14": return stock.rsi14;
+    case "rs":
     case "vsVNINDEX3m": return stock.relative?.vsVNINDEX3m;
     case "vsVN303m": return stock.relative?.vsVN303m;
     case "priceVsSma20Pct": return stock.relative?.priceVsSma20Pct;
@@ -1288,6 +1311,12 @@ function renderActionItems(items, emptyCopy) {
   return items.map((item) => `<div class="driver">${item}</div>`).join("");
 }
 
+function renderWyckoffTests(wyckoff) {
+  const active = wyckoff?.tests?.activeSide === "sell" ? wyckoff?.tests?.sell?.items : wyckoff?.tests?.buy?.items;
+  if (!active?.length) return `<div class="driver">No Wyckoff tests recorded.</div>`;
+  return active.map((test) => `<div class="driver tone-${test.status === "pass" ? "good" : test.status === "fail" ? "bad" : "warn"}"><strong>${test.label}</strong><br>${test.detail}</div>`).join("");
+}
+
 function sectorOptions(snapshot) {
   const select = document.getElementById("sectorFilter");
   const sectors = Array.from(new Set((snapshot?.stocks || []).map((stock) => stock.sector))).sort();
@@ -1307,7 +1336,7 @@ function boardRows(stocks) {
     : [["", stocks]];
 
   return groups.map(([label, rows]) => {
-    const groupHeader = label ? `<tr class="group-row"><td colspan="14">${label}</td></tr>` : "";
+    const groupHeader = label ? `<tr class="group-row"><td colspan="15">${label}</td></tr>` : "";
     const stockRows = rows.map((stock) => {
       const selected = state.selectedTicker === stock.ticker ? "active" : "";
       const changeClass = (stock.changePct || 0) >= 0 ? "tone-good" : "tone-bad";
@@ -1315,6 +1344,9 @@ function boardRows(stocks) {
       const observedPct = stock.observedCanSlimMax > 0
         ? `${stock.observedCanSlimTotal}/${stock.observedCanSlimMax} · ${stock.coveragePct}%`
         : `N/A · ${stock.coveragePct}%`;
+      const strengthText = stock.strength?.score == null
+        ? "N/A"
+        : `${stock.strength.score}/100 · #${stock.strength?.rank || "—"}`;
 
       return `
         <tr class="${selected}" data-ticker="${stock.ticker}">
@@ -1337,6 +1369,7 @@ function boardRows(stocks) {
           <td class="mono ${stock.relative?.vsVN303m >= 0 ? "tone-good" : "tone-bad"}">${fPct(stock.relative?.vsVN303m, 100)}</td>
           <td class="mono ${stock.relative?.priceVsSma20Pct >= 0 ? "tone-good" : "tone-bad"}">${fPct(stock.relative?.priceVsSma20Pct, 1)}</td>
           <td class="mono ${stock.relative?.priceVsSma50Pct >= 0 ? "tone-good" : "tone-bad"}">${fPct(stock.relative?.priceVsSma50Pct, 1)}</td>
+          <td><span class="score-chip">${strengthText}</span><div class="warning-line">${stock.strength?.label || "n/a"}</div></td>
           <td><span class="score-chip">${observedPct}</span></td>
           <td>
             <div class="warning-stack">
@@ -1393,6 +1426,7 @@ function renderBoard() {
           <th><button data-sort="vsVN303m">RS vs VN30</button></th>
           <th><button data-sort="priceVsSma20Pct">Vs SMA20</button></th>
           <th><button data-sort="priceVsSma50Pct">Vs SMA50</button></th>
+          <th><button data-sort="strengthScore">Strength</button></th>
           <th><button data-sort="observedScore">Observed CAN SLIM</button></th>
           <th><button data-sort="ruleStrength">Rule Read</button></th>
           <th><button data-sort="coverage">Quality</button></th>
@@ -1526,6 +1560,7 @@ function renderDetail() {
   const watchItems = renderWyckoffWatch(wyckoff);
   const actionSteps = renderActionItems(wyckoff.action?.steps, "No action steps recorded.");
   const avoidSteps = renderActionItems(wyckoff.action?.shouldAvoid, "No avoid list recorded.");
+  const testItems = renderWyckoffTests(wyckoff);
 
   root.innerHTML = `
     <div class="sheet-nav-wrap">
@@ -1547,6 +1582,8 @@ function renderDetail() {
           <div class="hero-price mono">${fNum(stock.price)}</div>
           <div class="${stock.changePct >= 0 ? "tone-good" : "tone-bad"}">${stock.changePct >= 0 ? "+" : ""}${stock.changePct}% · ${fNum(stock.volume)} shares · ${fK(stock.tradedValue)} traded</div>
           <div class="hero-meta">
+            <span class="score-chip">Strength ${stock.strength?.score == null ? "N/A" : `${stock.strength.score}/100`}</span>
+            <span class="mini-chip">${stock.strength?.label || "n/a"}${stock.strength?.rank ? ` · #${stock.strength.rank}` : ""}</span>
             <span class="score-chip">Observed ${stock.observedCanSlimTotal}/${stock.observedCanSlimMax || 0}</span>
             <span class="quality-chip" data-tone="${qualityTone(stock.quality.label)}">${stock.quality.label} · ${stock.coveragePct}%</span>
             <span class="mini-chip">RS vs VNINDEX ${fPct(stock.relative.vsVNINDEX3m, 100)}</span>
@@ -1560,6 +1597,11 @@ function renderDetail() {
             <div class="stat-k">Rule Strength</div>
             <div class="stat-v mono">${stock.confidence}/10</div>
             <div>${stock.explain.ruleStrength.label}</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-k">CAN SLIM Strength</div>
+            <div class="stat-v mono">${stock.strength?.score == null ? "—" : `${stock.strength.score}/100`}</div>
+            <div>${stock.strength?.label || "No strength label"}${stock.strength?.rank ? ` · Rank #${stock.strength.rank}` : ""}</div>
           </div>
           <div class="stat-card">
             <div class="stat-k">Wyckoff Action</div>
@@ -1584,6 +1626,8 @@ function renderDetail() {
       <div class="kv-grid">
         <div class="kv"><div class="k">Session</div><div class="v">${stock.market.session.replace(/_/g, " ")}</div></div>
         <div class="kv"><div class="k">Market Regime</div><div class="v">${stock.market.regime}</div></div>
+        <div class="kv"><div class="k">Market Pulse</div><div class="v">${stock.market.pulse?.status || "unknown"}</div></div>
+        <div class="kv"><div class="k">Suggested Exposure</div><div class="v">${stock.market.pulse?.exposure || "n/a"}</div></div>
         <div class="kv"><div class="k">Value Traded</div><div class="v mono">${fK(stock.tradedValue)}</div></div>
         <div class="kv"><div class="k">Vol x Avg20</div><div class="v mono">${stock.volRatio}x</div></div>
         <div class="kv"><div class="k">RS vs VNINDEX 3M</div><div class="v mono">${fPct(stock.relative.vsVNINDEX3m, 100)}</div></div>
@@ -1611,6 +1655,11 @@ function renderDetail() {
     <div class="section">
       <h3>Wyckoff Step By Step</h3>
       <div class="driver-list">${reasoning}</div>
+    </div>
+
+    <div class="section">
+      <h3>Wyckoff Tests</h3>
+      <div class="driver-list">${testItems}</div>
     </div>
 
     <div class="detail-grid">

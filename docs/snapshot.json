@@ -1,16 +1,25 @@
 {
-  "publishedAt": "2026-03-25T10:58:19.597Z",
+  "publishedAt": "2026-03-25T11:10:54.718Z",
   "selectedTicker": "CTG",
   "snapshot": {
-    "generated": "2026-03-25T10:58:15.347Z",
+    "generated": "2026-03-25T11:10:54.717Z",
     "engine": "Saigon Terminal v2.0",
     "dataSource": "VPS + KBS",
-    "note": "Board data is VPS-first. KBS now enriches fundamentals and ownership when available. Missing CAN SLIM factors still stay unknown instead of being faked as neutral. Wyckoff output is a daily-bar structural heuristic with explicit action steps and entry conditions.",
+    "note": "Board data is VPS-first. KBS enriches fundamentals and ownership when available. CAN SLIM is the ticker-strength layer, while Wyckoff handles timing and entry logic. Market direction now includes an IBD-style pulse proxy and Wyckoff output includes a test checklist.",
     "count": 5,
     "market": {
-      "asOf": "2026-03-25T10:58:15.336Z",
+      "asOf": "2026-03-25T11:10:54.706Z",
       "session": "closed",
       "regime": "bearish",
+      "pulse": {
+        "primary": "VNINDEX",
+        "status": "correction",
+        "score": 0.25,
+        "exposure": "0-20%",
+        "distributionDays": 6,
+        "followThrough": null,
+        "note": "Distribution pressure is elevated with 6 active distribution days."
+      },
       "indexes": {
         "VNINDEX": {
           "price": 1658.19,
@@ -20,7 +29,26 @@
           "sma20": 1730.3,
           "sma50": 1795.61,
           "regime": "bearish",
+          "regimeScore": 0.25,
           "trendScore": 0.25,
+          "pulse": {
+            "symbol": "VNINDEX",
+            "status": "correction",
+            "score": 0.25,
+            "exposure": "0-20%",
+            "distributionDays": 6,
+            "distributionDayDates": [
+              "2026-03-02",
+              "2026-03-09",
+              "2026-03-13",
+              "2026-03-19",
+              "2026-03-20",
+              "2026-03-23"
+            ],
+            "rallyDayCount": 2,
+            "followThrough": null,
+            "note": "Distribution pressure is elevated with 6 active distribution days."
+          },
           "date": "2026-03-25"
         },
         "VN30": {
@@ -31,7 +59,25 @@
           "sma20": 1884.99,
           "sma50": 1974.03,
           "regime": "bearish",
+          "regimeScore": 0.25,
           "trendScore": 0.25,
+          "pulse": {
+            "symbol": "VN30",
+            "status": "correction",
+            "score": 0.25,
+            "exposure": "0-20%",
+            "distributionDays": 5,
+            "distributionDayDates": [
+              "2026-03-02",
+              "2026-03-09",
+              "2026-03-18",
+              "2026-03-19",
+              "2026-03-23"
+            ],
+            "rallyDayCount": 2,
+            "followThrough": null,
+            "note": "Distribution pressure is elevated with 5 active distribution days."
+          },
           "date": "2026-03-25"
         }
       },
@@ -150,7 +196,7 @@
         "ticker": "CTG",
         "name": "VietinBank",
         "sector": "BANK",
-        "scanTime": "2026-03-25T10:58:15.336Z",
+        "scanTime": "2026-03-25T11:10:54.706Z",
         "price": 34050,
         "open": 33750,
         "high": 34100,
@@ -196,6 +242,14 @@
         "observedCanSlimTotal": 42,
         "observedCanSlimMax": 70,
         "coveragePct": 100,
+        "strength": {
+          "score": 43,
+          "label": "Watch",
+          "canSlimRatio": 60,
+          "marketLeader": false,
+          "rank": 1,
+          "percentile": 100
+        },
         "volumeSignal": "NORMAL",
         "wyckoffPhase": "Accumulation",
         "wyckoffStage": "Phase B",
@@ -205,7 +259,7 @@
           "stage": "Phase B",
           "label": "Accumulation Phase B - Early Base Repair",
           "code": "acc_b",
-          "confidence": 56,
+          "confidence": 57,
           "confidenceLabel": "low",
           "bias": "wait",
           "levels": {
@@ -260,6 +314,161 @@
               "volumeRatio": 0.5
             }
           },
+          "tests": {
+            "activeSide": "buy",
+            "summary": "4/7 buy tests passed",
+            "active": {
+              "side": "buy",
+              "supported": 7,
+              "passed": 4,
+              "ratio": 0.57,
+              "summary": "4/7 buy tests passed"
+            },
+            "buy": {
+              "side": "buy",
+              "supported": 7,
+              "passed": 4,
+              "ratio": 0.57,
+              "summary": "4/7 buy tests passed",
+              "items": [
+                {
+                  "label": "1. Downside objective accomplished",
+                  "supported": false,
+                  "passed": null,
+                  "status": "unsupported",
+                  "detail": "Point-and-Figure downside count is not implemented yet."
+                },
+                {
+                  "label": "2. Preliminary support / selling climax / test",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "Needs visible stopping action, a spring, or a mature accumulation turn."
+                },
+                {
+                  "label": "3. Activity bullish",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "Rallies should show better effort than reactions."
+                },
+                {
+                  "label": "4. Downward stride broken",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "Price needs to stop respecting the old downtrend line or shelf."
+                },
+                {
+                  "label": "5. Higher lows",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "The base should stop printing lower lows."
+                },
+                {
+                  "label": "6. Higher highs",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "Demand should start winning the swing highs."
+                },
+                {
+                  "label": "7. Stock stronger than the market",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "Relative strength should at least hold up versus VNINDEX."
+                },
+                {
+                  "label": "8. Base forming",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "A tradable accumulation needs a box or cause to build against."
+                },
+                {
+                  "label": "9. Upside reward at least 3x risk",
+                  "supported": false,
+                  "passed": null,
+                  "status": "unsupported",
+                  "detail": "No active long trigger exists yet, so reward/risk cannot be confirmed."
+                }
+              ]
+            },
+            "sell": {
+              "side": "sell",
+              "supported": 8,
+              "passed": 3,
+              "ratio": 0.38,
+              "summary": "3/8 sell tests passed",
+              "items": [
+                {
+                  "label": "1. Upside objective accomplished",
+                  "supported": false,
+                  "passed": null,
+                  "status": "unsupported",
+                  "detail": "Point-and-Figure upside count is not implemented yet."
+                },
+                {
+                  "label": "2. Activity bearish",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "Reactions should carry more pressure than rallies."
+                },
+                {
+                  "label": "3. Preliminary supply / buying climax",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "Supply should be visible near the top or at the failed breakout."
+                },
+                {
+                  "label": "4. Stock weaker than the market",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "Relative weakness should confirm the bearish case."
+                },
+                {
+                  "label": "5. Upward stride broken",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "The prior uptrend should no longer be intact."
+                },
+                {
+                  "label": "6. Lower highs",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "Bearish structures lose altitude on rallies."
+                },
+                {
+                  "label": "7. Lower lows",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "Support breaks should create lower lows."
+                },
+                {
+                  "label": "8. Crown / supply range forming",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "Distribution normally leaves a lateral crown before markdown expands."
+                },
+                {
+                  "label": "9. Downside reward at least 3x risk",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "The damaged structure should still offer meaningful downside asymmetry."
+                }
+              ]
+            }
+          },
           "action": {
             "label": "Stay on watch, not on full risk",
             "summary": "The stock is building a box. That is useful, but it is not yet a valid expansion move.",
@@ -312,6 +521,11 @@
               "step": 4,
               "title": "Phase Decision",
               "detail": "The structure is classified as Accumulation Phase B - Early Base Repair because selling pressure is drying up, relative strength is holding better than the market, and price is trying to stabilize instead of extending the markdown."
+            },
+            {
+              "step": 5,
+              "title": "Wyckoff Tests",
+              "detail": "4/7 buy tests passed. Supported tests are used as a confirmation layer; unsupported P&F tests stay explicitly unscored."
             }
           ],
           "context": {
@@ -342,6 +556,15 @@
           "session": "closed",
           "regime": "bearish",
           "trendScore": 0.25,
+          "pulse": {
+            "primary": "VNINDEX",
+            "status": "correction",
+            "score": 0.25,
+            "exposure": "0-20%",
+            "distributionDays": 6,
+            "followThrough": null,
+            "note": "Distribution pressure is elevated with 6 active distribution days."
+          },
           "indexes": {
             "VNINDEX": {
               "price": 1658.19,
@@ -351,7 +574,26 @@
               "sma20": 1730.3,
               "sma50": 1795.61,
               "regime": "bearish",
+              "regimeScore": 0.25,
               "trendScore": 0.25,
+              "pulse": {
+                "symbol": "VNINDEX",
+                "status": "correction",
+                "score": 0.25,
+                "exposure": "0-20%",
+                "distributionDays": 6,
+                "distributionDayDates": [
+                  "2026-03-02",
+                  "2026-03-09",
+                  "2026-03-13",
+                  "2026-03-19",
+                  "2026-03-20",
+                  "2026-03-23"
+                ],
+                "rallyDayCount": 2,
+                "followThrough": null,
+                "note": "Distribution pressure is elevated with 6 active distribution days."
+              },
               "date": "2026-03-25"
             },
             "VN30": {
@@ -362,7 +604,25 @@
               "sma20": 1884.99,
               "sma50": 1974.03,
               "regime": "bearish",
+              "regimeScore": 0.25,
               "trendScore": 0.25,
+              "pulse": {
+                "symbol": "VN30",
+                "status": "correction",
+                "score": 0.25,
+                "exposure": "0-20%",
+                "distributionDays": 5,
+                "distributionDayDates": [
+                  "2026-03-02",
+                  "2026-03-09",
+                  "2026-03-18",
+                  "2026-03-19",
+                  "2026-03-23"
+                ],
+                "rallyDayCount": 2,
+                "followThrough": null,
+                "note": "Distribution pressure is elevated with 5 active distribution days."
+              },
               "date": "2026-03-25"
             }
           }
@@ -421,7 +681,7 @@
           "ruleStrength": {
             "score": 4,
             "label": "low conviction",
-            "rawScore": 45
+            "rawScore": 44
           },
           "driversPositive": [
             "RS vs VNINDEX 3M +0.9%",
@@ -803,6 +1063,11 @@
               "step": 4,
               "title": "Phase Decision",
               "detail": "The structure is classified as Accumulation Phase B - Early Base Repair because selling pressure is drying up, relative strength is holding better than the market, and price is trying to stabilize instead of extending the markdown."
+            },
+            {
+              "step": 5,
+              "title": "Wyckoff Tests",
+              "detail": "4/7 buy tests passed. Supported tests are used as a confirmation layer; unsupported P&F tests stay explicitly unscored."
             }
           ]
         },
@@ -811,30 +1076,9 @@
         "sl": null,
         "signal": "HOLD",
         "confidence": 4,
-        "rawScore": 45,
+        "rawScore": 44,
         "delta": "no change",
         "historyMini": [
-          {
-            "timestamp": "2026-03-25T09:37:02.456Z",
-            "price": 34050,
-            "signal": "HOLD",
-            "confidence": 5,
-            "observedPct": 0.6
-          },
-          {
-            "timestamp": "2026-03-25T10:35:45.552Z",
-            "price": 34050,
-            "signal": "SELL",
-            "confidence": 4,
-            "observedPct": 0.6
-          },
-          {
-            "timestamp": "2026-03-25T10:52:18.115Z",
-            "price": 34050,
-            "signal": "HOLD",
-            "confidence": 4,
-            "observedPct": 0.6
-          },
           {
             "timestamp": "2026-03-25T10:53:36.561Z",
             "price": 34050,
@@ -848,6 +1092,27 @@
             "signal": "HOLD",
             "confidence": 4,
             "observedPct": 0.6
+          },
+          {
+            "timestamp": "2026-03-25T11:09:19.358Z",
+            "price": 34050,
+            "signal": "HOLD",
+            "confidence": 4,
+            "observedPct": 0.6
+          },
+          {
+            "timestamp": "2026-03-25T11:10:37.754Z",
+            "price": 34050,
+            "signal": "HOLD",
+            "confidence": 4,
+            "observedPct": 0.6
+          },
+          {
+            "timestamp": "2026-03-25T11:10:54.706Z",
+            "price": 34050,
+            "signal": "HOLD",
+            "confidence": 4,
+            "observedPct": 0.6
           }
         ]
       },
@@ -855,7 +1120,7 @@
         "ticker": "MWG",
         "name": "Thế Giới Di Động",
         "sector": "RETAIL",
-        "scanTime": "2026-03-25T10:58:15.228Z",
+        "scanTime": "2026-03-25T11:10:54.388Z",
         "price": 79200,
         "open": 77000,
         "high": 79500,
@@ -901,6 +1166,14 @@
         "observedCanSlimTotal": 42,
         "observedCanSlimMax": 70,
         "coveragePct": 100,
+        "strength": {
+          "score": 38,
+          "label": "Weak",
+          "canSlimRatio": 60,
+          "marketLeader": false,
+          "rank": 2,
+          "percentile": 75
+        },
         "volumeSignal": "NORMAL",
         "wyckoffPhase": "Markdown",
         "wyckoffStage": "Phase E",
@@ -910,7 +1183,7 @@
           "stage": "Phase E",
           "label": "Markdown Phase E - Active Downtrend",
           "code": "markdown",
-          "confidence": 72,
+          "confidence": 77,
           "confidenceLabel": "moderate",
           "bias": "avoid",
           "levels": {
@@ -974,6 +1247,161 @@
               "volumeRatio": 0.78
             }
           },
+          "tests": {
+            "activeSide": "sell",
+            "summary": "6/8 sell tests passed",
+            "active": {
+              "side": "sell",
+              "supported": 8,
+              "passed": 6,
+              "ratio": 0.75,
+              "summary": "6/8 sell tests passed"
+            },
+            "buy": {
+              "side": "buy",
+              "supported": 7,
+              "passed": 1,
+              "ratio": 0.14,
+              "summary": "1/7 buy tests passed",
+              "items": [
+                {
+                  "label": "1. Downside objective accomplished",
+                  "supported": false,
+                  "passed": null,
+                  "status": "unsupported",
+                  "detail": "Point-and-Figure downside count is not implemented yet."
+                },
+                {
+                  "label": "2. Preliminary support / selling climax / test",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "Needs visible stopping action, a spring, or a mature accumulation turn."
+                },
+                {
+                  "label": "3. Activity bullish",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "Rallies should show better effort than reactions."
+                },
+                {
+                  "label": "4. Downward stride broken",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "Price needs to stop respecting the old downtrend line or shelf."
+                },
+                {
+                  "label": "5. Higher lows",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "The base should stop printing lower lows."
+                },
+                {
+                  "label": "6. Higher highs",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "Demand should start winning the swing highs."
+                },
+                {
+                  "label": "7. Stock stronger than the market",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "Relative strength should at least hold up versus VNINDEX."
+                },
+                {
+                  "label": "8. Base forming",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "A tradable accumulation needs a box or cause to build against."
+                },
+                {
+                  "label": "9. Upside reward at least 3x risk",
+                  "supported": false,
+                  "passed": null,
+                  "status": "unsupported",
+                  "detail": "No active long trigger exists yet, so reward/risk cannot be confirmed."
+                }
+              ]
+            },
+            "sell": {
+              "side": "sell",
+              "supported": 8,
+              "passed": 6,
+              "ratio": 0.75,
+              "summary": "6/8 sell tests passed",
+              "items": [
+                {
+                  "label": "1. Upside objective accomplished",
+                  "supported": false,
+                  "passed": null,
+                  "status": "unsupported",
+                  "detail": "Point-and-Figure upside count is not implemented yet."
+                },
+                {
+                  "label": "2. Activity bearish",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "Reactions should carry more pressure than rallies."
+                },
+                {
+                  "label": "3. Preliminary supply / buying climax",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "Supply should be visible near the top or at the failed breakout."
+                },
+                {
+                  "label": "4. Stock weaker than the market",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "Relative weakness should confirm the bearish case."
+                },
+                {
+                  "label": "5. Upward stride broken",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "The prior uptrend should no longer be intact."
+                },
+                {
+                  "label": "6. Lower highs",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "Bearish structures lose altitude on rallies."
+                },
+                {
+                  "label": "7. Lower lows",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "Support breaks should create lower lows."
+                },
+                {
+                  "label": "8. Crown / supply range forming",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "Distribution normally leaves a lateral crown before markdown expands."
+                },
+                {
+                  "label": "9. Downside reward at least 3x risk",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "The damaged structure should still offer meaningful downside asymmetry."
+                }
+              ]
+            }
+          },
           "action": {
             "label": "No long entries in active markdown",
             "summary": "Trend and structure are both hostile. The correct action is patience.",
@@ -1026,6 +1454,11 @@
               "step": 4,
               "title": "Phase Decision",
               "detail": "The structure is classified as Markdown Phase E - Active Downtrend because the stock is still below trend support and no convincing stopping or spring event has appeared yet."
+            },
+            {
+              "step": 5,
+              "title": "Wyckoff Tests",
+              "detail": "6/8 sell tests passed. Supported tests are used as a confirmation layer; unsupported P&F tests stay explicitly unscored."
             }
           ],
           "context": {
@@ -1056,6 +1489,15 @@
           "session": "closed",
           "regime": "bearish",
           "trendScore": 0.25,
+          "pulse": {
+            "primary": "VNINDEX",
+            "status": "correction",
+            "score": 0.25,
+            "exposure": "0-20%",
+            "distributionDays": 6,
+            "followThrough": null,
+            "note": "Distribution pressure is elevated with 6 active distribution days."
+          },
           "indexes": {
             "VNINDEX": {
               "price": 1658.19,
@@ -1065,7 +1507,26 @@
               "sma20": 1730.3,
               "sma50": 1795.61,
               "regime": "bearish",
+              "regimeScore": 0.25,
               "trendScore": 0.25,
+              "pulse": {
+                "symbol": "VNINDEX",
+                "status": "correction",
+                "score": 0.25,
+                "exposure": "0-20%",
+                "distributionDays": 6,
+                "distributionDayDates": [
+                  "2026-03-02",
+                  "2026-03-09",
+                  "2026-03-13",
+                  "2026-03-19",
+                  "2026-03-20",
+                  "2026-03-23"
+                ],
+                "rallyDayCount": 2,
+                "followThrough": null,
+                "note": "Distribution pressure is elevated with 6 active distribution days."
+              },
               "date": "2026-03-25"
             },
             "VN30": {
@@ -1076,7 +1537,25 @@
               "sma20": 1884.99,
               "sma50": 1974.03,
               "regime": "bearish",
+              "regimeScore": 0.25,
               "trendScore": 0.25,
+              "pulse": {
+                "symbol": "VN30",
+                "status": "correction",
+                "score": 0.25,
+                "exposure": "0-20%",
+                "distributionDays": 5,
+                "distributionDayDates": [
+                  "2026-03-02",
+                  "2026-03-09",
+                  "2026-03-18",
+                  "2026-03-19",
+                  "2026-03-23"
+                ],
+                "rallyDayCount": 2,
+                "followThrough": null,
+                "note": "Distribution pressure is elevated with 5 active distribution days."
+              },
               "date": "2026-03-25"
             }
           }
@@ -1133,9 +1612,9 @@
         "explain": {
           "ruleRead": "Strong Bearish Bias",
           "ruleStrength": {
-            "score": 7,
-            "label": "moderate conviction",
-            "rawScore": 19
+            "score": 8,
+            "label": "high conviction",
+            "rawScore": 18
           },
           "driversPositive": [
             "RSI 42.7 in healthy range"
@@ -1144,8 +1623,8 @@
             "RS vs VNINDEX 3M -4.8%",
             "Price -8.6% vs SMA50",
             "Market regime bearish",
-            "Wyckoff Markdown Phase E - Active Downtrend",
-            "Foreign flow unavailable"
+            "CAN SLIM strength Weak (38/100)",
+            "Wyckoff Markdown Phase E - Active Downtrend"
           ],
           "factorBreakdown": {
             "C": {
@@ -1517,6 +1996,11 @@
               "step": 4,
               "title": "Phase Decision",
               "detail": "The structure is classified as Markdown Phase E - Active Downtrend because the stock is still below trend support and no convincing stopping or spring event has appeared yet."
+            },
+            {
+              "step": 5,
+              "title": "Wyckoff Tests",
+              "detail": "6/8 sell tests passed. Supported tests are used as a confirmation layer; unsupported P&F tests stay explicitly unscored."
             }
           ]
         },
@@ -1524,31 +2008,10 @@
         "tp": [],
         "sl": null,
         "signal": "STRONG_SELL",
-        "confidence": 7,
-        "rawScore": 19,
+        "confidence": 8,
+        "rawScore": 18,
         "delta": "no change",
         "historyMini": [
-          {
-            "timestamp": "2026-03-25T09:37:02.137Z",
-            "price": 79200,
-            "signal": "HOLD",
-            "confidence": 5,
-            "observedPct": 0.6
-          },
-          {
-            "timestamp": "2026-03-25T10:35:45.261Z",
-            "price": 79200,
-            "signal": "SELL",
-            "confidence": 4,
-            "observedPct": 0.6
-          },
-          {
-            "timestamp": "2026-03-25T10:52:17.748Z",
-            "price": 79200,
-            "signal": "STRONG_SELL",
-            "confidence": 7,
-            "observedPct": 0.6
-          },
           {
             "timestamp": "2026-03-25T10:53:36.274Z",
             "price": 79200,
@@ -1562,6 +2025,27 @@
             "signal": "STRONG_SELL",
             "confidence": 7,
             "observedPct": 0.6
+          },
+          {
+            "timestamp": "2026-03-25T11:09:19.068Z",
+            "price": 79200,
+            "signal": "STRONG_SELL",
+            "confidence": 8,
+            "observedPct": 0.6
+          },
+          {
+            "timestamp": "2026-03-25T11:10:37.413Z",
+            "price": 79200,
+            "signal": "STRONG_SELL",
+            "confidence": 8,
+            "observedPct": 0.6
+          },
+          {
+            "timestamp": "2026-03-25T11:10:54.388Z",
+            "price": 79200,
+            "signal": "STRONG_SELL",
+            "confidence": 8,
+            "observedPct": 0.6
           }
         ]
       },
@@ -1569,7 +2053,7 @@
         "ticker": "HDB",
         "name": "HDBank",
         "sector": "BANK",
-        "scanTime": "2026-03-25T10:58:14.731Z",
+        "scanTime": "2026-03-25T11:10:54.212Z",
         "price": 24900,
         "open": 24500,
         "high": 25000,
@@ -1615,6 +2099,14 @@
         "observedCanSlimTotal": 40,
         "observedCanSlimMax": 70,
         "coveragePct": 100,
+        "strength": {
+          "score": 30,
+          "label": "Weak",
+          "canSlimRatio": 57.1,
+          "marketLeader": false,
+          "rank": 3,
+          "percentile": 50
+        },
         "volumeSignal": "NORMAL",
         "wyckoffPhase": "Markdown",
         "wyckoffStage": "Phase E",
@@ -1624,7 +2116,7 @@
           "stage": "Phase E",
           "label": "Markdown Phase E - Active Downtrend",
           "code": "markdown",
-          "confidence": 54,
+          "confidence": 59,
           "confidenceLabel": "low",
           "bias": "avoid",
           "levels": {
@@ -1679,6 +2171,161 @@
               "volumeRatio": 0.72
             }
           },
+          "tests": {
+            "activeSide": "sell",
+            "summary": "6/8 sell tests passed",
+            "active": {
+              "side": "sell",
+              "supported": 8,
+              "passed": 6,
+              "ratio": 0.75,
+              "summary": "6/8 sell tests passed"
+            },
+            "buy": {
+              "side": "buy",
+              "supported": 7,
+              "passed": 1,
+              "ratio": 0.14,
+              "summary": "1/7 buy tests passed",
+              "items": [
+                {
+                  "label": "1. Downside objective accomplished",
+                  "supported": false,
+                  "passed": null,
+                  "status": "unsupported",
+                  "detail": "Point-and-Figure downside count is not implemented yet."
+                },
+                {
+                  "label": "2. Preliminary support / selling climax / test",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "Needs visible stopping action, a spring, or a mature accumulation turn."
+                },
+                {
+                  "label": "3. Activity bullish",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "Rallies should show better effort than reactions."
+                },
+                {
+                  "label": "4. Downward stride broken",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "Price needs to stop respecting the old downtrend line or shelf."
+                },
+                {
+                  "label": "5. Higher lows",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "The base should stop printing lower lows."
+                },
+                {
+                  "label": "6. Higher highs",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "Demand should start winning the swing highs."
+                },
+                {
+                  "label": "7. Stock stronger than the market",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "Relative strength should at least hold up versus VNINDEX."
+                },
+                {
+                  "label": "8. Base forming",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "A tradable accumulation needs a box or cause to build against."
+                },
+                {
+                  "label": "9. Upside reward at least 3x risk",
+                  "supported": false,
+                  "passed": null,
+                  "status": "unsupported",
+                  "detail": "No active long trigger exists yet, so reward/risk cannot be confirmed."
+                }
+              ]
+            },
+            "sell": {
+              "side": "sell",
+              "supported": 8,
+              "passed": 6,
+              "ratio": 0.75,
+              "summary": "6/8 sell tests passed",
+              "items": [
+                {
+                  "label": "1. Upside objective accomplished",
+                  "supported": false,
+                  "passed": null,
+                  "status": "unsupported",
+                  "detail": "Point-and-Figure upside count is not implemented yet."
+                },
+                {
+                  "label": "2. Activity bearish",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "Reactions should carry more pressure than rallies."
+                },
+                {
+                  "label": "3. Preliminary supply / buying climax",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "Supply should be visible near the top or at the failed breakout."
+                },
+                {
+                  "label": "4. Stock weaker than the market",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "Relative weakness should confirm the bearish case."
+                },
+                {
+                  "label": "5. Upward stride broken",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "The prior uptrend should no longer be intact."
+                },
+                {
+                  "label": "6. Lower highs",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "Bearish structures lose altitude on rallies."
+                },
+                {
+                  "label": "7. Lower lows",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "Support breaks should create lower lows."
+                },
+                {
+                  "label": "8. Crown / supply range forming",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "Distribution normally leaves a lateral crown before markdown expands."
+                },
+                {
+                  "label": "9. Downside reward at least 3x risk",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "The damaged structure should still offer meaningful downside asymmetry."
+                }
+              ]
+            }
+          },
           "action": {
             "label": "No long entries in active markdown",
             "summary": "Trend and structure are both hostile. The correct action is patience.",
@@ -1731,6 +2378,11 @@
               "step": 4,
               "title": "Phase Decision",
               "detail": "The structure is classified as Markdown Phase E - Active Downtrend because the stock is still below trend support and no convincing stopping or spring event has appeared yet."
+            },
+            {
+              "step": 5,
+              "title": "Wyckoff Tests",
+              "detail": "6/8 sell tests passed. Supported tests are used as a confirmation layer; unsupported P&F tests stay explicitly unscored."
             }
           ],
           "context": {
@@ -1761,6 +2413,15 @@
           "session": "closed",
           "regime": "bearish",
           "trendScore": 0.25,
+          "pulse": {
+            "primary": "VNINDEX",
+            "status": "correction",
+            "score": 0.25,
+            "exposure": "0-20%",
+            "distributionDays": 6,
+            "followThrough": null,
+            "note": "Distribution pressure is elevated with 6 active distribution days."
+          },
           "indexes": {
             "VNINDEX": {
               "price": 1658.19,
@@ -1770,7 +2431,26 @@
               "sma20": 1730.3,
               "sma50": 1795.61,
               "regime": "bearish",
+              "regimeScore": 0.25,
               "trendScore": 0.25,
+              "pulse": {
+                "symbol": "VNINDEX",
+                "status": "correction",
+                "score": 0.25,
+                "exposure": "0-20%",
+                "distributionDays": 6,
+                "distributionDayDates": [
+                  "2026-03-02",
+                  "2026-03-09",
+                  "2026-03-13",
+                  "2026-03-19",
+                  "2026-03-20",
+                  "2026-03-23"
+                ],
+                "rallyDayCount": 2,
+                "followThrough": null,
+                "note": "Distribution pressure is elevated with 6 active distribution days."
+              },
               "date": "2026-03-25"
             },
             "VN30": {
@@ -1781,13 +2461,31 @@
               "sma20": 1884.99,
               "sma50": 1974.03,
               "regime": "bearish",
+              "regimeScore": 0.25,
               "trendScore": 0.25,
+              "pulse": {
+                "symbol": "VN30",
+                "status": "correction",
+                "score": 0.25,
+                "exposure": "0-20%",
+                "distributionDays": 5,
+                "distributionDayDates": [
+                  "2026-03-02",
+                  "2026-03-09",
+                  "2026-03-18",
+                  "2026-03-19",
+                  "2026-03-23"
+                ],
+                "rallyDayCount": 2,
+                "followThrough": null,
+                "note": "Distribution pressure is elevated with 5 active distribution days."
+              },
               "date": "2026-03-25"
             }
           }
         },
         "quality": {
-          "score": 93,
+          "score": 94,
           "label": "high",
           "coveragePct": 100,
           "coverageLabel": "strong",
@@ -1832,16 +2530,15 @@
             }
           },
           "warnings": [
-            "Foreign flow unavailable",
-            "Wyckoff read is low-confidence"
+            "Foreign flow unavailable"
           ]
         },
         "explain": {
           "ruleRead": "Strong Bearish Bias",
           "ruleStrength": {
-            "score": 5,
+            "score": 6,
             "label": "moderate conviction",
-            "rawScore": 19
+            "rawScore": 18
           },
           "driversPositive": [
             "RSI 40.9 in healthy range"
@@ -1850,8 +2547,8 @@
             "RS vs VNINDEX 3M -5.6%",
             "Price -8.6% vs SMA50",
             "Market regime bearish",
-            "Wyckoff Markdown Phase E - Active Downtrend",
-            "Foreign flow unavailable"
+            "CAN SLIM strength Weak (30/100)",
+            "Wyckoff Markdown Phase E - Active Downtrend"
           ],
           "factorBreakdown": {
             "C": {
@@ -2223,6 +2920,11 @@
               "step": 4,
               "title": "Phase Decision",
               "detail": "The structure is classified as Markdown Phase E - Active Downtrend because the stock is still below trend support and no convincing stopping or spring event has appeared yet."
+            },
+            {
+              "step": 5,
+              "title": "Wyckoff Tests",
+              "detail": "6/8 sell tests passed. Supported tests are used as a confirmation layer; unsupported P&F tests stay explicitly unscored."
             }
           ]
         },
@@ -2230,31 +2932,10 @@
         "tp": [],
         "sl": null,
         "signal": "STRONG_SELL",
-        "confidence": 5,
-        "rawScore": 19,
+        "confidence": 6,
+        "rawScore": 18,
         "delta": "no change",
         "historyMini": [
-          {
-            "timestamp": "2026-03-25T09:37:01.818Z",
-            "price": 24900,
-            "signal": "HOLD",
-            "confidence": 5,
-            "observedPct": 0.57
-          },
-          {
-            "timestamp": "2026-03-25T10:35:45.008Z",
-            "price": 24900,
-            "signal": "SELL",
-            "confidence": 4,
-            "observedPct": 0.57
-          },
-          {
-            "timestamp": "2026-03-25T10:52:17.550Z",
-            "price": 24900,
-            "signal": "STRONG_SELL",
-            "confidence": 5,
-            "observedPct": 0.57
-          },
           {
             "timestamp": "2026-03-25T10:53:35.973Z",
             "price": 24900,
@@ -2268,6 +2949,27 @@
             "signal": "STRONG_SELL",
             "confidence": 5,
             "observedPct": 0.57
+          },
+          {
+            "timestamp": "2026-03-25T11:09:18.808Z",
+            "price": 24900,
+            "signal": "STRONG_SELL",
+            "confidence": 6,
+            "observedPct": 0.57
+          },
+          {
+            "timestamp": "2026-03-25T11:10:37.044Z",
+            "price": 24900,
+            "signal": "STRONG_SELL",
+            "confidence": 6,
+            "observedPct": 0.57
+          },
+          {
+            "timestamp": "2026-03-25T11:10:54.212Z",
+            "price": 24900,
+            "signal": "STRONG_SELL",
+            "confidence": 6,
+            "observedPct": 0.57
           }
         ]
       },
@@ -2275,7 +2977,7 @@
         "ticker": "TCB",
         "name": "Techcombank",
         "sector": "BANK",
-        "scanTime": "2026-03-25T10:58:14.457Z",
+        "scanTime": "2026-03-25T11:10:53.947Z",
         "price": 30800,
         "open": 30300,
         "high": 30900,
@@ -2321,6 +3023,14 @@
         "observedCanSlimTotal": 38,
         "observedCanSlimMax": 70,
         "coveragePct": 100,
+        "strength": {
+          "score": 28,
+          "label": "Weak",
+          "canSlimRatio": 54.3,
+          "marketLeader": false,
+          "rank": 4,
+          "percentile": 25
+        },
         "volumeSignal": "NORMAL",
         "wyckoffPhase": "Markdown",
         "wyckoffStage": "Phase E",
@@ -2330,7 +3040,7 @@
           "stage": "Phase E",
           "label": "Markdown Phase E - Active Downtrend",
           "code": "markdown",
-          "confidence": 54,
+          "confidence": 56,
           "confidenceLabel": "low",
           "bias": "avoid",
           "levels": {
@@ -2385,6 +3095,161 @@
               "volumeRatio": 0.68
             }
           },
+          "tests": {
+            "activeSide": "sell",
+            "summary": "5/8 sell tests passed",
+            "active": {
+              "side": "sell",
+              "supported": 8,
+              "passed": 5,
+              "ratio": 0.63,
+              "summary": "5/8 sell tests passed"
+            },
+            "buy": {
+              "side": "buy",
+              "supported": 7,
+              "passed": 1,
+              "ratio": 0.14,
+              "summary": "1/7 buy tests passed",
+              "items": [
+                {
+                  "label": "1. Downside objective accomplished",
+                  "supported": false,
+                  "passed": null,
+                  "status": "unsupported",
+                  "detail": "Point-and-Figure downside count is not implemented yet."
+                },
+                {
+                  "label": "2. Preliminary support / selling climax / test",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "Needs visible stopping action, a spring, or a mature accumulation turn."
+                },
+                {
+                  "label": "3. Activity bullish",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "Rallies should show better effort than reactions."
+                },
+                {
+                  "label": "4. Downward stride broken",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "Price needs to stop respecting the old downtrend line or shelf."
+                },
+                {
+                  "label": "5. Higher lows",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "The base should stop printing lower lows."
+                },
+                {
+                  "label": "6. Higher highs",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "Demand should start winning the swing highs."
+                },
+                {
+                  "label": "7. Stock stronger than the market",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "Relative strength should at least hold up versus VNINDEX."
+                },
+                {
+                  "label": "8. Base forming",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "A tradable accumulation needs a box or cause to build against."
+                },
+                {
+                  "label": "9. Upside reward at least 3x risk",
+                  "supported": false,
+                  "passed": null,
+                  "status": "unsupported",
+                  "detail": "No active long trigger exists yet, so reward/risk cannot be confirmed."
+                }
+              ]
+            },
+            "sell": {
+              "side": "sell",
+              "supported": 8,
+              "passed": 5,
+              "ratio": 0.63,
+              "summary": "5/8 sell tests passed",
+              "items": [
+                {
+                  "label": "1. Upside objective accomplished",
+                  "supported": false,
+                  "passed": null,
+                  "status": "unsupported",
+                  "detail": "Point-and-Figure upside count is not implemented yet."
+                },
+                {
+                  "label": "2. Activity bearish",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "Reactions should carry more pressure than rallies."
+                },
+                {
+                  "label": "3. Preliminary supply / buying climax",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "Supply should be visible near the top or at the failed breakout."
+                },
+                {
+                  "label": "4. Stock weaker than the market",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "Relative weakness should confirm the bearish case."
+                },
+                {
+                  "label": "5. Upward stride broken",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "The prior uptrend should no longer be intact."
+                },
+                {
+                  "label": "6. Lower highs",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "Bearish structures lose altitude on rallies."
+                },
+                {
+                  "label": "7. Lower lows",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "Support breaks should create lower lows."
+                },
+                {
+                  "label": "8. Crown / supply range forming",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "Distribution normally leaves a lateral crown before markdown expands."
+                },
+                {
+                  "label": "9. Downside reward at least 3x risk",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "The damaged structure should still offer meaningful downside asymmetry."
+                }
+              ]
+            }
+          },
           "action": {
             "label": "No long entries in active markdown",
             "summary": "Trend and structure are both hostile. The correct action is patience.",
@@ -2437,6 +3302,11 @@
               "step": 4,
               "title": "Phase Decision",
               "detail": "The structure is classified as Markdown Phase E - Active Downtrend because the stock is still below trend support and no convincing stopping or spring event has appeared yet."
+            },
+            {
+              "step": 5,
+              "title": "Wyckoff Tests",
+              "detail": "5/8 sell tests passed. Supported tests are used as a confirmation layer; unsupported P&F tests stay explicitly unscored."
             }
           ],
           "context": {
@@ -2467,6 +3337,15 @@
           "session": "closed",
           "regime": "bearish",
           "trendScore": 0.25,
+          "pulse": {
+            "primary": "VNINDEX",
+            "status": "correction",
+            "score": 0.25,
+            "exposure": "0-20%",
+            "distributionDays": 6,
+            "followThrough": null,
+            "note": "Distribution pressure is elevated with 6 active distribution days."
+          },
           "indexes": {
             "VNINDEX": {
               "price": 1658.19,
@@ -2476,7 +3355,26 @@
               "sma20": 1730.3,
               "sma50": 1795.61,
               "regime": "bearish",
+              "regimeScore": 0.25,
               "trendScore": 0.25,
+              "pulse": {
+                "symbol": "VNINDEX",
+                "status": "correction",
+                "score": 0.25,
+                "exposure": "0-20%",
+                "distributionDays": 6,
+                "distributionDayDates": [
+                  "2026-03-02",
+                  "2026-03-09",
+                  "2026-03-13",
+                  "2026-03-19",
+                  "2026-03-20",
+                  "2026-03-23"
+                ],
+                "rallyDayCount": 2,
+                "followThrough": null,
+                "note": "Distribution pressure is elevated with 6 active distribution days."
+              },
               "date": "2026-03-25"
             },
             "VN30": {
@@ -2487,18 +3385,36 @@
               "sma20": 1884.99,
               "sma50": 1974.03,
               "regime": "bearish",
+              "regimeScore": 0.25,
               "trendScore": 0.25,
+              "pulse": {
+                "symbol": "VN30",
+                "status": "correction",
+                "score": 0.25,
+                "exposure": "0-20%",
+                "distributionDays": 5,
+                "distributionDayDates": [
+                  "2026-03-02",
+                  "2026-03-09",
+                  "2026-03-18",
+                  "2026-03-19",
+                  "2026-03-23"
+                ],
+                "rallyDayCount": 2,
+                "followThrough": null,
+                "note": "Distribution pressure is elevated with 5 active distribution days."
+              },
               "date": "2026-03-25"
             }
           }
         },
         "quality": {
-          "score": 93,
+          "score": 94,
           "label": "high",
           "coveragePct": 100,
           "coverageLabel": "strong",
           "historyBars": 57,
-          "freshnessSec": 0,
+          "freshnessSec": 1,
           "snapshotOverlayUsed": true,
           "missingFactors": [],
           "missingFields": [
@@ -2538,16 +3454,15 @@
             }
           },
           "warnings": [
-            "Foreign flow unavailable",
-            "Wyckoff read is low-confidence"
+            "Foreign flow unavailable"
           ]
         },
         "explain": {
           "ruleRead": "Strong Bearish Bias",
           "ruleStrength": {
-            "score": 5,
+            "score": 6,
             "label": "moderate conviction",
-            "rawScore": 19
+            "rawScore": 18
           },
           "driversPositive": [
             "RSI 42.6 in healthy range"
@@ -2557,7 +3472,7 @@
             "Price -9.3% vs SMA50",
             "Volume only 0.68x avg20",
             "Market regime bearish",
-            "Wyckoff Markdown Phase E - Active Downtrend"
+            "CAN SLIM strength Weak (28/100)"
           ],
           "factorBreakdown": {
             "C": {
@@ -2929,6 +3844,11 @@
               "step": 4,
               "title": "Phase Decision",
               "detail": "The structure is classified as Markdown Phase E - Active Downtrend because the stock is still below trend support and no convincing stopping or spring event has appeared yet."
+            },
+            {
+              "step": 5,
+              "title": "Wyckoff Tests",
+              "detail": "5/8 sell tests passed. Supported tests are used as a confirmation layer; unsupported P&F tests stay explicitly unscored."
             }
           ]
         },
@@ -2936,31 +3856,10 @@
         "tp": [],
         "sl": null,
         "signal": "STRONG_SELL",
-        "confidence": 5,
-        "rawScore": 19,
+        "confidence": 6,
+        "rawScore": 18,
         "delta": "no change",
         "historyMini": [
-          {
-            "timestamp": "2026-03-25T09:37:01.596Z",
-            "price": 30800,
-            "signal": "HOLD",
-            "confidence": 5,
-            "observedPct": 0.54
-          },
-          {
-            "timestamp": "2026-03-25T10:35:44.574Z",
-            "price": 30800,
-            "signal": "SELL",
-            "confidence": 4,
-            "observedPct": 0.54
-          },
-          {
-            "timestamp": "2026-03-25T10:52:17.253Z",
-            "price": 30800,
-            "signal": "STRONG_SELL",
-            "confidence": 5,
-            "observedPct": 0.54
-          },
           {
             "timestamp": "2026-03-25T10:53:35.836Z",
             "price": 30800,
@@ -2974,6 +3873,27 @@
             "signal": "STRONG_SELL",
             "confidence": 5,
             "observedPct": 0.54
+          },
+          {
+            "timestamp": "2026-03-25T11:09:18.511Z",
+            "price": 30800,
+            "signal": "STRONG_SELL",
+            "confidence": 6,
+            "observedPct": 0.54
+          },
+          {
+            "timestamp": "2026-03-25T11:10:36.838Z",
+            "price": 30800,
+            "signal": "STRONG_SELL",
+            "confidence": 6,
+            "observedPct": 0.54
+          },
+          {
+            "timestamp": "2026-03-25T11:10:53.947Z",
+            "price": 30800,
+            "signal": "STRONG_SELL",
+            "confidence": 6,
+            "observedPct": 0.54
           }
         ]
       },
@@ -2981,7 +3901,7 @@
         "ticker": "FPT",
         "name": "FPT Corp",
         "sector": "TECH",
-        "scanTime": "2026-03-25T10:58:14.166Z",
+        "scanTime": "2026-03-25T11:10:52.824Z",
         "price": 77000,
         "open": 76200,
         "high": 77000,
@@ -3027,6 +3947,14 @@
         "observedCanSlimTotal": 32,
         "observedCanSlimMax": 70,
         "coveragePct": 100,
+        "strength": {
+          "score": 12,
+          "label": "Weak",
+          "canSlimRatio": 45.7,
+          "marketLeader": false,
+          "rank": 5,
+          "percentile": 0
+        },
         "volumeSignal": "NORMAL",
         "wyckoffPhase": "Markdown",
         "wyckoffStage": "Phase E",
@@ -3036,7 +3964,7 @@
           "stage": "Phase E",
           "label": "Markdown Phase E - Active Downtrend",
           "code": "markdown",
-          "confidence": 72,
+          "confidence": 77,
           "confidenceLabel": "moderate",
           "bias": "avoid",
           "levels": {
@@ -3100,6 +4028,161 @@
               "volumeRatio": 0.52
             }
           },
+          "tests": {
+            "activeSide": "sell",
+            "summary": "6/8 sell tests passed",
+            "active": {
+              "side": "sell",
+              "supported": 8,
+              "passed": 6,
+              "ratio": 0.75,
+              "summary": "6/8 sell tests passed"
+            },
+            "buy": {
+              "side": "buy",
+              "supported": 7,
+              "passed": 1,
+              "ratio": 0.14,
+              "summary": "1/7 buy tests passed",
+              "items": [
+                {
+                  "label": "1. Downside objective accomplished",
+                  "supported": false,
+                  "passed": null,
+                  "status": "unsupported",
+                  "detail": "Point-and-Figure downside count is not implemented yet."
+                },
+                {
+                  "label": "2. Preliminary support / selling climax / test",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "Needs visible stopping action, a spring, or a mature accumulation turn."
+                },
+                {
+                  "label": "3. Activity bullish",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "Rallies should show better effort than reactions."
+                },
+                {
+                  "label": "4. Downward stride broken",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "Price needs to stop respecting the old downtrend line or shelf."
+                },
+                {
+                  "label": "5. Higher lows",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "The base should stop printing lower lows."
+                },
+                {
+                  "label": "6. Higher highs",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "Demand should start winning the swing highs."
+                },
+                {
+                  "label": "7. Stock stronger than the market",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "Relative strength should at least hold up versus VNINDEX."
+                },
+                {
+                  "label": "8. Base forming",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "A tradable accumulation needs a box or cause to build against."
+                },
+                {
+                  "label": "9. Upside reward at least 3x risk",
+                  "supported": false,
+                  "passed": null,
+                  "status": "unsupported",
+                  "detail": "No active long trigger exists yet, so reward/risk cannot be confirmed."
+                }
+              ]
+            },
+            "sell": {
+              "side": "sell",
+              "supported": 8,
+              "passed": 6,
+              "ratio": 0.75,
+              "summary": "6/8 sell tests passed",
+              "items": [
+                {
+                  "label": "1. Upside objective accomplished",
+                  "supported": false,
+                  "passed": null,
+                  "status": "unsupported",
+                  "detail": "Point-and-Figure upside count is not implemented yet."
+                },
+                {
+                  "label": "2. Activity bearish",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "Reactions should carry more pressure than rallies."
+                },
+                {
+                  "label": "3. Preliminary supply / buying climax",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "Supply should be visible near the top or at the failed breakout."
+                },
+                {
+                  "label": "4. Stock weaker than the market",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "Relative weakness should confirm the bearish case."
+                },
+                {
+                  "label": "5. Upward stride broken",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "The prior uptrend should no longer be intact."
+                },
+                {
+                  "label": "6. Lower highs",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "Bearish structures lose altitude on rallies."
+                },
+                {
+                  "label": "7. Lower lows",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "Support breaks should create lower lows."
+                },
+                {
+                  "label": "8. Crown / supply range forming",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "Distribution normally leaves a lateral crown before markdown expands."
+                },
+                {
+                  "label": "9. Downside reward at least 3x risk",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "The damaged structure should still offer meaningful downside asymmetry."
+                }
+              ]
+            }
+          },
           "action": {
             "label": "No long entries in active markdown",
             "summary": "Trend and structure are both hostile. The correct action is patience.",
@@ -3152,6 +4235,11 @@
               "step": 4,
               "title": "Phase Decision",
               "detail": "The structure is classified as Markdown Phase E - Active Downtrend because the stock is still below trend support and no convincing stopping or spring event has appeared yet."
+            },
+            {
+              "step": 5,
+              "title": "Wyckoff Tests",
+              "detail": "6/8 sell tests passed. Supported tests are used as a confirmation layer; unsupported P&F tests stay explicitly unscored."
             }
           ],
           "context": {
@@ -3182,6 +4270,15 @@
           "session": "closed",
           "regime": "bearish",
           "trendScore": 0.25,
+          "pulse": {
+            "primary": "VNINDEX",
+            "status": "correction",
+            "score": 0.25,
+            "exposure": "0-20%",
+            "distributionDays": 6,
+            "followThrough": null,
+            "note": "Distribution pressure is elevated with 6 active distribution days."
+          },
           "indexes": {
             "VNINDEX": {
               "price": 1658.19,
@@ -3191,7 +4288,26 @@
               "sma20": 1730.3,
               "sma50": 1795.61,
               "regime": "bearish",
+              "regimeScore": 0.25,
               "trendScore": 0.25,
+              "pulse": {
+                "symbol": "VNINDEX",
+                "status": "correction",
+                "score": 0.25,
+                "exposure": "0-20%",
+                "distributionDays": 6,
+                "distributionDayDates": [
+                  "2026-03-02",
+                  "2026-03-09",
+                  "2026-03-13",
+                  "2026-03-19",
+                  "2026-03-20",
+                  "2026-03-23"
+                ],
+                "rallyDayCount": 2,
+                "followThrough": null,
+                "note": "Distribution pressure is elevated with 6 active distribution days."
+              },
               "date": "2026-03-25"
             },
             "VN30": {
@@ -3202,7 +4318,25 @@
               "sma20": 1884.99,
               "sma50": 1974.03,
               "regime": "bearish",
+              "regimeScore": 0.25,
               "trendScore": 0.25,
+              "pulse": {
+                "symbol": "VN30",
+                "status": "correction",
+                "score": 0.25,
+                "exposure": "0-20%",
+                "distributionDays": 5,
+                "distributionDayDates": [
+                  "2026-03-02",
+                  "2026-03-09",
+                  "2026-03-18",
+                  "2026-03-19",
+                  "2026-03-23"
+                ],
+                "rallyDayCount": 2,
+                "followThrough": null,
+                "note": "Distribution pressure is elevated with 5 active distribution days."
+              },
               "date": "2026-03-25"
             }
           }
@@ -3213,7 +4347,7 @@
           "coveragePct": 100,
           "coverageLabel": "strong",
           "historyBars": 57,
-          "freshnessSec": 0,
+          "freshnessSec": 1,
           "snapshotOverlayUsed": true,
           "missingFactors": [],
           "missingFields": [
@@ -3259,9 +4393,9 @@
         "explain": {
           "ruleRead": "Strong Bearish Bias",
           "ruleStrength": {
-            "score": 6,
+            "score": 7,
             "label": "moderate conviction",
-            "rawScore": 11
+            "rawScore": 10
           },
           "driversPositive": [],
           "driversNegative": [
@@ -3269,7 +4403,7 @@
             "Price -16.6% vs SMA50",
             "Volume only 0.52x avg20",
             "Market regime bearish",
-            "Wyckoff Markdown Phase E - Active Downtrend"
+            "CAN SLIM strength Weak (12/100)"
           ],
           "factorBreakdown": {
             "C": {
@@ -3641,6 +4775,11 @@
               "step": 4,
               "title": "Phase Decision",
               "detail": "The structure is classified as Markdown Phase E - Active Downtrend because the stock is still below trend support and no convincing stopping or spring event has appeared yet."
+            },
+            {
+              "step": 5,
+              "title": "Wyckoff Tests",
+              "detail": "6/8 sell tests passed. Supported tests are used as a confirmation layer; unsupported P&F tests stay explicitly unscored."
             }
           ]
         },
@@ -3648,31 +4787,10 @@
         "tp": [],
         "sl": null,
         "signal": "STRONG_SELL",
-        "confidence": 6,
-        "rawScore": 11,
+        "confidence": 7,
+        "rawScore": 10,
         "delta": "no change",
         "historyMini": [
-          {
-            "timestamp": "2026-03-25T09:37:01.250Z",
-            "price": 77000,
-            "signal": "SELL",
-            "confidence": 4,
-            "observedPct": 0.46
-          },
-          {
-            "timestamp": "2026-03-25T10:35:44.319Z",
-            "price": 77000,
-            "signal": "SELL",
-            "confidence": 3,
-            "observedPct": 0.46
-          },
-          {
-            "timestamp": "2026-03-25T10:52:17.033Z",
-            "price": 77000,
-            "signal": "STRONG_SELL",
-            "confidence": 6,
-            "observedPct": 0.46
-          },
           {
             "timestamp": "2026-03-25T10:53:35.722Z",
             "price": 77000,
@@ -3686,10 +4804,31 @@
             "signal": "STRONG_SELL",
             "confidence": 6,
             "observedPct": 0.46
+          },
+          {
+            "timestamp": "2026-03-25T11:09:18.190Z",
+            "price": 77000,
+            "signal": "STRONG_SELL",
+            "confidence": 7,
+            "observedPct": 0.46
+          },
+          {
+            "timestamp": "2026-03-25T11:10:36.364Z",
+            "price": 77000,
+            "signal": "STRONG_SELL",
+            "confidence": 7,
+            "observedPct": 0.46
+          },
+          {
+            "timestamp": "2026-03-25T11:10:52.824Z",
+            "price": 77000,
+            "signal": "STRONG_SELL",
+            "confidence": 7,
+            "observedPct": 0.46
           }
         ]
       }
     ]
   },
-  "prompt": "I have 5 Vietnam stocks monitored by my local Saigon Terminal snapshot (2026-03-25T10:58:15.347Z).\n\nRules:\n- VPS is the live market source.\n- KBS enriches fundamentals and ownership when reachable.\n- Missing CAN SLIM factors are unknown, not neutral.\n- CAN SLIM ranks ticker strength; Wyckoff governs timing, entry, and exit bias.\n- Confidence is a rule-strength score, not certainty.\n\nMarket:\n- Session: closed\n- Regime: bearish\n- Breadth: 5 up / 0 down / 0 flat\n- Turnover: 2.0T\n\nPlease validate the rule reads, flag weak data coverage, and identify the strongest and weakest setups.\n\n▸ CTG (VietinBank, BANK)\n  Price: 34.050 (+1.49%) | Value: 211.6B | Vol 6.2M (0.5x avg)\n  Relative: 1W -2.7% | 1M -10.9% | 3M -3.3% | vs VNINDEX +0.9% | vs VN30 +4.4%\n  Wyckoff: Accumulation Phase B - Early Base Repair | Bias wait | Confidence 56 | Action Stay on watch, not on full risk\n  Wyckoff plan: This looks more like an early base repair than a confirmed trend reversal. Stay on watch until price reclaims repair levels, then the range ceiling.\n  Observed CAN SLIM: 42/70 | Coverage 100% [C:6 A:10 N:4 S:4 L:6 I:10 M:2]\n  Rule Read: Neutral / Mixed | Rule Strength: 4/10 (low conviction)\n  Positive drivers: RS vs VNINDEX 3M +0.9%; RSI 40.3 in healthy range\n  Negative drivers: Price -9.1% vs SMA50; Volume only 0.5x avg20; Market regime bearish; Foreign flow unavailable\n  Warnings: Foreign flow unavailable\n  No active long entry yet. Watch: Early repair trigger 35.080 | Full demand confirmation 39.898\n\n▸ MWG (Thế Giới Di Động, RETAIL)\n  Price: 79.200 (+4.21%) | Value: 592.4B | Vol 7.6M (0.78x avg)\n  Relative: 1W -5.4% | 1M -14.1% | 3M -9.0% | vs VNINDEX -4.8% | vs VN30 -1.3%\n  Wyckoff: Markdown Phase E - Active Downtrend | Bias avoid | Confidence 72 | Action No long entries in active markdown\n  Wyckoff plan: Do not buy into active markdown. Wait for stopping action or a spring first.\n  Observed CAN SLIM: 42/70 | Coverage 100% [C:4 A:10 N:6 S:6 L:4 I:10 M:2]\n  Rule Read: Strong Bearish Bias | Rule Strength: 7/10 (moderate conviction)\n  Positive drivers: RSI 42.7 in healthy range\n  Negative drivers: RS vs VNINDEX 3M -4.8%; Price -8.6% vs SMA50; Market regime bearish; Wyckoff Markdown Phase E - Active Downtrend; Foreign flow unavailable\n  Warnings: Foreign flow unavailable\n  No active long entry yet. Watch: Early repair / stop bleeding trigger 83.560 | Full demand confirmation 94.771\n\n▸ HDB (HDBank, BANK)\n  Price: 24.900 (+2.47%) | Value: 274.3B | Vol 11.1M (0.72x avg)\n  Relative: 1W -3.1% | 1M -12.6% | 3M -9.8% | vs VNINDEX -5.6% | vs VN30 -2.1%\n  Wyckoff: Markdown Phase E - Active Downtrend | Bias avoid | Confidence 54 | Action No long entries in active markdown\n  Wyckoff plan: Do not buy into active markdown. Wait for stopping action or a spring first.\n  Observed CAN SLIM: 40/70 | Coverage 100% [C:10 A:10 N:6 S:6 L:4 I:2 M:2]\n  Rule Read: Strong Bearish Bias | Rule Strength: 5/10 (moderate conviction)\n  Positive drivers: RSI 40.9 in healthy range\n  Negative drivers: RS vs VNINDEX 3M -5.6%; Price -8.6% vs SMA50; Market regime bearish; Wyckoff Markdown Phase E - Active Downtrend; Foreign flow unavailable\n  Warnings: Foreign flow unavailable; Wyckoff read is low-confidence\n  No active long entry yet. Watch: Early repair / stop bleeding trigger 25.820 | Full demand confirmation 28.994\n\n▸ TCB (Techcombank, BANK)\n  Price: 30.800 (+3.18%) | Value: 305.3B | Vol 10.0M (0.68x avg)\n  Relative: 1W +1.7% | 1M -14.0% | 3M -9.1% | vs VNINDEX -5.0% | vs VN30 -1.5%\n  Wyckoff: Markdown Phase E - Active Downtrend | Bias avoid | Confidence 54 | Action No long entries in active markdown\n  Wyckoff plan: Do not buy into active markdown. Wait for stopping action or a spring first.\n  Observed CAN SLIM: 38/70 | Coverage 100% [C:4 A:8 N:6 S:4 L:4 I:10 M:2]\n  Rule Read: Strong Bearish Bias | Rule Strength: 5/10 (moderate conviction)\n  Positive drivers: RSI 42.6 in healthy range\n  Negative drivers: RS vs VNINDEX 3M -5.0%; Price -9.3% vs SMA50; Volume only 0.68x avg20; Market regime bearish; Wyckoff Markdown Phase E - Active Downtrend\n  Warnings: Foreign flow unavailable; Wyckoff read is low-confidence\n  No active long entry yet. Watch: Early repair / stop bleeding trigger 31.920 | Full demand confirmation 36.632\n\n▸ FPT (FPT Corp, TECH)\n  Price: 77.000 (+2.12%) | Value: 567.7B | Vol 7.4M (0.52x avg)\n  Relative: 1W -2.0% | 1M -16.8% | 3M -16.8% | vs VNINDEX -12.6% | vs VN30 -9.1%\n  Wyckoff: Markdown Phase E - Active Downtrend | Bias avoid | Confidence 72 | Action No long entries in active markdown\n  Wyckoff plan: Do not buy into active markdown. Wait for stopping action or a spring first.\n  Observed CAN SLIM: 32/70 | Coverage 100% [C:6 A:4 N:4 S:4 L:2 I:10 M:2]\n  Rule Read: Strong Bearish Bias | Rule Strength: 6/10 (moderate conviction)\n  Positive drivers: —\n  Negative drivers: RS vs VNINDEX 3M -12.6%; Price -16.6% vs SMA50; Volume only 0.52x avg20; Market regime bearish; Wyckoff Markdown Phase E - Active Downtrend\n  Warnings: Foreign flow unavailable\n  No active long entry yet. Watch: Early repair / stop bleeding trigger 83.720 | Full demand confirmation 102.409"
+  "prompt": ""
 }

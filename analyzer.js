@@ -154,9 +154,158 @@ function benchmarkRegime(bars) {
   return { score: 0.4, label: "fragile" };
 }
 
+function distributionDays(bars) {
+  if (!bars?.length) return [];
+  const settings = config.marketPulse || {};
+  const lookback = settings.distributionLookback || 20;
+  const minDrop = settings.distributionDropPct || -0.0025;
+  const staleAdvance = settings.staleDistributionAdvancePct || 0.06;
+  const latest = bars[bars.length - 1];
+  const start = Math.max(1, bars.length - lookback);
+  const days = [];
+
+  for (let i = start; i < bars.length; i++) {
+    const bar = bars[i];
+    const prev = bars[i - 1];
+    if (!prev?.c || !bar?.c) continue;
+
+    const changePct = bar.c / prev.c - 1;
+    const higherVolume = (bar.v || 0) > (prev.v || 0);
+    const stillActive = latest.c < bar.c * (1 + staleAdvance);
+
+    if (changePct <= minDrop && higherVolume && stillActive) {
+      days.push({
+        date: bar.date,
+        changePct: +changePct.toFixed(4),
+        volume: bar.v || 0,
+      });
+    }
+  }
+
+  return days;
+}
+
+function recentRallyLowIndex(bars) {
+  if (!bars?.length) return null;
+  const lookback = config.marketPulse?.rallyLookback || 15;
+  const start = Math.max(0, bars.length - lookback);
+  let lowIndex = start;
+
+  for (let i = start + 1; i < bars.length; i++) {
+    if ((bars[i]?.c || Number.MAX_SAFE_INTEGER) <= (bars[lowIndex]?.c || Number.MAX_SAFE_INTEGER)) {
+      lowIndex = i;
+    }
+  }
+
+  return lowIndex;
+}
+
+function detectFollowThroughDay(bars, lowIndex) {
+  if (!bars?.length || lowIndex == null || lowIndex < 0 || lowIndex >= bars.length - 1) return null;
+  const minPct = config.marketPulse?.followThroughMinPct || 0.012;
+  const end = Math.min(bars.length - 1, lowIndex + 10);
+  const lowBar = bars[lowIndex];
+
+  for (let i = lowIndex + 4; i <= end; i++) {
+    const bar = bars[i];
+    const prev = bars[i - 1];
+    if (!prev?.c || !bar?.c || !lowBar?.c) continue;
+
+    const changePct = bar.c / prev.c - 1;
+    if (changePct >= minPct && (bar.v || 0) > (prev.v || 0) && bar.c > lowBar.c) {
+      return {
+        date: bar.date,
+        changePct: +changePct.toFixed(4),
+        dayCount: i - lowIndex,
+      };
+    }
+  }
+
+  return null;
+}
+
+function marketPulseFromBars(symbol, bars) {
+  if (!bars?.length) {
+    return {
+      symbol,
+      status: "unknown",
+      score: null,
+      exposure: "0-20%",
+      distributionDays: 0,
+      distributionDayDates: [],
+      rallyDayCount: null,
+      followThrough: null,
+      note: "No benchmark data.",
+    };
+  }
+
+  const closes = bars.map((bar) => bar.c);
+  const latest = bars[bars.length - 1];
+  const sma20 = sma(closes, 20);
+  const sma50 = sma(closes, 50);
+  const regime = benchmarkRegime(bars);
+  const distDays = distributionDays(bars);
+  const lowIndex = recentRallyLowIndex(bars);
+  const rallyLow = lowIndex != null ? bars[lowIndex] : null;
+  const rallyDayCount = lowIndex != null ? Math.max(0, bars.length - 1 - lowIndex) : null;
+  const followThrough = detectFollowThroughDay(bars, lowIndex);
+
+  let status = "correction";
+  let score = 0.25;
+  let exposure = "0-20%";
+  let note = "The benchmark is still in correction mode.";
+
+  const aboveSma20 = sma20 != null ? latest.c > sma20 : false;
+  const aboveSma50 = sma50 != null ? latest.c > sma50 : false;
+  const inHealthyTrend = (regime.label === "bullish" || regime.label === "constructive") && aboveSma20 && aboveSma50;
+
+  if (inHealthyTrend && distDays.length <= 2) {
+    status = "confirmed_uptrend";
+    score = 0.85;
+    exposure = "60-100%";
+    note = "Price is above key averages and distribution pressure is light.";
+  } else if (followThrough && aboveSma20 && rallyLow?.c != null && latest.c > rallyLow.c) {
+    status = distDays.length >= 3 ? "uptrend_under_pressure" : "confirmed_uptrend";
+    score = status === "confirmed_uptrend" ? 0.8 : 0.62;
+    exposure = status === "confirmed_uptrend" ? "40-80%" : "20-40%";
+    note = `${followThrough.date} produced a follow-through style confirmation after the recent low.`;
+  } else if (rallyDayCount != null && rallyDayCount >= 1 && rallyLow?.c != null && latest.c > rallyLow.c) {
+    status = "rally_attempt";
+    score = 0.5;
+    exposure = "0-20%";
+    note = "A rally attempt is in progress, but no follow-through confirmation has appeared yet.";
+  }
+
+  if (distDays.length >= 5 || ((regime.label === "bearish" || regime.label === "fragile") && !followThrough)) {
+    status = "correction";
+    score = 0.25;
+    exposure = "0-20%";
+    note = distDays.length >= 5
+      ? `Distribution pressure is elevated with ${distDays.length} active distribution days.`
+      : "The benchmark remains below healthy trend support without a follow-through confirmation.";
+  } else if (status === "confirmed_uptrend" && distDays.length >= 3) {
+    status = "uptrend_under_pressure";
+    score = 0.62;
+    exposure = "20-40%";
+    note = `The uptrend is still alive, but ${distDays.length} distribution days keep it under pressure.`;
+  }
+
+  return {
+    symbol,
+    status,
+    score,
+    exposure,
+    distributionDays: distDays.length,
+    distributionDayDates: distDays.map((day) => day.date),
+    rallyDayCount,
+    followThrough,
+    note,
+  };
+}
+
 function marketTrendScore(marketBars) {
   const scores = Object.values(marketBars || {})
-    .map((bars) => benchmarkRegime(bars).score)
+    .map((bars) => marketPulseFromBars(null, bars).score)
     .filter((value) => value != null);
 
   if (!scores.length) return null;
@@ -180,6 +329,7 @@ function benchmarkDetails(marketBars) {
       const prev = bars.length > 1 ? bars[bars.length - 2] : null;
       const closes = bars.map((bar) => bar.c);
       const regime = benchmarkRegime(bars);
+      const pulse = marketPulseFromBars(symbol, bars);
 
       return [symbol, {
         price: latest.c,
@@ -189,11 +339,49 @@ function benchmarkDetails(marketBars) {
         sma20: sma(closes, 20) ? +sma(closes, 20).toFixed(2) : null,
         sma50: sma(closes, 50) ? +sma(closes, 50).toFixed(2) : null,
         regime: regime.label,
-        trendScore: regime.score,
+        regimeScore: regime.score,
+        trendScore: pulse.score ?? regime.score,
+        pulse,
         date: latest.date,
       }];
     })
   );
+}
+
+function aggregateMarketPulse(indexes) {
+  const rows = Object.entries(indexes || {})
+    .filter(([, detail]) => detail?.pulse?.score != null);
+
+  if (!rows.length) {
+    return {
+      primary: null,
+      status: "unknown",
+      score: null,
+      exposure: "0-20%",
+      distributionDays: 0,
+      followThrough: null,
+      note: "No benchmark pulse available.",
+    };
+  }
+
+  const [primarySymbol, primary] = rows.find(([symbol]) => symbol === "VNINDEX") || rows[0];
+  const avgScore = average(rows.map(([, detail]) => detail.pulse.score));
+  const supportiveCount = rows.filter(([, detail]) => detail.pulse.status === "confirmed_uptrend").length;
+  const correctionCount = rows.filter(([, detail]) => detail.pulse.status === "correction").length;
+
+  let status = primary.pulse.status;
+  if (status === "confirmed_uptrend" && correctionCount > 0) status = "uptrend_under_pressure";
+  if (status === "rally_attempt" && supportiveCount === rows.length) status = "confirmed_uptrend";
+
+  return {
+    primary: primarySymbol,
+    status,
+    score: avgScore == null ? null : +avgScore.toFixed(2),
+    exposure: primary.pulse.exposure,
+    distributionDays: primary.pulse.distributionDays,
+    followThrough: primary.pulse.followThrough,
+    note: primary.pulse.note,
+  };
 }
 
 function toMarketClock(date = new Date()) {
@@ -306,13 +494,22 @@ function computeMetrics(rawOhlcv, rawOverview, rawForeign, rawMarket, rawMeta = 
   const stockRet3m = trailingReturn(bars, 61);
   const benchmark3m = benchmarkAverage(marketBars, 61);
   const marketIndexes = benchmarkDetails(marketBars);
+  const marketPulse = aggregateMarketPulse(marketIndexes);
   const vnindex3m = marketIndexes.VNINDEX?.ret3m ?? null;
   const vn303m = marketIndexes.VN30?.ret3m ?? null;
   const rs3m = benchmark3m == null || stockRet3m == null
     ? stockRet3m
     : +((stockRet3m) - benchmark3m).toFixed(4);
-  const marketTrend = marketTrendScore(marketBars);
-  const marketRegime = marketTrendLabel(marketTrend);
+  const marketTrend = marketPulse.score ?? marketTrendScore(marketBars);
+  const marketRegime = marketPulse.status === "confirmed_uptrend"
+    ? "bullish"
+    : marketPulse.status === "uptrend_under_pressure"
+      ? "constructive"
+      : marketPulse.status === "rally_attempt"
+        ? "mixed"
+        : marketPulse.status === "correction"
+          ? "bearish"
+          : marketTrendLabel(marketTrend);
 
   const aboveSMA50 = sma50Value ? latest.c > sma50Value : false;
   const belowSMA50 = sma50Value ? latest.c < sma50Value : false;
@@ -444,6 +641,7 @@ function computeMetrics(rawOhlcv, rawOverview, rawForeign, rawMarket, rawMeta = 
       session: sessionState(),
       regime: marketRegime,
       trendScore: marketTrend,
+      pulse: marketPulse,
       indexes: marketIndexes,
     },
 

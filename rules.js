@@ -80,19 +80,59 @@ function normalizedCanSlimTotal(canslim) {
   return +((canslim.observedTotal / canslim.observedMax) * 70).toFixed(1);
 }
 
+function buildStrengthProfile(canslim, metrics) {
+  const strengthConfig = config.strength || {};
+  const relVsIndex = metrics.relative?.vsVNINDEX3m ?? metrics.rs3m ?? null;
+  const priceVsSma50 = metrics.relative?.priceVsSma50Pct ?? null;
+  const coveragePct = canslim?.coveragePct ?? 0;
+  const csRatio = canslim?.observedMax > 0 ? canslim.observedTotal / canslim.observedMax : 0.5;
+  let score = csRatio * 70;
+
+  if (relVsIndex != null) {
+    if (relVsIndex >= 0.15) score += 15;
+    else if (relVsIndex >= (strengthConfig.leaderRsThreshold ?? 0.05)) score += 10;
+    else if (relVsIndex >= 0) score += 5;
+    else if (relVsIndex <= -0.10) score -= 10;
+    else if (relVsIndex <= (strengthConfig.weakRsThreshold ?? -0.05)) score -= 6;
+  }
+
+  if (metrics.aboveSMA50 && metrics.sma20AboveSMA50) score += 10;
+  else if (priceVsSma50 != null && priceVsSma50 >= -3) score += 3;
+  else if (priceVsSma50 != null && priceVsSma50 <= -12) score -= 10;
+  else if (priceVsSma50 != null && priceVsSma50 < 0) score -= 4;
+
+  if (coveragePct < 40) score -= 8;
+  else if (coveragePct < 70) score -= 4;
+
+  score = Math.max(0, Math.min(100, score));
+
+  let label = "Weak";
+  if (score >= (strengthConfig.eliteScore ?? 80)) label = "Elite Leader";
+  else if (score >= (strengthConfig.strongScore ?? 65)) label = "Strong";
+  else if (score >= (strengthConfig.watchScore ?? 50)) label = "Watch";
+
+  return {
+    score: +score.toFixed(1),
+    label,
+    canSlimRatio: +(csRatio * 100).toFixed(1),
+    marketLeader: relVsIndex != null && relVsIndex >= (strengthConfig.leaderRsThreshold ?? 0.05),
+  };
+}
+
 function computeSignal(canslim, metrics) {
+  const strengthProfile = buildStrengthProfile(canslim, metrics);
   const strengthScore = normalizedCanSlimTotal(canslim);
   const wyckoff = metrics.wyckoff || {};
   const wyckoffBias = wyckoff.bias || "wait";
   const wyckoffCode = wyckoff.code || null;
   const wyckoffConfidence = wyckoff.confidence == null ? 55 : wyckoff.confidence;
   const relVsIndex = metrics.relative?.vsVNINDEX3m ?? metrics.rs3m ?? null;
-  const priceVsSma20 = metrics.relative?.priceVsSma20Pct ?? null;
   const priceVsSma50 = metrics.relative?.priceVsSma50Pct ?? null;
   const marketRegime = metrics.marketContext?.regime || "unknown";
+  const marketPulse = metrics.marketContext?.pulse?.status || "unknown";
 
-  const strongTicker = strengthScore >= 48;
-  const provenLeader = relVsIndex != null && relVsIndex >= 0.05;
+  const strongTicker = strengthProfile.score >= (config.strength?.strongScore ?? 65);
+  const provenLeader = relVsIndex != null && relVsIndex >= (config.strength?.leaderRsThreshold ?? 0.05);
   const severeWeakness = (relVsIndex != null && relVsIndex <= -0.08) ||
     (priceVsSma50 != null && priceVsSma50 <= -12);
   const trendSupportive = metrics.aboveSMA50 && metrics.sma20AboveSMA50;
@@ -114,9 +154,12 @@ function computeSignal(canslim, metrics) {
   if (trendSupportive) rawScore += 5;
   else if (trendDamaged) rawScore -= 5;
 
-  if (marketRegime === "bullish" || marketRegime === "constructive") rawScore += 4;
-  else if (marketRegime === "defensive") rawScore -= 2;
-  else if (marketRegime === "bearish") rawScore -= 4;
+  if (marketPulse === "confirmed_uptrend") rawScore += 5;
+  else if (marketPulse === "uptrend_under_pressure") rawScore += 1;
+  else if (marketPulse === "rally_attempt") rawScore -= 1;
+  else if (marketPulse === "correction") rawScore -= 5;
+  else if (marketRegime === "bullish" || marketRegime === "constructive") rawScore += 2;
+  else if (marketRegime === "bearish") rawScore -= 3;
 
   if (repairing && wyckoffBias === "wait" && relVsIndex != null && relVsIndex >= -0.01) rawScore += 4;
 
@@ -129,11 +172,12 @@ function computeSignal(canslim, metrics) {
     if ((wyckoffBias === "buy" || wyckoffBias === "buy_pullback") &&
       (strongTicker || provenLeader) &&
       trendSupportive &&
+      marketPulse !== "correction" &&
       marketRegime !== "bearish") {
       signal = "STRONG_BUY";
     }
   } else if (wyckoffBias === "avoid") {
-    signal = severeWeakness || marketRegime === "bearish" ? "STRONG_SELL" : "SELL";
+    signal = severeWeakness || marketPulse === "correction" || marketRegime === "bearish" ? "STRONG_SELL" : "SELL";
   } else if (wyckoffBias === "wait" || wyckoffBias === "wait_pullback") {
     signal = "HOLD";
   }
@@ -148,7 +192,15 @@ function computeSignal(canslim, metrics) {
   if (trendSupportive) conviction += 0.8;
   else if (trendDamaged) conviction -= 0.8;
 
-  if (marketRegime === "bullish" || marketRegime === "constructive") {
+  if (marketPulse === "confirmed_uptrend") {
+    conviction += signal.includes("BUY") ? 1.0 : 0.5;
+  } else if (marketPulse === "uptrend_under_pressure") {
+    conviction += signal.includes("BUY") ? 0.2 : 0;
+  } else if (marketPulse === "rally_attempt") {
+    conviction -= signal.includes("BUY") ? 0.5 : 0;
+  } else if (marketPulse === "correction") {
+    conviction += signal.includes("SELL") ? 0.8 : -1.0;
+  } else if (marketRegime === "bullish" || marketRegime === "constructive") {
     conviction += signal.includes("BUY") ? 0.8 : 0.4;
   } else if (marketRegime === "defensive") {
     conviction += signal.includes("SELL") ? 0.4 : -0.4;
@@ -170,6 +222,7 @@ function computeSignal(canslim, metrics) {
     confidence,
     rawScore: +rawScore.toFixed(1),
     normalizedCanSlim: strengthScore,
+    strength: strengthProfile,
   };
 }
 
@@ -188,6 +241,7 @@ function applyRules(metrics) {
     coveragePct: canslim.coveragePct,
     factorBreakdown: canslim.factorBreakdown,
     normalizedCanSlim: signalState.normalizedCanSlim,
+    strength: signalState.strength,
     volumeSignal,
     wyckoffPhase,
     wyckoffStage: metrics.wyckoff?.stage || null,

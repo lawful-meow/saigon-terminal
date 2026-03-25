@@ -7,7 +7,7 @@
 
 Board-first desk monitor for Vietnam equities.
 
-Saigon Terminal scans a curated watchlist, ranks the board by observed CAN SLIM strength, explains what is driving the score, and publishes a clean static snapshot you can ship to GitHub Pages.
+Saigon Terminal scans a curated watchlist, ranks tickers by CAN SLIM-style strength, times entries and exits with Wyckoff structure, and publishes a clean static snapshot you can ship to GitHub Pages.
 
 Most retail dashboards give you more widgets than decisions. This repo does the opposite: tighter universe, clearer ranking, explainable scoring, and a local-first workflow that is fast enough to actually become part of your desk.
 
@@ -16,7 +16,7 @@ If you are still jumping between broker tabs, spreadsheets, and half-broken scre
 ## Why This Repo Is Worth Cloning
 
 - `Board-first, not prompt-first`: the product is the ranked board and detail view. AI prompt export exists, but it is deliberately secondary.
-- `Local scoring`: price, relative strength, volume behavior, market regime, and CAN SLIM logic are computed inside the app, not outsourced to a black box.
+- `Local scoring`: price, relative strength, volume behavior, IBD-style market pulse, CAN SLIM strength, and Wyckoff timing logic are computed inside the app, not outsourced to a black box.
 - `Explainable output`: each factor carries observed score, coverage, warnings, and reasoning. Missing data stays `unknown`; it is not faked as neutral.
 - `Publishable by default`: one API call writes `docs/index.html` and `docs/snapshot.json` so the same snapshot can be hosted on GitHub Pages.
 - `Provider-aware design`: VPS drives the market/board path, KBS enriches fundamentals and ownership, and the model is already prepared for additional providers later.
@@ -24,8 +24,8 @@ If you are still jumping between broker tabs, spreadsheets, and half-broken scre
 
 ## What You Get
 
-- Ranked market board with market header, benchmark context, breadth, turnover, and sector leaders/laggards
-- Per-ticker detail layer with price action, relative strength, volume behavior, step-by-step Wyckoff phase/action/entry playbook, CAN SLIM breakdown, and warnings
+- Ranked market board with market header, benchmark context, IBD-style pulse proxy, breadth, turnover, and sector leaders/laggards
+- Per-ticker detail layer with price action, relative strength, CAN SLIM strength rank, step-by-step Wyckoff phase/action/entry playbook, Wyckoff tests, and warnings
 - History persistence in `data/scans.json`
 - HTTP API for full scans, single-ticker scans, prompt export, publish flow, history, and health checks
 - Static publish flow for GitHub Pages
@@ -116,8 +116,9 @@ Saigon Terminal is intentionally explicit about what it knows and what it does n
 
 - `Observed CAN SLIM`: score only across factors that have real data
 - `Coverage %`: percentage of CAN SLIM factors currently observed
-- `Normalized CAN SLIM`: observed score scaled back to a 70-point frame for downstream signal logic
-- `Rule Read`: final directional bias from the engine
+- `Normalized CAN SLIM`: observed score scaled back to a 70-point frame for strength math
+- `Strength`: CAN SLIM-style ticker ranking layer
+- `Rule Read`: final directional bias from the engine, primarily driven by Wyckoff timing state
 - `Rule Strength`: strength of the rules output, not certainty
 - `Quality`: composite of coverage, freshness, and source health
 
@@ -145,7 +146,7 @@ config.js      universe, thresholds, provider roadmap
 fetcher.js     VPS history/snapshot + KBS enrichment I/O
 resolver.js    source precedence / canonical source flags
 analyzer.js    pure metric computation + market context
-rules.js       CAN SLIM scoring + signal logic
+rules.js       CAN SLIM strength ranking + signal logic
 wyckoff.js     daily-bar Wyckoff structure, action plan, and entry logic
 formatter.js   terminal snapshot + explanation layer + prompt export
 store.js       JSON history persistence

@@ -68,6 +68,24 @@ module.exports = {
     M: { metric: "marketTrend",    thresholds: [0.3, 0.5, 0.6, 0.8] },
   },
 
+  // ── CAN SLIM strength ranking ──
+  strength: {
+    eliteScore: 80,
+    strongScore: 65,
+    watchScore: 40,
+    leaderRsThreshold: 0.05,
+    weakRsThreshold: -0.05,
+  },
+
+  // ── IBD-style market timing proxy ──
+  marketPulse: {
+    distributionLookback: 20,
+    rallyLookback: 15,
+    distributionDropPct: -0.0025,
+    followThroughMinPct: 0.012,
+    staleDistributionAdvancePct: 0.06,
+  },
+
   // ── Wyckoff structure heuristics ──
   // Daily-bar approximation only. Used to map phase, action, and entry logic.
   wyckoff: {
@@ -81,6 +99,8 @@ module.exports = {
     climaxVolumeRatio: 1.8,
     markupExtensionAtr: 2.2,
     stopBufferAtr: 0.6,
+    testWindow: 12,
+    minTestRiskReward: 3,
   },
 
   // ── Persistence ──

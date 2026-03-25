@@ -348,6 +348,12 @@ function renderActionItems(items, emptyCopy) {
   return items.map((item) => \`<div class="item">\${item}</div>\`).join("");
 }
 
+function renderWyckoffTests(wyckoff) {
+  const active = wyckoff?.tests?.activeSide === "sell" ? wyckoff?.tests?.sell?.items : wyckoff?.tests?.buy?.items;
+  if (!active?.length) return \`<div class="item">No Wyckoff tests recorded.</div>\`;
+  return active.map((test) => \`<div class="item \${test.status === "pass" ? "tone-good" : test.status === "fail" ? "tone-bad" : ""}"><strong>\${test.label}</strong><br>\${test.detail}</div>\`).join("");
+}
+
 function renderHeader() {
   const meta = document.getElementById("headerMeta");
   meta.textContent = \`\${new Date(state.snapshot.generated).toLocaleString("vi-VN")} · \${state.snapshot.count} tickers\`;
@@ -375,6 +381,16 @@ function renderMarket() {
 
   grid.innerHTML = cards + \`
     <div class="market-card">
+      <div class="market-k">Market Pulse</div>
+      <div class="market-v">\${market.pulse?.status || "unknown"}</div>
+      <div class="market-s">\${market.pulse?.note || "No pulse note available."}</div>
+      <div class="chip-row">
+        <span class="chip">Exposure \${market.pulse?.exposure || "n/a"}</span>
+        <span class="chip">Dist \${market.pulse?.distributionDays ?? "n/a"}</span>
+        \${market.pulse?.followThrough?.date ? \`<span class="chip">FTD \${market.pulse.followThrough.date}</span>\` : ""}
+      </div>
+    </div>
+    <div class="market-card">
       <div class="market-k">Breadth</div>
       <div class="market-v mono">\${market.breadth.advancers} / \${market.breadth.decliners}</div>
       <div class="market-s">\${market.breadth.unchanged} unchanged · session \${market.session.replace(/_/g, " ")}</div>
@@ -394,7 +410,7 @@ function renderPublishStats() {
     \`<div class="stat-card"><div class="stat-k">Focus</div><div class="stat-v">\${selected?.ticker || "—"}</div><div>\${selected ? selected.explain.ruleRead : "—"}</div></div>\`,
     \`<div class="stat-card"><div class="stat-k">Universe</div><div class="stat-v mono">\${state.snapshot.count}</div><div>Tickers in this published snapshot</div></div>\`,
     \`<div class="stat-card"><div class="stat-k">Published</div><div class="stat-v mono">\${new Date(state.snapshot.generated).toLocaleString("vi-VN")}</div><div>Snapshot timestamp</div></div>\`,
-    \`<div class="stat-card"><div class="stat-k">Coverage</div><div class="stat-v mono">\${selected?.coveragePct ?? "—"}%</div><div>Observed CAN SLIM coverage for focus ticker</div></div>\`,
+    \`<div class="stat-card"><div class="stat-k">Strength</div><div class="stat-v mono">\${selected?.strength?.score == null ? "—" : \`\${selected.strength.score}/100\`}</div><div>\${selected?.strength?.label || "No strength label"}\${selected?.strength?.rank ? \` · Rank #\${selected.strength.rank}\` : ""}</div></div>\`,
   ].join("");
 }
 
@@ -411,6 +427,7 @@ function renderBoard() {
           <th>Value</th>
           <th>Vol x Avg</th>
           <th>RS vs VNINDEX</th>
+          <th>Strength</th>
           <th>Observed CAN SLIM</th>
           <th>Rule Read</th>
           <th>Quality</th>
@@ -422,6 +439,9 @@ function renderBoard() {
           const observedPct = stock.observedCanSlimMax > 0
             ? \`\${stock.observedCanSlimTotal}/\${stock.observedCanSlimMax} · \${stock.coveragePct}%\`
             : \`N/A · \${stock.coveragePct}%\`;
+          const strengthText = stock.strength?.score == null
+            ? "N/A"
+            : \`\${stock.strength.score}/100 · #\${stock.strength?.rank || "—"}\`;
           return \`
             <tr class="\${selected}" data-ticker="\${stock.ticker}">
               <td><strong>\${stock.ticker}</strong><div style="color:var(--muted);font-size:12px;margin-top:4px">\${stock.name}</div></td>
@@ -431,6 +451,7 @@ function renderBoard() {
               <td class="mono">\${fK(stock.tradedValue)}</td>
               <td class="mono">\${stock.volRatio}x</td>
               <td class="\${stock.relative?.vsVNINDEX3m >= 0 ? "tone-good" : "tone-bad"}">\${fPct(stock.relative?.vsVNINDEX3m, 100)}</td>
+              <td><span class="chip">\${strengthText}</span><div style="color:var(--muted);font-size:12px;margin-top:5px">\${stock.strength?.label || "n/a"}</div></td>
               <td><span class="chip">\${observedPct}</span></td>
               <td><span class="signal-chip" data-signal="\${stock.signal}">\${signalLabel(stock.signal)}</span></td>
               <td><span class="quality-chip" data-tone="\${qualityTone(stock.quality.label)}">\${stock.quality.label}</span><div style="color:var(--muted);font-size:12px;margin-top:5px">\${warningSummary(stock)}</div></td>
@@ -514,6 +535,7 @@ function renderFocus() {
   const watchItems = renderWyckoffWatch(wyckoff);
   const actionSteps = renderActionItems(wyckoff.action?.steps, "No action steps recorded.");
   const avoidSteps = renderActionItems(wyckoff.action?.shouldAvoid, "No avoid list recorded.");
+  const testItems = renderWyckoffTests(wyckoff);
 
   document.getElementById("focusPanel").innerHTML = \`
     <div class="sheet-nav-wrap">
@@ -531,6 +553,8 @@ function renderFocus() {
         <div class="\${stock.changePct >= 0 ? "tone-good" : "tone-bad"}">\${stock.changePct >= 0 ? "+" : ""}\${stock.changePct}% · \${fK(stock.tradedValue)} traded · \${fNum(stock.volume)} volume</div>
         <div class="chip-row" style="margin-top:12px">
           <span class="signal-chip" data-signal="\${stock.signal}">\${signalLabel(stock.signal)}</span>
+          <span class="chip">Strength \${stock.strength?.score == null ? "N/A" : \`\${stock.strength.score}/100\`}</span>
+          <span class="chip">\${stock.strength?.label || "n/a"}\${stock.strength?.rank ? \` · #\${stock.strength.rank}\` : ""}</span>
           <span class="quality-chip" data-tone="\${qualityTone(stock.quality.label)}">\${stock.quality.label} · \${stock.coveragePct}%</span>
           <span class="chip">Observed \${stock.observedCanSlimTotal}/\${stock.observedCanSlimMax || 0}</span>
           <span class="chip">RS vs VNINDEX \${fPct(stock.relative.vsVNINDEX3m, 100)}</span>
@@ -540,6 +564,7 @@ function renderFocus() {
       </div>
       <div class="stack" style="gap:12px">
         <div class="stat-card"><div class="stat-k">Rule Strength</div><div class="stat-v mono">\${stock.confidence}/10</div><div>\${stock.explain.ruleStrength.label}</div></div>
+        <div class="stat-card"><div class="stat-k">CAN SLIM Strength</div><div class="stat-v mono">\${stock.strength?.score == null ? "—" : \`\${stock.strength.score}/100\`}</div><div>\${stock.strength?.label || "No strength label"}\${stock.strength?.rank ? \` · Rank #\${stock.strength.rank}\` : ""}</div></div>
         <div class="stat-card"><div class="stat-k">Wyckoff Action</div><div class="stat-v">\${wyckoff.action?.label || "No action"}</div><div>\${wyckoff.action?.summary || wyckoff.entry?.summary || "No Wyckoff action summary."}</div></div>
         <div class="stat-card"><div class="stat-k">Primary Entry</div><div>\${primaryPlanText}</div><div>\${primaryPlan ? \`T1 \${fNum(primaryPlan.target1)} · T2 \${fNum(primaryPlan.target2)}\` : invalidationText}</div></div>
         <div class="stat-card"><div class="stat-k">Delta</div><div>\${stock.delta}</div></div>
@@ -550,6 +575,8 @@ function renderFocus() {
       <div class="section-card">
         <div class="eyebrow">Context</div>
         <div class="kv-grid">
+          <div class="kv"><div class="k">Market Pulse</div><div class="v">\${stock.market.pulse?.status || "unknown"}</div></div>
+          <div class="kv"><div class="k">Suggested Exposure</div><div class="v">\${stock.market.pulse?.exposure || "n/a"}</div></div>
           <div class="kv"><div class="k">RS vs VNINDEX</div><div class="v mono">\${fPct(stock.relative.vsVNINDEX3m, 100)}</div></div>
           <div class="kv"><div class="k">RS vs VN30</div><div class="v mono">\${fPct(stock.relative.vsVN303m, 100)}</div></div>
           <div class="kv"><div class="k">Vol x Avg20</div><div class="v mono">\${stock.volRatio}x</div></div>
@@ -582,6 +609,11 @@ function renderFocus() {
         <div class="eyebrow">Action Plan</div>
         <div class="list" style="margin-top:12px">\${actionSteps}</div>
       </div>
+    </div>
+
+    <div class="section-card" style="margin-top:14px">
+      <div class="eyebrow">Wyckoff Tests</div>
+      <div class="list" style="margin-top:12px">\${testItems}</div>
     </div>
 
     <div class="section-card" style="margin-top:14px">

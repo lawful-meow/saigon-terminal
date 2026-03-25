@@ -126,7 +126,206 @@ function rr(entry, stop, target) {
   return +((Math.abs(target - entry)) / risk).toFixed(2);
 }
 
-function buildReasoning(context, events, classification) {
+function directionalActivity(bars, lookback) {
+  const slice = bars.slice(-(lookback + 1));
+  const upVol = [];
+  const downVol = [];
+  const upSpread = [];
+  const downSpread = [];
+
+  for (let i = 1; i < slice.length; i++) {
+    if (slice[i].c >= slice[i - 1].c) {
+      upVol.push(slice[i].v || 0);
+      upSpread.push(spread(slice[i]));
+    } else {
+      downVol.push(slice[i].v || 0);
+      downSpread.push(spread(slice[i]));
+    }
+  }
+
+  const avgUpVol = average(upVol) || 0;
+  const avgDownVol = average(downVol) || 0;
+  const avgUpSpread = average(upSpread) || 0;
+  const avgDownSpread = average(downSpread) || 0;
+
+  return {
+    avgUpVol,
+    avgDownVol,
+    avgUpSpread,
+    avgDownSpread,
+    bullish: avgUpVol >= avgDownVol * 0.95 && avgUpSpread >= avgDownSpread * 0.85,
+    bearish: avgDownVol >= avgUpVol * 0.95 && avgDownSpread >= avgUpSpread * 0.85,
+  };
+}
+
+function recentStructure(bars, lookback) {
+  const slice = bars.slice(-lookback);
+  if (slice.length < 4) {
+    return {
+      priorLow: null,
+      latestLow: null,
+      priorHigh: null,
+      latestHigh: null,
+    };
+  }
+
+  const mid = Math.floor(slice.length / 2);
+  const older = slice.slice(0, mid);
+  const newer = slice.slice(mid);
+
+  return {
+    priorLow: Math.min(...older.map((bar) => bar.l)),
+    latestLow: Math.min(...newer.map((bar) => bar.l)),
+    priorHigh: Math.max(...older.map((bar) => bar.h)),
+    latestHigh: Math.max(...newer.map((bar) => bar.h)),
+  };
+}
+
+function buildTest(label, passed, detail, supported = true) {
+  return {
+    label,
+    supported,
+    passed: supported ? !!passed : null,
+    status: supported ? (passed ? "pass" : "fail") : "unsupported",
+    detail,
+  };
+}
+
+function summarizeTests(side, tests) {
+  const supported = tests.filter((test) => test.supported);
+  const passed = supported.filter((test) => test.passed).length;
+  const ratio = supported.length ? passed / supported.length : null;
+  return {
+    side,
+    supported: supported.length,
+    passed,
+    ratio: ratio == null ? null : +ratio.toFixed(2),
+    summary: supported.length ? `${passed}/${supported.length} ${side} tests passed` : `No supported ${side} tests`,
+  };
+}
+
+function buildWyckoffTests(classification, context, events, metrics, bars, entry) {
+  const testWindow = config.wyckoff.testWindow || 12;
+  const structure = recentStructure(bars, testWindow);
+  const activity = directionalActivity(bars, testWindow);
+  const relVsIndex = metrics.relative?.vsVNINDEX3m ?? null;
+  const hasLongPlan = (entry.plans || []).some((plan) => Number.isFinite(plan.riskReward2) || Number.isFinite(plan.riskReward1));
+  const longPlan = (entry.plans || []).find((plan) => Number.isFinite(plan.riskReward2) || Number.isFinite(plan.riskReward1)) || null;
+  const minRR = config.wyckoff.minTestRiskReward || 3;
+  const shortEntry = context.support;
+  const shortStop = context.resistance;
+  const shortTarget = context.support - Math.max(context.atr, context.resistance - context.support);
+  const shortRR = rr(shortEntry, shortStop, shortTarget);
+
+  const buyTests = [
+    buildTest("1. Downside objective accomplished", false, "Point-and-Figure downside count is not implemented yet.", false),
+    buildTest(
+      "2. Preliminary support / selling climax / test",
+      events.stoppingVolume.active || events.spring.active || classification.code === "acc_a" || classification.code === "acc_c" || classification.code === "acc_d",
+      "Needs visible stopping action, a spring, or a mature accumulation turn."
+    ),
+    buildTest(
+      "3. Activity bullish",
+      activity.bullish || (context.volumeDry && !events.sow.active),
+      "Rallies should show better effort than reactions."
+    ),
+    buildTest(
+      "4. Downward stride broken",
+      classification.code === "acc_d" || (!!metrics.sma20 && metrics.price >= metrics.sma20) || context.ret20 > context.ret40,
+      "Price needs to stop respecting the old downtrend line or shelf."
+    ),
+    buildTest(
+      "5. Higher lows",
+      (structure.latestLow != null && structure.priorLow != null && structure.latestLow >= structure.priorLow * 1.01) || events.spring.active || classification.code === "acc_d",
+      "The base should stop printing lower lows."
+    ),
+    buildTest(
+      "6. Higher highs",
+      (structure.latestHigh != null && structure.priorHigh != null && structure.latestHigh >= structure.priorHigh * 1.01) || events.sos.active || classification.code === "acc_d",
+      "Demand should start winning the swing highs."
+    ),
+    buildTest(
+      "7. Stock stronger than the market",
+      relVsIndex != null && relVsIndex >= 0,
+      "Relative strength should at least hold up versus VNINDEX."
+    ),
+    buildTest(
+      "8. Base forming",
+      context.rangeWidthPct <= 0.18 || classification.code === "acc_b" || classification.code === "acc_c" || classification.code === "acc_d",
+      "A tradable accumulation needs a box or cause to build against."
+    ),
+    buildTest(
+      "9. Upside reward at least 3x risk",
+      hasLongPlan && ((longPlan?.riskReward2 || 0) >= minRR || (longPlan?.riskReward1 || 0) >= minRR),
+      hasLongPlan ? "The active or watchable long plan should offer asymmetry." : "No active long trigger exists yet, so reward/risk cannot be confirmed.",
+      hasLongPlan
+    ),
+  ];
+
+  const sellTests = [
+    buildTest("1. Upside objective accomplished", false, "Point-and-Figure upside count is not implemented yet.", false),
+    buildTest(
+      "2. Activity bearish",
+      activity.bearish || events.sow.active || events.upthrust.active,
+      "Reactions should carry more pressure than rallies."
+    ),
+    buildTest(
+      "3. Preliminary supply / buying climax",
+      events.buyingClimax.active || events.upthrust.active || classification.code === "dist_a" || classification.code === "dist_c" || classification.code === "dist_d",
+      "Supply should be visible near the top or at the failed breakout."
+    ),
+    buildTest(
+      "4. Stock weaker than the market",
+      relVsIndex != null && relVsIndex <= 0,
+      "Relative weakness should confirm the bearish case."
+    ),
+    buildTest(
+      "5. Upward stride broken",
+      classification.code === "dist_d" || (!!metrics.sma20 && metrics.price <= metrics.sma20) || context.ret20 < context.ret40,
+      "The prior uptrend should no longer be intact."
+    ),
+    buildTest(
+      "6. Lower highs",
+      (structure.latestHigh != null && structure.priorHigh != null && structure.latestHigh <= structure.priorHigh * 0.99) || events.upthrust.active || classification.phase === "Markdown",
+      "Bearish structures lose altitude on rallies."
+    ),
+    buildTest(
+      "7. Lower lows",
+      (structure.latestLow != null && structure.priorLow != null && structure.latestLow <= structure.priorLow * 0.99) || events.sow.active || classification.phase === "Markdown",
+      "Support breaks should create lower lows."
+    ),
+    buildTest(
+      "8. Crown / supply range forming",
+      context.rangeWidthPct <= 0.18 || classification.code === "dist_a" || classification.code === "dist_b" || classification.code === "dist_c" || classification.code === "dist_d" || classification.phase === "Markdown",
+      "Distribution normally leaves a lateral crown before markdown expands."
+    ),
+    buildTest(
+      "9. Downside reward at least 3x risk",
+      Number.isFinite(shortRR) && shortRR >= minRR,
+      Number.isFinite(shortRR) ? "The damaged structure should still offer meaningful downside asymmetry." : "The current box does not give a clear downside asymmetry estimate.",
+      Number.isFinite(shortRR)
+    ),
+  ];
+
+  const activeSide = classification.phase === "Distribution" || classification.phase === "Markdown" ? "sell" : "buy";
+  const active = activeSide === "buy" ? summarizeTests("buy", buyTests) : summarizeTests("sell", sellTests);
+
+  return {
+    activeSide,
+    summary: active.summary,
+    active,
+    buy: {
+      ...summarizeTests("buy", buyTests),
+      items: buyTests,
+    },
+    sell: {
+      ...summarizeTests("sell", sellTests),
+      items: sellTests,
+    },
+  };
+}
+
+function buildReasoning(context, events, classification, tests) {
   const steps = [];
   const rangeWidthPct = context.rangeWidthPct != null ? `${(context.rangeWidthPct * 100).toFixed(1)}%` : "n/a";
   const pricePos = context.pricePositionPct != null ? `${Math.round(context.pricePositionPct * 100)}%` : "n/a";
@@ -167,6 +366,14 @@ function buildReasoning(context, events, classification) {
     title: "Phase Decision",
     detail: `The structure is classified as ${classification.label} because ${classification.because}.`,
   });
+
+  if (tests?.summary) {
+    steps.push({
+      step: 5,
+      title: "Wyckoff Tests",
+      detail: `${tests.summary}. Supported tests are used as a confirmation layer; unsupported P&F tests stay explicitly unscored.`,
+    });
+  }
 
   return steps;
 }
@@ -779,6 +986,8 @@ function analyzeWyckoff(bars, metrics) {
   const classification = classify(context, events, metrics);
   const entry = buildEntryPlan(classification, context, events, metrics);
   const action = buildActionPlan(classification, entry, context);
+  const tests = buildWyckoffTests(classification, context, events, metrics, bars, entry);
+  const activeTests = tests.active;
 
   let confidence = 42;
   if (classification.phase === "Accumulation" || classification.phase === "Distribution") confidence += 8;
@@ -790,9 +999,12 @@ function analyzeWyckoff(bars, metrics) {
   if (classification.phase === "Markdown" || classification.phase === "Markup") confidence += 12;
   if (context.trendBias === "range") confidence -= 6;
   if (metrics.meta?.historyBars != null && metrics.meta.historyBars < 45) confidence -= 8;
+  if (activeTests?.supported >= 4 && activeTests?.ratio != null) {
+    confidence += Math.round((activeTests.ratio - 0.5) * 18);
+  }
   confidence = clamp(confidence, 35, 92);
 
-  const reasoning = buildReasoning(context, events, classification);
+  const reasoning = buildReasoning(context, events, classification, activeTests);
   const levelMap = {
     support: roundPrice(context.support),
     resistance: roundPrice(context.resistance),
@@ -812,6 +1024,7 @@ function analyzeWyckoff(bars, metrics) {
     bias: entry.status,
     levels: levelMap,
     events,
+    tests,
     action,
     entry,
     reasoning,

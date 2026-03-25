@@ -11,10 +11,12 @@ const store = require("./store");
 const { tickerSnapshot, fullSnapshot, claudePrompt } = require("./formatter");
 
 function rankSnapshot(stock) {
+  const strengthScore = stock.strength?.score ?? -1;
   const observedRatio = stock.observedCanSlimMax > 0
     ? stock.observedCanSlimTotal / stock.observedCanSlimMax
     : -1;
   return {
+    strengthScore,
     observedRatio,
     rs: stock.relative?.vsVNINDEX3m ?? -999,
   };
@@ -59,8 +61,20 @@ async function scanAll(options = {}) {
   results.sort((a, b) => {
     const ar = rankSnapshot(a);
     const br = rankSnapshot(b);
+    if (br.strengthScore !== ar.strengthScore) return br.strengthScore - ar.strengthScore;
     if (br.observedRatio !== ar.observedRatio) return br.observedRatio - ar.observedRatio;
     return br.rs - ar.rs;
+  });
+
+  results.forEach((stock, index) => {
+    const percentile = results.length > 1
+      ? Math.round((1 - index / (results.length - 1)) * 100)
+      : 100;
+    stock.strength = {
+      ...(stock.strength || {}),
+      rank: index + 1,
+      percentile,
+    };
   });
 
   const snapshot = fullSnapshot(results);

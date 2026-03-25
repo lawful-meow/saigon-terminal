@@ -1,0 +1,27 @@
+[
+  {
+    "ticker": "FPT",
+    "name": "FPT Corp",
+    "sector": "TECH"
+  },
+  {
+    "ticker": "TCB",
+    "name": "Techcombank",
+    "sector": "BANK"
+  },
+  {
+    "ticker": "HDB",
+    "name": "HDBank",
+    "sector": "BANK"
+  },
+  {
+    "ticker": "MWG",
+    "name": "Thế Giới Di Động",
+    "sector": "RETAIL"
+  },
+  {
+    "ticker": "CTG",
+    "name": "VietinBank",
+    "sector": "BANK"
+  }
+]

@@ -463,7 +463,7 @@ function buildMarketSummary(results) {
   };
 }
 
-function fullSnapshot(results) {
+function fullSnapshot(results, meta = {}) {
   const activeProviders = Object.entries(config.sources.roadmap || {})
     .filter(([, detail]) => detail?.status === "active")
     .map(([provider]) => provider);
@@ -474,6 +474,13 @@ function fullSnapshot(results) {
     dataSource: "VPS + KBS",
     note: "Board data is VPS-first. KBS enriches fundamentals and ownership when available. CAN SLIM is the ticker-strength layer, while Wyckoff handles timing and entry logic. Market direction now includes an IBD-style pulse proxy and Wyckoff output includes a test checklist.",
     count: results.length,
+    universeCount: meta.universeCount ?? results.length,
+    requestedCount: meta.requestedCount ?? results.length,
+    scannedCount: meta.scannedCount ?? results.length,
+    errorCount: meta.errorCount ?? 0,
+    scanMode: meta.scanMode || "watchlist",
+    topN: meta.topN || null,
+    throttleMs: meta.delayMs || 0,
     market: buildMarketSummary(results),
     providers: {
       active: ["vps", ...activeProviders],

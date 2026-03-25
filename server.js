@@ -12,6 +12,7 @@ const engine = require("./engine");
 const { claudePrompt } = require("./formatter");
 const publisher = require("./publisher");
 const store = require("./store");
+const watchlist = require("./watchlist");
 
 const PORT = config.server.port;
 
@@ -41,6 +42,26 @@ function serveFile(res, filePath) {
   });
 }
 
+function parseTickerList(input) {
+  const parts = Array.isArray(input)
+    ? input
+    : String(input || "").split(/[\s,;\n\r\t]+/);
+
+  const seen = new Set();
+  const tickers = [];
+
+  for (const part of parts) {
+    const ticker = watchlist.normalizeTicker(part);
+    if (!ticker) continue;
+    if (ticker.length < 2 || ticker.length > 12) continue;
+    if (seen.has(ticker)) continue;
+    seen.add(ticker);
+    tickers.push(ticker);
+  }
+
+  return tickers;
+}
+
 // ── Server ──
 
 const server = http.createServer(async (req, res) => {
@@ -62,6 +83,52 @@ const server = http.createServer(async (req, res) => {
       });
       console.log(`[scan] Done: ${snapshot.count} stocks, ${errors.length} errors`);
       return json(res, 200, { snapshot, errors });
+    }
+
+    // ── POST /api/scan/batch — throttle-scan many tickers and keep top strength names ──
+    if (p === "/api/scan/batch" && req.method === "POST") {
+      const body = await readBody(req);
+      let payload = {};
+      if (body) {
+        try {
+          payload = JSON.parse(body);
+        } catch (error) {
+          return json(res, 400, { error: `Invalid JSON body: ${error.message}` });
+        }
+      }
+
+      const tickers = parseTickerList(payload.tickers);
+      if (!tickers.length) return json(res, 400, { error: "Provide at least one ticker" });
+      if (tickers.length > 60) return json(res, 400, { error: "Batch scan is capped at 60 tickers per request" });
+
+      const topN = Math.max(1, Math.min(20, Number(payload.topN) || 10));
+      const delayMs = Math.max(250, Math.min(3000, Number(payload.delayMs) || 450));
+      const existingMap = new Map(watchlist.getAll().map((stock) => [stock.ticker, stock]));
+      const stocks = tickers.map((ticker) => existingMap.get(ticker) || {
+        ticker,
+        name: ticker,
+        sector: "BATCH",
+      });
+
+      console.log(`[batch] Scanning ${stocks.length} tickers with ${delayMs}ms spacing, top ${topN}`);
+      const { snapshot, errors } = await engine.scanAll({
+        stocks,
+        delayMs,
+        persist: false,
+        topN,
+        scanMode: "batch_top_strength",
+        onProgress: ({ ticker, status, error }) => {
+          console.log(`  ${status === "ok" ? "✅" : "❌"} ${ticker}${error ? ": " + error : ""}`);
+        },
+      });
+
+      return json(res, 200, {
+        snapshot,
+        errors,
+        inputCount: tickers.length,
+        topN,
+        delayMs,
+      });
     }
 
     // ── GET /api/prompt — scan all + return Claude-ready prompt ──
@@ -105,14 +172,55 @@ const server = http.createServer(async (req, res) => {
     }
 
     // ── GET /api/scan/:ticker — scan single ticker ──
-    const singleMatch = p.match(/^\/api\/scan\/([A-Z]{2,6})$/);
+    const singleMatch = p.match(/^\/api\/scan\/([A-Z0-9]{2,12})$/i);
     if (singleMatch && req.method === "GET") {
       const ticker = singleMatch[1];
-      const stock = config.stocks.find((s) => s.ticker === ticker);
+      const stock = watchlist.getTicker(ticker);
       if (!stock) return json(res, 404, { error: `Ticker ${ticker} not in watchlist` });
       console.log(`[scan] ${ticker}...`);
       const snapshot = await engine.scanOne(stock);
       return json(res, 200, snapshot);
+    }
+
+    // ── GET /api/watchlist — current editable universe ──
+    if (p === "/api/watchlist" && req.method === "GET") {
+      const stocks = watchlist.getAll();
+      return json(res, 200, { stocks, count: stocks.length });
+    }
+
+    // ── POST /api/watchlist — add a ticker ──
+    if (p === "/api/watchlist" && req.method === "POST") {
+      const body = await readBody(req);
+      let payload = {};
+      try {
+        payload = JSON.parse(body || "{}");
+      } catch (error) {
+        return json(res, 400, { error: `Invalid JSON body: ${error.message}` });
+      }
+
+      const stocks = watchlist.add(payload);
+      return json(res, 200, { status: "ok", stocks, count: stocks.length });
+    }
+
+    // ── PUT /api/watchlist/:ticker — edit a ticker row ──
+    const watchlistMatch = p.match(/^\/api\/watchlist\/([A-Z0-9]{2,12})$/i);
+    if (watchlistMatch && req.method === "PUT") {
+      const body = await readBody(req);
+      let payload = {};
+      try {
+        payload = JSON.parse(body || "{}");
+      } catch (error) {
+        return json(res, 400, { error: `Invalid JSON body: ${error.message}` });
+      }
+
+      const stocks = watchlist.update(watchlistMatch[1], payload);
+      return json(res, 200, { status: "ok", stocks, count: stocks.length });
+    }
+
+    // ── DELETE /api/watchlist/:ticker — remove a ticker row ──
+    if (watchlistMatch && req.method === "DELETE") {
+      const stocks = watchlist.remove(watchlistMatch[1]);
+      return json(res, 200, { status: "ok", stocks, count: stocks.length });
     }
 
     // ── GET /api/history — all stored history ──
@@ -135,11 +243,12 @@ const server = http.createServer(async (req, res) => {
 
     // ── GET /api/health ──
     if (p === "/api/health") {
+      const stocks = watchlist.getAll();
       return json(res, 200, {
         status: "ok",
         engine: "Saigon Terminal v2.0",
         node: process.version,
-        stocks: config.stocks.map((s) => s.ticker),
+        stocks: stocks.map((s) => s.ticker),
         time: new Date().toISOString(),
       });
     }
@@ -221,19 +330,22 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(PORT, () => {
+  const stocks = watchlist.getAll();
   console.log("");
   console.log("  ┌──────────────────────────────────────┐");
   console.log("  │      SAIGON TERMINAL v2.0             │");
   console.log("  │      Board-First Desk Monitor         │");
   console.log("  ├──────────────────────────────────────┤");
   console.log(`  │  URL: http://localhost:${PORT}             │`);
-  console.log(`  │  Universe: ${config.stocks.map((s) => s.ticker).join(", ")} │`);
+  console.log(`  │  Universe: ${stocks.map((s) => s.ticker).join(", ")} │`);
   console.log("  │  Feed: VPS market + KBS enrich      │");
   console.log("  ├──────────────────────────────────────┤");
   console.log("  │  Endpoints:                          │");
   console.log("  │  POST /api/scan     → scan all       │");
+  console.log("  │  POST /api/scan/batch → top strength │");
   console.log("  │  GET  /api/prompt   → prompt export   │");
   console.log("  │  GET  /api/scan/FPT → scan one        │");
+  console.log("  │  GET  /api/watchlist → edit universe  │");
   console.log("  │  GET  /api/history  → stored data     │");
   console.log("  └──────────────────────────────────────┘");
   console.log("");

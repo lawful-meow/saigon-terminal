@@ -8,6 +8,7 @@ const fetcher = require("./fetcher");
 const { computeMetrics } = require("./analyzer");
 const { applyRules } = require("./rules");
 const store = require("./store");
+const watchlist = require("./watchlist");
 const { tickerSnapshot, fullSnapshot, claudePrompt } = require("./formatter");
 
 function rankSnapshot(stock) {
@@ -33,19 +34,30 @@ async function scanOne(stockInfo, options = {}) {
   const history = historyEntry?.scans || [];
 
   const snapshot = tickerSnapshot(ticker, stockInfo, metrics, scores, prevScan, history);
-  store.addScan(ticker, snapshot, { name: stockInfo.name, sector: stockInfo.sector });
+  if (options.persist !== false) {
+    store.addScan(ticker, snapshot, { name: stockInfo.name, sector: stockInfo.sector });
+  }
   return snapshot;
 }
 
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 async function scanAll(options = {}) {
-  const stocks = options.stocks || config.stocks;
+  const stocks = options.stocks || watchlist.getAll();
   const results = [];
   const errors = [];
   const marketBundle = await fetcher.fetchMarketBundle();
+  const delayMs = Math.max(0, Number(options.delayMs) || 0);
 
-  for (const stock of stocks) {
+  for (let i = 0; i < stocks.length; i++) {
+    const stock = stocks[i];
     try {
-      const snapshot = await scanOne(stock, { marketBundle });
+      const snapshot = await scanOne(stock, {
+        marketBundle,
+        persist: options.persist,
+      });
       results.push(snapshot);
       if (options.onProgress) {
         options.onProgress({ ticker: stock.ticker, status: "ok", snapshot });
@@ -55,6 +67,10 @@ async function scanAll(options = {}) {
       if (options.onProgress) {
         options.onProgress({ ticker: stock.ticker, status: "error", error: e.message });
       }
+    }
+
+    if (delayMs > 0 && i < stocks.length - 1) {
+      await sleep(delayMs);
     }
   }
 
@@ -77,7 +93,18 @@ async function scanAll(options = {}) {
     };
   });
 
-  const snapshot = fullSnapshot(results);
+  const requestedCount = stocks.length;
+  const scannedCount = results.length;
+  const finalResults = options.topN ? results.slice(0, options.topN) : results;
+  const snapshot = fullSnapshot(finalResults, {
+    universeCount: requestedCount,
+    requestedCount,
+    scannedCount,
+    errorCount: errors.length,
+    scanMode: options.scanMode || "watchlist",
+    topN: options.topN || null,
+    delayMs,
+  });
   return { snapshot, errors };
 }
 

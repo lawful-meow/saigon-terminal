@@ -106,6 +106,7 @@ module.exports = {
   // ── Persistence ──
   store: {
     path: "./data/scans.json",
+    watchlistPath: "./data/watchlist.json",
     maxScansPerTicker: 50,
   },
 

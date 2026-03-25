@@ -1,14 +1,21 @@
 {
-  "publishedAt": "2026-03-25T11:10:54.718Z",
+  "publishedAt": "2026-03-25T12:57:21.604Z",
   "selectedTicker": "CTG",
   "snapshot": {
-    "generated": "2026-03-25T11:10:54.717Z",
+    "generated": "2026-03-25T12:56:29.810Z",
     "engine": "Saigon Terminal v2.0",
     "dataSource": "VPS + KBS",
     "note": "Board data is VPS-first. KBS enriches fundamentals and ownership when available. CAN SLIM is the ticker-strength layer, while Wyckoff handles timing and entry logic. Market direction now includes an IBD-style pulse proxy and Wyckoff output includes a test checklist.",
     "count": 5,
+    "universeCount": 5,
+    "requestedCount": 5,
+    "scannedCount": 5,
+    "errorCount": 0,
+    "scanMode": "watchlist",
+    "topN": null,
+    "throttleMs": 0,
     "market": {
-      "asOf": "2026-03-25T11:10:54.706Z",
+      "asOf": "2026-03-25T12:56:29.787Z",
       "session": "closed",
       "regime": "bearish",
       "pulse": {
@@ -196,7 +203,7 @@
         "ticker": "CTG",
         "name": "VietinBank",
         "sector": "BANK",
-        "scanTime": "2026-03-25T11:10:54.706Z",
+        "scanTime": "2026-03-25T12:56:29.787Z",
         "price": 34050,
         "open": 33750,
         "high": 34100,
@@ -1080,20 +1087,6 @@
         "delta": "no change",
         "historyMini": [
           {
-            "timestamp": "2026-03-25T10:53:36.561Z",
-            "price": 34050,
-            "signal": "HOLD",
-            "confidence": 4,
-            "observedPct": 0.6
-          },
-          {
-            "timestamp": "2026-03-25T10:58:15.336Z",
-            "price": 34050,
-            "signal": "HOLD",
-            "confidence": 4,
-            "observedPct": 0.6
-          },
-          {
             "timestamp": "2026-03-25T11:09:19.358Z",
             "price": 34050,
             "signal": "HOLD",
@@ -1113,6 +1106,20 @@
             "signal": "HOLD",
             "confidence": 4,
             "observedPct": 0.6
+          },
+          {
+            "timestamp": "2026-03-25T11:12:08.452Z",
+            "price": 34050,
+            "signal": "HOLD",
+            "confidence": 4,
+            "observedPct": 0.6
+          },
+          {
+            "timestamp": "2026-03-25T12:56:29.787Z",
+            "price": 34050,
+            "signal": "HOLD",
+            "confidence": 4,
+            "observedPct": 0.6
           }
         ]
       },
@@ -1120,7 +1127,7 @@
         "ticker": "MWG",
         "name": "Thế Giới Di Động",
         "sector": "RETAIL",
-        "scanTime": "2026-03-25T11:10:54.388Z",
+        "scanTime": "2026-03-25T12:56:29.446Z",
         "price": 79200,
         "open": 77000,
         "high": 79500,
@@ -2013,20 +2020,6 @@
         "delta": "no change",
         "historyMini": [
           {
-            "timestamp": "2026-03-25T10:53:36.274Z",
-            "price": 79200,
-            "signal": "STRONG_SELL",
-            "confidence": 7,
-            "observedPct": 0.6
-          },
-          {
-            "timestamp": "2026-03-25T10:58:15.228Z",
-            "price": 79200,
-            "signal": "STRONG_SELL",
-            "confidence": 7,
-            "observedPct": 0.6
-          },
-          {
             "timestamp": "2026-03-25T11:09:19.068Z",
             "price": 79200,
             "signal": "STRONG_SELL",
@@ -2046,6 +2039,20 @@
             "signal": "STRONG_SELL",
             "confidence": 8,
             "observedPct": 0.6
+          },
+          {
+            "timestamp": "2026-03-25T11:12:08.133Z",
+            "price": 79200,
+            "signal": "STRONG_SELL",
+            "confidence": 8,
+            "observedPct": 0.6
+          },
+          {
+            "timestamp": "2026-03-25T12:56:29.446Z",
+            "price": 79200,
+            "signal": "STRONG_SELL",
+            "confidence": 8,
+            "observedPct": 0.6
           }
         ]
       },
@@ -2053,7 +2060,7 @@
         "ticker": "HDB",
         "name": "HDBank",
         "sector": "BANK",
-        "scanTime": "2026-03-25T11:10:54.212Z",
+        "scanTime": "2026-03-25T12:56:29.030Z",
         "price": 24900,
         "open": 24500,
         "high": 25000,
@@ -2937,20 +2944,6 @@
         "delta": "no change",
         "historyMini": [
           {
-            "timestamp": "2026-03-25T10:53:35.973Z",
-            "price": 24900,
-            "signal": "STRONG_SELL",
-            "confidence": 5,
-            "observedPct": 0.57
-          },
-          {
-            "timestamp": "2026-03-25T10:58:14.731Z",
-            "price": 24900,
-            "signal": "STRONG_SELL",
-            "confidence": 5,
-            "observedPct": 0.57
-          },
-          {
             "timestamp": "2026-03-25T11:09:18.808Z",
             "price": 24900,
             "signal": "STRONG_SELL",
@@ -2970,6 +2963,20 @@
             "signal": "STRONG_SELL",
             "confidence": 6,
             "observedPct": 0.57
+          },
+          {
+            "timestamp": "2026-03-25T11:12:07.865Z",
+            "price": 24900,
+            "signal": "STRONG_SELL",
+            "confidence": 6,
+            "observedPct": 0.57
+          },
+          {
+            "timestamp": "2026-03-25T12:56:29.030Z",
+            "price": 24900,
+            "signal": "STRONG_SELL",
+            "confidence": 6,
+            "observedPct": 0.57
           }
         ]
       },
@@ -2977,7 +2984,7 @@
         "ticker": "TCB",
         "name": "Techcombank",
         "sector": "BANK",
-        "scanTime": "2026-03-25T11:10:53.947Z",
+        "scanTime": "2026-03-25T12:56:28.781Z",
         "price": 30800,
         "open": 30300,
         "high": 30900,
@@ -3414,7 +3421,7 @@
           "coveragePct": 100,
           "coverageLabel": "strong",
           "historyBars": 57,
-          "freshnessSec": 1,
+          "freshnessSec": 0,
           "snapshotOverlayUsed": true,
           "missingFactors": [],
           "missingFields": [
@@ -3861,20 +3868,6 @@
         "delta": "no change",
         "historyMini": [
           {
-            "timestamp": "2026-03-25T10:53:35.836Z",
-            "price": 30800,
-            "signal": "STRONG_SELL",
-            "confidence": 5,
-            "observedPct": 0.54
-          },
-          {
-            "timestamp": "2026-03-25T10:58:14.457Z",
-            "price": 30800,
-            "signal": "STRONG_SELL",
-            "confidence": 5,
-            "observedPct": 0.54
-          },
-          {
             "timestamp": "2026-03-25T11:09:18.511Z",
             "price": 30800,
             "signal": "STRONG_SELL",
@@ -3894,6 +3887,20 @@
             "signal": "STRONG_SELL",
             "confidence": 6,
             "observedPct": 0.54
+          },
+          {
+            "timestamp": "2026-03-25T11:12:07.757Z",
+            "price": 30800,
+            "signal": "STRONG_SELL",
+            "confidence": 6,
+            "observedPct": 0.54
+          },
+          {
+            "timestamp": "2026-03-25T12:56:28.781Z",
+            "price": 30800,
+            "signal": "STRONG_SELL",
+            "confidence": 6,
+            "observedPct": 0.54
           }
         ]
       },
@@ -3901,7 +3908,7 @@
         "ticker": "FPT",
         "name": "FPT Corp",
         "sector": "TECH",
-        "scanTime": "2026-03-25T11:10:52.824Z",
+        "scanTime": "2026-03-25T12:56:28.385Z",
         "price": 77000,
         "open": 76200,
         "high": 77000,
@@ -4792,20 +4799,6 @@
         "delta": "no change",
         "historyMini": [
           {
-            "timestamp": "2026-03-25T10:53:35.722Z",
-            "price": 77000,
-            "signal": "STRONG_SELL",
-            "confidence": 6,
-            "observedPct": 0.46
-          },
-          {
-            "timestamp": "2026-03-25T10:58:14.166Z",
-            "price": 77000,
-            "signal": "STRONG_SELL",
-            "confidence": 6,
-            "observedPct": 0.46
-          },
-          {
             "timestamp": "2026-03-25T11:09:18.190Z",
             "price": 77000,
             "signal": "STRONG_SELL",
@@ -4825,10 +4818,24 @@
             "signal": "STRONG_SELL",
             "confidence": 7,
             "observedPct": 0.46
+          },
+          {
+            "timestamp": "2026-03-25T11:12:07.478Z",
+            "price": 77000,
+            "signal": "STRONG_SELL",
+            "confidence": 7,
+            "observedPct": 0.46
+          },
+          {
+            "timestamp": "2026-03-25T12:56:28.385Z",
+            "price": 77000,
+            "signal": "STRONG_SELL",
+            "confidence": 7,
+            "observedPct": 0.46
           }
         ]
       }
     ]
   },
-  "prompt": ""
+  "prompt": "I have 5 Vietnam stocks monitored by my local Saigon Terminal snapshot (2026-03-25T12:56:29.810Z).\n\nRules:\n- VPS is the live market source.\n- KBS enriches fundamentals and ownership when reachable.\n- Missing CAN SLIM factors are unknown, not neutral.\n- CAN SLIM ranks ticker strength; Wyckoff governs timing, entry, and exit bias.\n- Confidence is a rule-strength score, not certainty.\n\nMarket:\n- Session: closed\n- Regime: bearish\n- Pulse: correction | Exposure 0-20% | Dist days 6\n- Breadth: 5 up / 0 down / 0 flat\n- Turnover: 2.0T\n\nPlease validate the rule reads, flag weak data coverage, and identify the strongest and weakest setups.\n\n▸ CTG (VietinBank, BANK)\n  Price: 34.050 (+1.49%) | Value: 211.6B | Vol 6.2M (0.5x avg)\nStrength: Watch 43/100 | Rank #1\n  Relative: 1W -2.7% | 1M -10.9% | 3M -3.3% | vs VNINDEX +0.9% | vs VN30 +4.4%\n  Market pulse: correction | Exposure 0-20% | Dist days 6\n  Wyckoff: Accumulation Phase B - Early Base Repair | Bias wait | Confidence 57 | Action Stay on watch, not on full risk\n  Wyckoff tests: 4/7 buy tests passed\n  Wyckoff plan: This looks more like an early base repair than a confirmed trend reversal. Stay on watch until price reclaims repair levels, then the range ceiling.\n  Observed CAN SLIM: 42/70 | Coverage 100% [C:6 A:10 N:4 S:4 L:6 I:10 M:2]\n  Rule Read: Neutral / Mixed | Rule Strength: 4/10 (low conviction)\n  Positive drivers: RS vs VNINDEX 3M +0.9%; RSI 40.3 in healthy range\n  Negative drivers: Price -9.1% vs SMA50; Volume only 0.5x avg20; Market regime bearish; Foreign flow unavailable\n  Warnings: Foreign flow unavailable\n  No active long entry yet. Watch: Early repair trigger 35.080 | Full demand confirmation 39.898\n\n▸ MWG (Thế Giới Di Động, RETAIL)\n  Price: 79.200 (+4.21%) | Value: 592.4B | Vol 7.6M (0.78x avg)\nStrength: Weak 38/100 | Rank #2\n  Relative: 1W -5.4% | 1M -14.1% | 3M -9.0% | vs VNINDEX -4.8% | vs VN30 -1.3%\n  Market pulse: correction | Exposure 0-20% | Dist days 6\n  Wyckoff: Markdown Phase E - Active Downtrend | Bias avoid | Confidence 77 | Action No long entries in active markdown\n  Wyckoff tests: 6/8 sell tests passed\n  Wyckoff plan: Do not buy into active markdown. Wait for stopping action or a spring first.\n  Observed CAN SLIM: 42/70 | Coverage 100% [C:4 A:10 N:6 S:6 L:4 I:10 M:2]\n  Rule Read: Strong Bearish Bias | Rule Strength: 8/10 (high conviction)\n  Positive drivers: RSI 42.7 in healthy range\n  Negative drivers: RS vs VNINDEX 3M -4.8%; Price -8.6% vs SMA50; Market regime bearish; CAN SLIM strength Weak (38/100); Wyckoff Markdown Phase E - Active Downtrend\n  Warnings: Foreign flow unavailable\n  No active long entry yet. Watch: Early repair / stop bleeding trigger 83.560 | Full demand confirmation 94.771\n\n▸ HDB (HDBank, BANK)\n  Price: 24.900 (+2.47%) | Value: 274.3B | Vol 11.1M (0.72x avg)\nStrength: Weak 30/100 | Rank #3\n  Relative: 1W -3.1% | 1M -12.6% | 3M -9.8% | vs VNINDEX -5.6% | vs VN30 -2.1%\n  Market pulse: correction | Exposure 0-20% | Dist days 6\n  Wyckoff: Markdown Phase E - Active Downtrend | Bias avoid | Confidence 59 | Action No long entries in active markdown\n  Wyckoff tests: 6/8 sell tests passed\n  Wyckoff plan: Do not buy into active markdown. Wait for stopping action or a spring first.\n  Observed CAN SLIM: 40/70 | Coverage 100% [C:10 A:10 N:6 S:6 L:4 I:2 M:2]\n  Rule Read: Strong Bearish Bias | Rule Strength: 6/10 (moderate conviction)\n  Positive drivers: RSI 40.9 in healthy range\n  Negative drivers: RS vs VNINDEX 3M -5.6%; Price -8.6% vs SMA50; Market regime bearish; CAN SLIM strength Weak (30/100); Wyckoff Markdown Phase E - Active Downtrend\n  Warnings: Foreign flow unavailable\n  No active long entry yet. Watch: Early repair / stop bleeding trigger 25.820 | Full demand confirmation 28.994\n\n▸ TCB (Techcombank, BANK)\n  Price: 30.800 (+3.18%) | Value: 305.3B | Vol 10.0M (0.68x avg)\nStrength: Weak 28/100 | Rank #4\n  Relative: 1W +1.7% | 1M -14.0% | 3M -9.1% | vs VNINDEX -5.0% | vs VN30 -1.5%\n  Market pulse: correction | Exposure 0-20% | Dist days 6\n  Wyckoff: Markdown Phase E - Active Downtrend | Bias avoid | Confidence 56 | Action No long entries in active markdown\n  Wyckoff tests: 5/8 sell tests passed\n  Wyckoff plan: Do not buy into active markdown. Wait for stopping action or a spring first.\n  Observed CAN SLIM: 38/70 | Coverage 100% [C:4 A:8 N:6 S:4 L:4 I:10 M:2]\n  Rule Read: Strong Bearish Bias | Rule Strength: 6/10 (moderate conviction)\n  Positive drivers: RSI 42.6 in healthy range\n  Negative drivers: RS vs VNINDEX 3M -5.0%; Price -9.3% vs SMA50; Volume only 0.68x avg20; Market regime bearish; CAN SLIM strength Weak (28/100)\n  Warnings: Foreign flow unavailable\n  No active long entry yet. Watch: Early repair / stop bleeding trigger 31.920 | Full demand confirmation 36.632\n\n▸ FPT (FPT Corp, TECH)\n  Price: 77.000 (+2.12%) | Value: 567.7B | Vol 7.4M (0.52x avg)\nStrength: Weak 12/100 | Rank #5\n  Relative: 1W -2.0% | 1M -16.8% | 3M -16.8% | vs VNINDEX -12.6% | vs VN30 -9.1%\n  Market pulse: correction | Exposure 0-20% | Dist days 6\n  Wyckoff: Markdown Phase E - Active Downtrend | Bias avoid | Confidence 77 | Action No long entries in active markdown\n  Wyckoff tests: 6/8 sell tests passed\n  Wyckoff plan: Do not buy into active markdown. Wait for stopping action or a spring first.\n  Observed CAN SLIM: 32/70 | Coverage 100% [C:6 A:4 N:4 S:4 L:2 I:10 M:2]\n  Rule Read: Strong Bearish Bias | Rule Strength: 7/10 (moderate conviction)\n  Positive drivers: —\n  Negative drivers: RS vs VNINDEX 3M -12.6%; Price -16.6% vs SMA50; Volume only 0.52x avg20; Market regime bearish; CAN SLIM strength Weak (12/100)\n  Warnings: Foreign flow unavailable\n  No active long entry yet. Watch: Early repair / stop bleeding trigger 83.720 | Full demand confirmation 102.409"
 }

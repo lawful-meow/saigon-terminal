@@ -7,7 +7,7 @@
 
 Board-first desk monitor for Vietnam equities.
 
-Saigon Terminal scans a curated watchlist, ranks tickers by CAN SLIM-style strength, times entries and exits with Wyckoff structure, and publishes a clean static snapshot you can ship to GitHub Pages.
+Saigon Terminal scans an editable watchlist, ranks tickers by CAN SLIM-style strength, times entries and exits with Wyckoff structure, and publishes a clean static snapshot you can ship to GitHub Pages.
 
 Most retail dashboards give you more widgets than decisions. This repo does the opposite: tighter universe, clearer ranking, explainable scoring, and a local-first workflow that is fast enough to actually become part of your desk.
 
@@ -27,7 +27,7 @@ If you are still jumping between broker tabs, spreadsheets, and half-broken scre
 - Ranked market board with market header, benchmark context, IBD-style pulse proxy, breadth, turnover, and sector leaders/laggards
 - Per-ticker detail layer with price action, relative strength, CAN SLIM strength rank, step-by-step Wyckoff phase/action/entry playbook, Wyckoff tests, and warnings
 - History persistence in `data/scans.json`
-- HTTP API for full scans, single-ticker scans, prompt export, publish flow, history, and health checks
+- HTTP API for full scans, throttled batch scans, watchlist CRUD, prompt export, publish flow, history, and health checks
 - Static publish flow for GitHub Pages
 - Clear source separation between market data, enrichment data, and local scoring
 
@@ -51,11 +51,13 @@ There is no `package.json` because this repo uses Node's built-in modules plus n
 
 Edit [`config.js`](./config.js) and update:
 
-- `stocks`: watchlist / universe
+- `stocks`: fallback default watchlist before `data/watchlist.json` exists
 - `canslim`: factor thresholds
 - `volumeRules`: volume classification
 - `sources`: provider endpoints, timeouts, and roadmap
 - `server.port`: local server port
+
+The local UI can also add, edit, and delete watchlist tickers at runtime. Once you change the watchlist from the UI or API, the editable universe is persisted to `data/watchlist.json`.
 
 ## Workflow
 
@@ -75,7 +77,17 @@ curl http://localhost:3000/api/scan/FPT
 
 Useful when you want a single-symbol read without re-reading the whole board.
 
-### 3. Export a prompt
+### 3. Batch-scan 30-50 names and keep the top CAN SLIM leaders
+
+```bash
+curl -X POST http://localhost:3000/api/scan/batch \
+  -H "Content-Type: application/json" \
+  -d '{"tickers":"FPT,CTG,MWG,TCB,HDB", "topN":10, "delayMs":450}'
+```
+
+The server scans the requested list sequentially, waits between tickers to reduce upstream hit-rate, does not persist those batch scans into history, and returns the top-ranked CAN SLIM names plus any ticker-level errors.
+
+### 4. Export a prompt
 
 ```bash
 curl http://localhost:3000/api/prompt
@@ -83,7 +95,7 @@ curl http://localhost:3000/api/prompt
 
 This generates a scan plus a Claude-ready prompt. The prompt is a utility, not the core product.
 
-### 4. Publish a static snapshot
+### 5. Publish a static snapshot
 
 ```bash
 curl -X POST http://localhost:3000/api/publish
@@ -101,8 +113,13 @@ Commit `docs/` and enable GitHub Pages from that directory.
 | Method | Path | Purpose |
 | --- | --- | --- |
 | `POST` | `/api/scan` | Scan the configured universe and return a full snapshot |
+| `POST` | `/api/scan/batch` | Throttled scan of a pasted ticker list and return the top CAN SLIM names |
 | `POST` | `/api/publish` | Generate static output for GitHub Pages |
 | `GET` | `/api/scan/:ticker` | Scan a single ticker |
+| `GET` | `/api/watchlist` | Return the editable watchlist |
+| `POST` | `/api/watchlist` | Add a ticker to the editable watchlist |
+| `PUT` | `/api/watchlist/:ticker` | Update an existing watchlist row |
+| `DELETE` | `/api/watchlist/:ticker` | Remove a ticker from the editable watchlist |
 | `GET` | `/api/prompt` | Scan + prompt export |
 | `GET` | `/api/test` | Test VPS + KBS connectivity |
 | `GET` | `/api/history` | Return stored history |
@@ -143,6 +160,7 @@ See [`CANSLIM_SOURCES.md`](./CANSLIM_SOURCES.md) for the factor-level source mat
 
 ```text
 config.js      universe, thresholds, provider roadmap
+watchlist.js   editable watchlist persistence and normalization
 fetcher.js     VPS history/snapshot + KBS enrichment I/O
 resolver.js    source precedence / canonical source flags
 analyzer.js    pure metric computation + market context
@@ -172,6 +190,7 @@ That makes the repo easier to extend without smearing business logic across the 
 - [`docs/index.html`](./docs/index.html): published static snapshot
 - [`docs/snapshot.json`](./docs/snapshot.json): publish payload
 - [`data/scans.json`](./data/scans.json): persisted scan history
+- [`data/watchlist.json`](./data/watchlist.json): editable watchlist persisted from the UI/API
 
 ## Design Principles
 
@@ -183,10 +202,10 @@ That makes the repo easier to extend without smearing business logic across the 
 
 ## Current Limitations
 
-- Breadth, turnover, and sector leader/laggard stats are computed from the configured universe, not the full market
+- Breadth, turnover, and sector leader/laggard stats are computed from the active watchlist or requested batch universe, not the full market
 - Execution-only fields such as bid/ask depth, foreign room, and order-book imbalance are not wired in yet
 - Live data quality depends on public upstream endpoints and can degrade when those endpoints fail or throttle
-- The watchlist is curated by config; this is a desk monitor, not a full-market discovery platform
+- Batch discovery is still request-driven; this is a desk monitor, not a full-market discovery crawler
 
 ## Why It Feels Different
 

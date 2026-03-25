@@ -256,6 +256,20 @@ button{cursor:pointer}
 .search{
   flex:1 1 240px;
 }
+textarea.control{
+  min-height:96px;
+  padding:12px 14px;
+  resize:vertical;
+}
+.batch-box{
+  width:100%;
+  font:inherit;
+}
+.tool-note{
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.5;
+}
 .toggle{
   display:inline-flex;
   align-items:center;
@@ -845,6 +859,28 @@ td{
             <button class="btn" data-quick-sort="coverage">Low Coverage</button>
           </div>
         </div>
+        <div class="toolbar-row">
+          <select class="control" id="watchlistSelect"></select>
+          <button class="btn" id="btnWatchLoad">Load Ticker</button>
+          <button class="btn btn-warn" id="btnWatchDelete">Delete</button>
+          <div class="tool-note" id="watchlistMeta">Watchlist manager</div>
+        </div>
+        <div class="toolbar-row">
+          <input class="control" id="watchTickerInput" type="text" placeholder="Ticker">
+          <input class="control" id="watchNameInput" type="text" placeholder="Name">
+          <input class="control" id="watchSectorInput" type="text" placeholder="Sector">
+          <button class="btn btn-primary" id="btnWatchSave">Add / Update</button>
+          <button class="btn" id="btnWatchClear">Clear</button>
+        </div>
+        <div class="toolbar-row">
+          <textarea class="control batch-box" id="batchTickerInput" placeholder="Paste 30-50 tickers separated by comma, space, or newline"></textarea>
+        </div>
+        <div class="toolbar-row">
+          <input class="control" id="batchTopN" type="number" min="1" max="20" value="10" placeholder="Top N">
+          <input class="control" id="batchDelayMs" type="number" min="250" max="3000" value="450" placeholder="Delay ms">
+          <button class="btn btn-primary" id="btnBatchScan">Batch Scan Top CAN SLIM</button>
+          <div class="tool-note" id="batchMeta">Batch scan is throttled between tickers to reduce VPS hit rate.</div>
+        </div>
       </section>
 
       <section class="panel board-panel">
@@ -929,6 +965,8 @@ const state = {
   prompt: "",
   selectedTicker: null,
   publishInfo: null,
+  watchlist: [],
+  watchEditTicker: null,
   sortKey: "strengthScore",
   sortDir: "desc",
   sector: "ALL",
@@ -1021,7 +1059,7 @@ function buildPrompt(snapshot) {
     ].join("\n");
   }).join("\n\n");
 
-  return `I have ${snapshot.count} Vietnam stocks monitored by my local Saigon Terminal snapshot (${snapshot.generated}).
+  return `I have ${snapshot.count} Vietnam stocks monitored by my local Saigon Terminal snapshot (${snapshot.generated})${snapshot.scanMode === "batch_top_strength" ? `, filtered from ${snapshot.requestedCount || snapshot.universeCount} requested batch tickers${snapshot.errorCount ? ` with ${snapshot.scannedCount} successful scans and ${snapshot.errorCount} failures` : ""}` : ""}.
 
 Rules:
 - VPS is the live market source.
@@ -1074,7 +1112,11 @@ function renderUtility() {
       <div class="stat-card">
         <div class="stat-k">Snapshot</div>
         <div class="stat-v mono">${state.snapshot?.count ?? 0}</div>
-        <div>${state.snapshot ? "rows in current universe snapshot" : "No active snapshot yet"}</div>
+        <div>${state.snapshot
+          ? (state.snapshot.scanMode === "batch_top_strength"
+            ? `top ${state.snapshot.count} of ${state.snapshot.requestedCount || state.snapshot.universeCount} requested tickers${state.snapshot.errorCount ? ` · ${state.snapshot.scannedCount} succeeded` : ""}`
+            : "rows in current watchlist snapshot")
+          : "No active snapshot yet"}</div>
       </div>
     `,
     `
@@ -1324,6 +1366,152 @@ function sectorOptions(snapshot) {
     .concat(sectors.map((sector) => `<option value="${sector}">${sector}</option>`))
     .join("");
   select.value = state.sector;
+}
+
+function watchFormPayload() {
+  return {
+    ticker: document.getElementById("watchTickerInput").value,
+    name: document.getElementById("watchNameInput").value,
+    sector: document.getElementById("watchSectorInput").value,
+  };
+}
+
+function fillWatchForm(stock) {
+  document.getElementById("watchTickerInput").value = stock?.ticker || "";
+  document.getElementById("watchNameInput").value = stock?.name || "";
+  document.getElementById("watchSectorInput").value = stock?.sector || "";
+  state.watchEditTicker = stock?.ticker || null;
+}
+
+function clearWatchForm() {
+  fillWatchForm(null);
+  document.getElementById("watchlistSelect").value = "";
+}
+
+function renderWatchlistManager() {
+  const select = document.getElementById("watchlistSelect");
+  const meta = document.getElementById("watchlistMeta");
+  const options = ['<option value="">Watchlist ticker…</option>']
+    .concat(state.watchlist.map((stock) => `<option value="${stock.ticker}">${stock.ticker} · ${stock.name}</option>`));
+  select.innerHTML = options.join("");
+
+  const activeTicker = state.watchEditTicker || state.selectedTicker || "";
+  if (activeTicker && state.watchlist.some((stock) => stock.ticker === activeTicker)) {
+    select.value = activeTicker;
+  }
+
+  meta.textContent = `${state.watchlist.length} watchlist tickers${state.watchEditTicker ? ` · editing ${state.watchEditTicker}` : ""}`;
+}
+
+async function loadWatchlist() {
+  const response = await fetch("/api/watchlist");
+  const data = await response.json();
+  if (!response.ok || data.error) throw new Error(data.error || "Failed to load watchlist");
+  state.watchlist = data.stocks || [];
+  renderWatchlistManager();
+  return state.watchlist;
+}
+
+function syncWatchFormFromSelection() {
+  const ticker = document.getElementById("watchlistSelect").value;
+  const stock = state.watchlist.find((item) => item.ticker === ticker) || null;
+  fillWatchForm(stock);
+}
+
+async function saveWatchTicker() {
+  const payload = watchFormPayload();
+  if (!payload.ticker.trim()) {
+    setStatus("Ticker is required", "warn");
+    return;
+  }
+
+  const button = document.getElementById("btnWatchSave");
+  button.disabled = true;
+  setStatus(state.watchEditTicker ? `Updating ${state.watchEditTicker}` : "Adding ticker", "warn");
+
+  try {
+    const method = state.watchEditTicker ? "PUT" : "POST";
+    const target = state.watchEditTicker ? `/api/watchlist/${state.watchEditTicker}` : "/api/watchlist";
+    const response = await fetch(target, {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    const data = await response.json();
+    if (!response.ok || data.error) throw new Error(data.error || "Failed to save ticker");
+    state.watchlist = data.stocks || [];
+    const savedTicker = String(payload.ticker || "").trim().toUpperCase();
+    fillWatchForm(state.watchlist.find((stock) => stock.ticker === savedTicker) || null);
+    renderWatchlistManager();
+    setStatus(`Watchlist saved: ${savedTicker}`, "ok");
+  } catch (error) {
+    setStatus(error.message, "danger");
+  } finally {
+    button.disabled = false;
+  }
+}
+
+async function deleteWatchTicker() {
+  const ticker = state.watchEditTicker || document.getElementById("watchlistSelect").value;
+  if (!ticker) {
+    setStatus("Pick a watchlist ticker first", "warn");
+    return;
+  }
+  if (!window.confirm(`Delete ${ticker} from watchlist?`)) return;
+
+  const button = document.getElementById("btnWatchDelete");
+  button.disabled = true;
+  setStatus(`Deleting ${ticker}`, "warn");
+  try {
+    const response = await fetch(`/api/watchlist/${ticker}`, { method: "DELETE" });
+    const data = await response.json();
+    if (!response.ok || data.error) throw new Error(data.error || "Failed to delete ticker");
+    state.watchlist = data.stocks || [];
+    clearWatchForm();
+    renderWatchlistManager();
+    setStatus(`Removed ${ticker} from watchlist`, "ok");
+  } catch (error) {
+    setStatus(error.message, "danger");
+  } finally {
+    button.disabled = false;
+  }
+}
+
+async function batchScanTopStrength() {
+  const button = document.getElementById("btnBatchScan");
+  const rawTickers = document.getElementById("batchTickerInput").value || "";
+  if (!rawTickers.trim()) {
+    setStatus("Paste tickers for batch scan first", "warn");
+    return;
+  }
+
+  const topN = Number(document.getElementById("batchTopN").value) || 10;
+  const delayMs = Number(document.getElementById("batchDelayMs").value) || 450;
+
+  button.disabled = true;
+  setStatus("Batch scanning with throttle", "warn");
+  try {
+    const response = await fetch("/api/scan/batch", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        tickers: rawTickers,
+        topN,
+        delayMs,
+      }),
+    });
+    const data = await response.json();
+    if (!response.ok || data.error) throw new Error(data.error || "Batch scan failed");
+    state.snapshot = data.snapshot;
+    state.selectedTicker = data.snapshot.stocks[0]?.ticker || null;
+    document.getElementById("batchMeta").textContent = `Requested ${data.inputCount} tickers · ${data.snapshot.scannedCount} succeeded · ${data.delayMs}ms spacing · showing top ${data.snapshot.count}${data.errors?.length ? ` · ${data.errors.length} errors` : ""}`;
+    renderAll();
+    setStatus(`Batch ${data.inputCount} → top ${data.snapshot.count}${data.errors?.length ? ` · ${data.errors.length} errors` : ""}`, data.errors?.length ? "warn" : "ok");
+  } catch (error) {
+    setStatus(error.message, "danger");
+  } finally {
+    button.disabled = false;
+  }
 }
 
 function boardRows(stocks) {
@@ -1748,12 +1936,13 @@ function renderAll() {
   renderMarket(state.snapshot);
   renderUtility();
   sectorOptions(state.snapshot);
+  renderWatchlistManager();
   renderBoard();
   renderDetail();
   updatePrompt(state.snapshot);
   const footer = document.getElementById("footerMeta");
   footer.textContent = state.snapshot
-    ? `Snapshot ${new Date(state.snapshot.generated).toLocaleString("vi-VN")} · ${state.snapshot.count} tickers`
+    ? `Snapshot ${new Date(state.snapshot.generated).toLocaleString("vi-VN")} · ${state.snapshot.count} tickers${state.snapshot.scanMode === "batch_top_strength" ? ` · top ${state.snapshot.count} of ${state.snapshot.requestedCount || state.snapshot.universeCount}${state.snapshot.errorCount ? ` · ${state.snapshot.errorCount} errors` : ""}` : ""}`
     : "Local snapshot terminal";
 }
 
@@ -1854,10 +2043,16 @@ document.getElementById("btnPublish").addEventListener("click", publishSnapshot)
 document.getElementById("btnPrompt").addEventListener("click", () => togglePrompt(true));
 document.getElementById("closePrompt").addEventListener("click", () => togglePrompt(false));
 document.getElementById("copyPrompt").addEventListener("click", copyPrompt);
+document.getElementById("btnWatchLoad").addEventListener("click", syncWatchFormFromSelection);
+document.getElementById("btnWatchSave").addEventListener("click", saveWatchTicker);
+document.getElementById("btnWatchDelete").addEventListener("click", deleteWatchTicker);
+document.getElementById("btnWatchClear").addEventListener("click", clearWatchForm);
+document.getElementById("btnBatchScan").addEventListener("click", batchScanTopStrength);
 document.getElementById("searchInput").addEventListener("input", (event) => {
   state.query = event.target.value || "";
   renderBoard();
 });
+document.getElementById("watchlistSelect").addEventListener("change", syncWatchFormFromSelection);
 document.getElementById("sectorFilter").addEventListener("change", (event) => {
   state.sector = event.target.value;
   renderBoard();
@@ -1881,6 +2076,10 @@ document.querySelectorAll("[data-quick-sort]").forEach((button) => {
 
 renderMarket(null);
 renderUtility();
+renderWatchlistManager();
+loadWatchlist().catch((error) => {
+  document.getElementById("watchlistMeta").textContent = error.message;
+});
 document.getElementById("footerMeta").textContent = "Local snapshot terminal";
 </script>
 </body>

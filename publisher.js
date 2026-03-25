@@ -1,7 +1,7 @@
-// ─── publisher.js ──────────────────────────────────────────────────────────────
+﻿// 鈹€鈹€鈹€ publisher.js 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
 // Export a static snapshot page that can be hosted on GitHub Pages.
 // Output is self-contained: one HTML file with embedded snapshot data.
-// ────────────────────────────────────────────────────────────────────────────────
+// 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
 
 const fs = require("fs");
 const path = require("path");
@@ -173,6 +173,7 @@ a{color:#d9fff1;text-decoration:none}
 .market-k{font-size:11px;color:var(--subtle);text-transform:uppercase;letter-spacing:.12em;margin-bottom:8px}
 .market-v{font-size:24px;font-weight:800;line-height:1.05}
 .market-s{margin-top:8px;color:var(--muted);font-size:13px;line-height:1.5}
+.sector-card{padding:12px;border-radius:16px;border:1px solid rgba(40,69,81,.78);background:rgba(11,20,26,.88)}
 .history-chip{min-width:88px;padding:8px 10px;border-radius:14px;background:rgba(20,37,47,.9);border:1px solid rgba(40,69,81,.7)}
 .history-chip .ts{color:var(--subtle);font-size:10px;margin-bottom:5px;text-transform:uppercase;letter-spacing:.1em}
 .history-chip .sv{font-size:12px;line-height:1.5}
@@ -226,6 +227,12 @@ pre{
       </section>
 
       <section class="panel">
+        <div class="eyebrow">Sector Drilldown</div>
+        <div class="panel-title">Current basket leadership</div>
+        <div class="detail-grid" id="sectorPanel"></div>
+      </section>
+
+      <section class="panel">
         <div class="eyebrow">Snapshot</div>
         <div class="panel-title">Publish details</div>
         <div class="detail-grid" id="publishStats"></div>
@@ -251,12 +258,12 @@ const state = {
 };
 
 function fNum(n) {
-  if (n == null) return "—";
+  if (n == null) return "鈥?;
   return Number(n).toLocaleString("vi-VN");
 }
 
 function fK(n) {
-  if (n == null) return "—";
+  if (n == null) return "鈥?;
   if (Math.abs(n) >= 1e12) return (n / 1e12).toFixed(1) + "T";
   if (Math.abs(n) >= 1e9) return (n / 1e9).toFixed(1) + "B";
   if (Math.abs(n) >= 1e6) return (n / 1e6).toFixed(1) + "M";
@@ -265,7 +272,7 @@ function fK(n) {
 }
 
 function fPct(n, scale = 1, digits = 1) {
-  if (n == null) return "—";
+  if (n == null) return "鈥?;
   const value = Number(n) * scale;
   return \`\${value >= 0 ? "+" : ""}\${value.toFixed(digits)}%\`;
 }
@@ -285,6 +292,27 @@ function breakoutLabel(state) {
     .join(" ");
 }
 
+function bankBasketSummary(snapshot) {
+  const banks = (snapshot?.stocks || []).filter((stock) => stock.sector === "BANK");
+  if (!banks.length) return null;
+
+  const avgChangePct = banks.reduce((sum, stock) => sum + (stock.changePct || 0), 0) / banks.length;
+  const avgRsVsVNINDEX3m = banks.reduce((sum, stock) => sum + (stock.relative?.vsVNINDEX3m || 0), 0) / banks.length;
+  const advancers = banks.filter((stock) => (stock.changePct || 0) > 0).length;
+  const decliners = banks.filter((stock) => (stock.changePct || 0) < 0).length;
+  const leader = banks.slice().sort((a, b) => (b.relative?.vsVNINDEX3m || -999) - (a.relative?.vsVNINDEX3m || -999))[0] || null;
+  const laggard = banks.slice().sort((a, b) => (a.relative?.vsVNINDEX3m || 999) - (b.relative?.vsVNINDEX3m || 999))[0] || null;
+
+  return {
+    advancers,
+    decliners,
+    avgChangePct: +avgChangePct.toFixed(2),
+    avgRsVsVNINDEX3m: +avgRsVsVNINDEX3m.toFixed(4),
+    leader,
+    laggard,
+  };
+}
+
 function factorScoreTone(detail) {
   if (detail.score == null) return "unknown";
   return detail.score >= 8 ? "strong" : "weak";
@@ -295,11 +323,11 @@ function warningSummary(stock) {
   const firstWarning = (stock.quality?.warnings || []).find((warning) =>
     !missing || !warning.includes("Missing CAN SLIM factors")
   ) || null;
-  return [missing, firstWarning].filter(Boolean).join(" · ") || "Clean";
+  return [missing, firstWarning].filter(Boolean).join(" 路 ") || "Clean";
 }
 
 function fRR(value) {
-  if (value == null) return "—";
+  if (value == null) return "鈥?;
   return \`\${Number(value).toFixed(2)}R\`;
 }
 
@@ -370,7 +398,7 @@ function renderWyckoffTests(wyckoff) {
 
 function renderHeader() {
   const meta = document.getElementById("headerMeta");
-  meta.textContent = \`\${new Date(state.snapshot.generated).toLocaleString("vi-VN")} · \${state.snapshot.count} tickers\`;
+  meta.textContent = \`\${new Date(state.snapshot.generated).toLocaleString("vi-VN")} 路 \${state.snapshot.count} tickers\`;
 }
 
 function renderMarket() {
@@ -384,7 +412,7 @@ function renderMarket() {
       <div class="market-card">
         <div class="market-k">\${symbol}</div>
         <div class="market-v mono">\${fNum(index.price)}</div>
-        <div class="market-s \${tone}">\${index.changePct >= 0 ? "+" : ""}\${index.changePct}% · \${index.regime}</div>
+        <div class="market-s \${tone}">\${index.changePct >= 0 ? "+" : ""}\${index.changePct}% 路 \${index.regime}</div>
         <div class="chip-row">
           <span class="chip">1M \${fPct(index.ret1m, 100)}</span>
           <span class="chip">3M \${fPct(index.ret3m, 100)}</span>
@@ -407,7 +435,7 @@ function renderMarket() {
     <div class="market-card">
       <div class="market-k">Breadth</div>
       <div class="market-v mono">\${market.breadth.advancers} / \${market.breadth.decliners}</div>
-      <div class="market-s">\${market.breadth.unchanged} unchanged · session \${market.session.replace(/_/g, " ")}</div>
+      <div class="market-s">\${market.breadth.unchanged} unchanged 路 session \${market.session.replace(/_/g, " ")}</div>
     </div>
     <div class="market-card">
       <div class="market-k">Turnover</div>
@@ -417,14 +445,33 @@ function renderMarket() {
   \`;
 }
 
+function renderSectorPanel() {
+  const root = document.getElementById("sectorPanel");
+  const sectors = state.snapshot?.market?.sectors?.all || [];
+
+  if (!sectors.length) {
+    root.innerHTML = \`<div class="sector-card">Sector drilldown unavailable for this snapshot.</div>\`;
+    return;
+  }
+
+  root.innerHTML = sectors.map((sector) => \`
+    <div class="sector-card">
+      <div class="stat-k">\${sector.sector}</div>
+      <div class="stat-v mono">\${sector.count} names</div>
+      <div>\${sector.advancers}/\${sector.decliners} adv/dec · \${sector.avgChangePct >= 0 ? "+" : ""}\${sector.avgChangePct}%</div>
+      <div class="meta-copy">Observed \${sector.avgObservedScorePct ?? "n/a"}% · RS \${fPct(sector.avgRsVsVNINDEX3m, 100)}</div>
+    </div>
+  \`).join("");
+}
+
 function renderPublishStats() {
   const root = document.getElementById("publishStats");
   const selected = state.snapshot.stocks.find((stock) => stock.ticker === state.selectedTicker) || state.snapshot.stocks[0];
   root.innerHTML = [
-    \`<div class="stat-card"><div class="stat-k">Focus</div><div class="stat-v">\${selected?.ticker || "—"}</div><div>\${selected ? selected.explain.ruleRead : "—"}</div></div>\`,
+    \`<div class="stat-card"><div class="stat-k">Focus</div><div class="stat-v">\${selected?.ticker || "鈥?}</div><div>\${selected ? selected.explain.ruleRead : "鈥?}</div></div>\`,
     \`<div class="stat-card"><div class="stat-k">Universe</div><div class="stat-v mono">\${state.snapshot.count}</div><div>Tickers in this published snapshot</div></div>\`,
     \`<div class="stat-card"><div class="stat-k">Published</div><div class="stat-v mono">\${new Date(state.snapshot.generated).toLocaleString("vi-VN")}</div><div>Snapshot timestamp</div></div>\`,
-    \`<div class="stat-card"><div class="stat-k">Strength</div><div class="stat-v mono">\${selected?.strength?.score == null ? "—" : \`\${selected.strength.score}/100\`}</div><div>\${selected?.strength?.label || "No strength label"}\${selected?.strength?.rank ? \` · Rank #\${selected.strength.rank}\` : ""}</div></div>\`,
+    \`<div class="stat-card"><div class="stat-k">Strength</div><div class="stat-v mono">\${selected?.strength?.score == null ? "鈥? : \`\${selected.strength.score}/100\`}</div><div>\${selected?.strength?.label || "No strength label"}\${selected?.strength?.rank ? \` 路 Rank #\${selected.strength.rank}\` : ""}</div></div>\`,
   ].join("");
 }
 
@@ -452,11 +499,11 @@ function renderBoard() {
         \${state.snapshot.stocks.map((stock) => {
           const selected = stock.ticker === state.selectedTicker ? "active" : "";
           const observedPct = stock.observedCanSlimMax > 0
-            ? \`\${stock.observedCanSlimTotal}/\${stock.observedCanSlimMax} · \${stock.coveragePct}%\`
-            : \`N/A · \${stock.coveragePct}%\`;
+            ? \`\${stock.observedCanSlimTotal}/\${stock.observedCanSlimMax} 路 \${stock.coveragePct}%\`
+            : \`N/A 路 \${stock.coveragePct}%\`;
           const strengthText = stock.strength?.score == null
             ? "N/A"
-            : \`\${stock.strength.score}/100 · #\${stock.strength?.rank || "—"}\`;
+            : \`\${stock.strength.score}/100 路 #\${stock.strength?.rank || "鈥?}\`;
           return \`
             <tr class="\${selected}" data-ticker="\${stock.ticker}">
               <td><strong>\${stock.ticker}</strong><div style="color:var(--muted);font-size:12px;margin-top:4px">\${stock.name}</div></td>
@@ -493,7 +540,7 @@ function renderFocus() {
   const tickerNav = state.snapshot.stocks.map((item) => \`
     <button class="sheet-tab \${item.ticker === stock.ticker ? "active" : ""}" data-sheet-nav="\${item.ticker}">
       <div class="sheet-tab-ticker">\${item.ticker}</div>
-      <div class="sheet-tab-meta">\${item.changePct >= 0 ? "+" : ""}\${item.changePct}% · \${item.confidence}/10</div>
+      <div class="sheet-tab-meta">\${item.changePct >= 0 ? "+" : ""}\${item.changePct}% 路 \${item.confidence}/10</div>
     </button>
   \`).join("");
   const positives = stock.explain.driversPositive.length
@@ -510,7 +557,7 @@ function renderFocus() {
       <div class="factor-card" data-status="\${detail.status}">
         <div class="factor-head">
           <div>
-            <div class="factor-name">\${factor} · \${detail.factorLabel}</div>
+            <div class="factor-name">\${factor} 路 \${detail.factorLabel}</div>
             <div class="factor-metric">\${detail.metricLabel}</div>
           </div>
           <div class="factor-score" data-tone="\${factorScoreTone(detail)}">\${detail.score == null ? "?" : \`\${detail.score}/10\`}</div>
@@ -522,7 +569,7 @@ function renderFocus() {
         </div>
         <div class="factor-reason">\${detail.reason}</div>
         <div class="factor-bands">
-          \${detail.bands.map((band) => \`<span class="factor-band \${band.active ? "active" : ""}">\${band.score} · \${band.label}</span>\`).join("")}
+          \${detail.bands.map((band) => \`<span class="factor-band \${band.active ? "active" : ""}">\${band.score} 路 \${band.label}</span>\`).join("")}
         </div>
       </div>
     \`
@@ -543,7 +590,7 @@ function renderFocus() {
     : \`<span class="chip">No fresh Wyckoff trigger</span>\`;
   const primaryPlan = wyckoff.entry?.plans?.[0] || null;
   const primaryPlanText = primaryPlan
-    ? \`Entry \${fNum(primaryPlan.price)} · Stop \${fNum(primaryPlan.stop)}\`
+    ? \`Entry \${fNum(primaryPlan.price)} 路 Stop \${fNum(primaryPlan.stop)}\`
     : (wyckoff.entry?.summary || "No active long entry.");
   const invalidationText = wyckoff.entry?.invalidation || "No invalidation level recorded.";
   const reasoning = renderWyckoffReasoning(wyckoff);
@@ -552,6 +599,7 @@ function renderFocus() {
   const actionSteps = renderActionItems(wyckoff.action?.steps, "No action steps recorded.");
   const avoidSteps = renderActionItems(wyckoff.action?.shouldAvoid, "No avoid list recorded.");
   const testItems = renderWyckoffTests(wyckoff);
+  const bankBasket = stock.sector === "BANK" ? bankBasketSummary(state.snapshot) : null;
 
   document.getElementById("focusPanel").innerHTML = \`
     <div class="sheet-nav-wrap">
@@ -560,31 +608,39 @@ function renderFocus() {
     </div>
 
     <div class="eyebrow">Main Sheet</div>
-    <div class="panel-title">\${stock.ticker} · \${stock.name}</div>
-    <div class="meta-copy">\${stock.sector} · \${new Date(stock.scanTime).toLocaleString("vi-VN")} · \${stock.market.session.replace(/_/g, " ")} market</div>
+    <div class="panel-title">\${stock.ticker} 路 \${stock.name}</div>
+    <div class="meta-copy">\${stock.sector} 路 \${new Date(stock.scanTime).toLocaleString("vi-VN")} 路 \${stock.market.session.replace(/_/g, " ")} market</div>
+
+    \${bankBasket ? \`
+    <div class="detail-grid" style="margin-top:14px">
+      <div class="stat-card"><div class="stat-k">BANK Basket</div><div class="stat-v mono">\${bankBasket.advancers} / \${bankBasket.decliners}</div><div>Advancers / decliners in current bank basket</div></div>
+      <div class="stat-card"><div class="stat-k">BANK Avg Change</div><div class="stat-v mono">\${bankBasket.avgChangePct >= 0 ? "+" : ""}\${bankBasket.avgChangePct}%</div><div>Average change across bank names</div></div>
+      <div class="stat-card"><div class="stat-k">BANK Avg RS</div><div class="stat-v mono">\${fPct(bankBasket.avgRsVsVNINDEX3m, 100)}</div><div>Average RS vs VNINDEX</div></div>
+      <div class="stat-card"><div class="stat-k">Leader / Laggard</div><div>\${bankBasket.leader?.ticker || "n/a"} / \${bankBasket.laggard?.ticker || "n/a"}</div><div>\${bankBasket.leader ? \`\${fPct(bankBasket.leader.relative?.vsVNINDEX3m, 100)} vs \${fPct(bankBasket.laggard?.relative?.vsVNINDEX3m, 100)}\` : "Current bank basket leadership"}</div></div>
+    </div>\` : ""}
 
     <div class="focus-hero">
       <div class="hero-slab">
         <div class="hero-price mono">\${fNum(stock.price)}</div>
-        <div class="\${stock.changePct >= 0 ? "tone-good" : "tone-bad"}">\${stock.changePct >= 0 ? "+" : ""}\${stock.changePct}% · \${fK(stock.tradedValue)} traded · \${fNum(stock.volume)} volume</div>
+        <div class="\${stock.changePct >= 0 ? "tone-good" : "tone-bad"}">\${stock.changePct >= 0 ? "+" : ""}\${stock.changePct}% 路 \${fK(stock.tradedValue)} traded 路 \${fNum(stock.volume)} volume</div>
         <div class="chip-row" style="margin-top:12px">
           <span class="signal-chip" data-signal="\${stock.signal}">\${signalLabel(stock.signal)}</span>
           <span class="chip">Strength \${stock.strength?.score == null ? "N/A" : \`\${stock.strength.score}/100\`}</span>
-          <span class="chip">\${stock.strength?.label || "n/a"}\${stock.strength?.rank ? \` · #\${stock.strength.rank}\` : ""}</span>
-          <span class="quality-chip" data-tone="\${qualityTone(stock.quality.label)}">\${stock.quality.label} · \${stock.coveragePct}%</span>
+          <span class="chip">\${stock.strength?.label || "n/a"}\${stock.strength?.rank ? \` 路 #\${stock.strength.rank}\` : ""}</span>
+          <span class="quality-chip" data-tone="\${qualityTone(stock.quality.label)}">\${stock.quality.label} 路 \${stock.coveragePct}%</span>
           <span class="chip">Observed \${stock.observedCanSlimTotal}/\${stock.observedCanSlimMax || 0}</span>
           <span class="breakout-chip" data-state="\${stock.breakout?.state || "not_ready"}">\${breakoutLabel(stock.breakout?.state)}</span>
           <span class="chip">RS vs VNINDEX \${fPct(stock.relative.vsVNINDEX3m, 100)}</span>
           <span class="chip">\${wyckoff.stage || stock.wyckoffStage || stock.wyckoffPhase || "Wyckoff n/a"}</span>
-          <span class="chip">Wyckoff \${wyckoff.confidence || "—"}/100</span>
+          <span class="chip">Wyckoff \${wyckoff.confidence || "鈥?}/100</span>
         </div>
       </div>
       <div class="stack" style="gap:12px">
         <div class="stat-card"><div class="stat-k">Rule Strength</div><div class="stat-v mono">\${stock.confidence}/10</div><div>\${stock.explain.ruleStrength.label}</div></div>
-        <div class="stat-card"><div class="stat-k">CAN SLIM Strength</div><div class="stat-v mono">\${stock.strength?.score == null ? "—" : \`\${stock.strength.score}/100\`}</div><div>\${stock.strength?.label || "No strength label"}\${stock.strength?.rank ? \` · Rank #\${stock.strength.rank}\` : ""}</div></div>
+        <div class="stat-card"><div class="stat-k">CAN SLIM Strength</div><div class="stat-v mono">\${stock.strength?.score == null ? "鈥? : \`\${stock.strength.score}/100\`}</div><div>\${stock.strength?.label || "No strength label"}\${stock.strength?.rank ? \` 路 Rank #\${stock.strength.rank}\` : ""}</div></div>
         <div class="stat-card"><div class="stat-k">Wyckoff Action</div><div class="stat-v">\${wyckoff.action?.label || "No action"}</div><div>\${wyckoff.action?.summary || wyckoff.entry?.summary || "No Wyckoff action summary."}</div></div>
-        <div class="stat-card"><div class="stat-k">Primary Entry</div><div>\${primaryPlanText}</div><div>\${primaryPlan ? \`T1 \${fNum(primaryPlan.target1)} · T2 \${fNum(primaryPlan.target2)}\` : invalidationText}</div></div>
-        <div class="stat-card"><div class="stat-k">Breakout Readiness</div><div class="stat-v">\${breakoutLabel(stock.breakout?.state)}</div><div>\${stock.breakout?.distancePct == null ? stock.breakout?.reason || "No trigger available." : \`\${stock.breakout.distancePct >= 0 ? "+" : ""}\${stock.breakout.distancePct}% vs \${fNum(stock.breakout.triggerPrice)} · \${stock.breakout.reason}\`}</div></div>
+        <div class="stat-card"><div class="stat-k">Primary Entry</div><div>\${primaryPlanText}</div><div>\${primaryPlan ? \`T1 \${fNum(primaryPlan.target1)} 路 T2 \${fNum(primaryPlan.target2)}\` : invalidationText}</div></div>
+        <div class="stat-card"><div class="stat-k">Breakout Readiness</div><div class="stat-v">\${breakoutLabel(stock.breakout?.state)}</div><div>\${stock.breakout?.distancePct == null ? stock.breakout?.reason || "No trigger available." : \`\${stock.breakout.distancePct >= 0 ? "+" : ""}\${stock.breakout.distancePct}% vs \${fNum(stock.breakout.triggerPrice)} 路 \${stock.breakout.reason}\`}</div></div>
         <div class="stat-card"><div class="stat-k">Delta</div><div>\${stock.delta}</div></div>
       </div>
     </div>
@@ -598,9 +654,9 @@ function renderFocus() {
           <div class="kv"><div class="k">RS vs VNINDEX</div><div class="v mono">\${fPct(stock.relative.vsVNINDEX3m, 100)}</div></div>
           <div class="kv"><div class="k">RS vs VN30</div><div class="v mono">\${fPct(stock.relative.vsVN303m, 100)}</div></div>
           <div class="kv"><div class="k">Vol x Avg20</div><div class="v mono">\${stock.volRatio}x</div></div>
-          <div class="kv"><div class="k">RSI14</div><div class="v mono">\${stock.rsi14 ?? "—"}</div></div>
-          <div class="kv"><div class="k">PE / PB</div><div class="v mono">\${stock.pe ?? "—"} / \${stock.pb ?? "—"}</div></div>
-          <div class="kv"><div class="k">ROE</div><div class="v mono">\${stock.roe ?? "—"}</div></div>
+          <div class="kv"><div class="k">RSI14</div><div class="v mono">\${stock.rsi14 ?? "鈥?}</div></div>
+          <div class="kv"><div class="k">PE / PB</div><div class="v mono">\${stock.pe ?? "鈥?} / \${stock.pb ?? "鈥?}</div></div>
+          <div class="kv"><div class="k">ROE</div><div class="v mono">\${stock.roe ?? "鈥?}</div></div>
         </div>
       </div>
 
@@ -610,7 +666,7 @@ function renderFocus() {
           <div class="kv"><div class="k">Phase</div><div class="v">\${wyckoff.label || stock.wyckoffPhase || "N/A"}</div></div>
           <div class="kv"><div class="k">Bias</div><div class="v">\${wyckoff.bias || stock.wyckoffBias || "N/A"}</div></div>
           <div class="kv"><div class="k">Support / Resistance</div><div class="v mono">\${fNum(wyckoff.levels?.support)} / \${fNum(wyckoff.levels?.resistance)}</div></div>
-          <div class="kv"><div class="k">Range Position</div><div class="v">\${wyckoff.levels?.pricePositionPct == null ? "N/A" : \`\${wyckoff.levels.pricePositionPct}% · \${wyckoff.context?.rangeLocation || ""}\`}</div></div>
+          <div class="kv"><div class="k">Range Position</div><div class="v">\${wyckoff.levels?.pricePositionPct == null ? "N/A" : \`\${wyckoff.levels.pricePositionPct}% 路 \${wyckoff.context?.rangeLocation || ""}\`}</div></div>
           <div class="kv"><div class="k">Trend Bias</div><div class="v">\${wyckoff.context?.trendBias || "N/A"}</div></div>
           <div class="kv"><div class="k">Invalidation</div><div class="v">\${invalidationText}</div></div>
         </div>
@@ -698,6 +754,7 @@ function renderFocus() {
 
 renderHeader();
 renderMarket();
+renderSectorPanel();
 renderPublishStats();
 renderBoard();
 renderFocus();
@@ -733,3 +790,6 @@ function publishSnapshot(snapshot, options = {}) {
 }
 
 module.exports = { publishSnapshot };
+
+
+

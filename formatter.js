@@ -499,21 +499,36 @@ function sectorSummary(results) {
   const map = new Map();
   for (const stock of results) {
     if (!map.has(stock.sector)) {
-      map.set(stock.sector, { sector: stock.sector, count: 0, turnover: 0, changeValues: [], scoreValues: [] });
+      map.set(stock.sector, {
+        sector: stock.sector,
+        count: 0,
+        turnover: 0,
+        changeValues: [],
+        scoreValues: [],
+        rsValues: [],
+        advancers: 0,
+        decliners: 0,
+      });
     }
     const row = map.get(stock.sector);
     row.count += 1;
     row.turnover += stock.tradedValue || 0;
     if (stock.changePct != null) row.changeValues.push(stock.changePct);
     if (stock.observedCanSlimMax > 0) row.scoreValues.push(stock.observedCanSlimTotal / stock.observedCanSlimMax);
+    if (stock.relative?.vsVNINDEX3m != null) row.rsValues.push(stock.relative.vsVNINDEX3m);
+    if ((stock.changePct || 0) > 0) row.advancers += 1;
+    else if ((stock.changePct || 0) < 0) row.decliners += 1;
   }
 
   const sectors = Array.from(map.values()).map((row) => ({
     sector: row.sector,
     count: row.count,
     turnover: row.turnover,
+    advancers: row.advancers,
+    decliners: row.decliners,
     avgChangePct: row.changeValues.length ? +(average(row.changeValues)).toFixed(2) : null,
     avgObservedScorePct: row.scoreValues.length ? +(average(row.scoreValues) * 100).toFixed(1) : null,
+    avgRsVsVNINDEX3m: row.rsValues.length ? +(average(row.rsValues)).toFixed(4) : null,
   })).sort((a, b) => (b.avgChangePct || -999) - (a.avgChangePct || -999));
 
   return {

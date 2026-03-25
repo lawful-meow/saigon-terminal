@@ -1,0 +1,1687 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Saigon Terminal</title>
+<style>
+:root{
+  --bg:#071014;
+  --bg-2:#0d171d;
+  --panel:#101d24;
+  --panel-2:#14252f;
+  --panel-3:#182d38;
+  --line:#26404c;
+  --text:#f3f0e9;
+  --muted:#b9c7ce;
+  --subtle:#80939d;
+  --accent:#5ce1b8;
+  --accent-2:#7fd0ff;
+  --good:#57df94;
+  --bad:#ff8573;
+  --warn:#ffc869;
+  --neutral:#8fa7b5;
+  --shadow:0 24px 60px rgba(0,0,0,.28);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%}
+body{
+  font-family:"IBM Plex Sans","Avenir Next","Segoe UI",sans-serif;
+  color:var(--text);
+  background:
+    radial-gradient(circle at top left, rgba(92,225,184,.11), transparent 26%),
+    radial-gradient(circle at 85% 0%, rgba(127,208,255,.12), transparent 22%),
+    linear-gradient(180deg, #061014 0%, #081117 38%, #071014 100%);
+}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.app{
+  min-height:100vh;
+  display:grid;
+  grid-template-rows:auto 1fr auto;
+}
+.topbar{
+  position:sticky;
+  top:0;
+  z-index:20;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:16px;
+  padding:18px 24px;
+  border-bottom:1px solid var(--line);
+  background:rgba(7,16,20,.92);
+  backdrop-filter:blur(18px);
+}
+.brand{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  flex-wrap:wrap;
+}
+.brand-mark{
+  display:grid;
+  gap:2px;
+}
+.brand-title{
+  font-size:24px;
+  font-weight:800;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+}
+.brand-title span:first-child{color:var(--text)}
+.brand-title span:last-child{color:var(--accent)}
+.brand-sub{
+  font-size:12px;
+  color:var(--muted);
+  letter-spacing:.12em;
+  text-transform:uppercase;
+}
+.status-line{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.pill,
+.btn{
+  min-height:40px;
+  border-radius:999px;
+  border:1px solid var(--line);
+}
+.pill{
+  display:inline-flex;
+  align-items:center;
+  padding:0 14px;
+  background:rgba(20,37,47,.92);
+  color:var(--muted);
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:.05em;
+  text-transform:uppercase;
+}
+.pill[data-tone="ok"]{border-color:rgba(92,225,184,.28);color:#d9fff0;background:rgba(92,225,184,.10)}
+.pill[data-tone="warn"]{border-color:rgba(255,200,105,.28);color:#ffeabf;background:rgba(255,200,105,.10)}
+.pill[data-tone="danger"]{border-color:rgba(255,133,115,.3);color:#ffd5cf;background:rgba(255,133,115,.12)}
+.btn{
+  padding:0 16px;
+  background:linear-gradient(180deg, rgba(127,208,255,.14), rgba(127,208,255,.05));
+  color:#e7f7ff;
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  transition:transform .16s ease,border-color .16s ease,background .16s ease;
+}
+.btn:hover{transform:translateY(-1px);border-color:rgba(127,208,255,.48)}
+.btn:disabled{opacity:.45;cursor:default;transform:none}
+.btn-primary{
+  border-color:rgba(92,225,184,.32);
+  background:linear-gradient(180deg, rgba(92,225,184,.16), rgba(92,225,184,.05));
+  color:#dcfff3;
+}
+.btn-warn{
+  border-color:rgba(255,200,105,.32);
+  background:linear-gradient(180deg, rgba(255,200,105,.18), rgba(255,200,105,.05));
+  color:#fff1ce;
+}
+.workspace{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 390px;
+  gap:18px;
+  padding:18px;
+  align-items:start;
+}
+.main-stack{
+  display:grid;
+  gap:16px;
+  min-width:0;
+}
+.side-rail{
+  display:grid;
+  gap:16px;
+  align-content:start;
+  position:sticky;
+  top:86px;
+}
+.panel{
+  border:1px solid var(--line);
+  border-radius:24px;
+  background:linear-gradient(180deg, rgba(16,29,36,.96), rgba(12,22,28,.96));
+  box-shadow:var(--shadow);
+}
+.focus-panel{
+  overflow:hidden;
+  min-height:420px;
+}
+.market-panel{
+  padding:18px;
+  display:grid;
+  gap:14px;
+}
+.panel-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:12px;
+  flex-wrap:wrap;
+}
+.eyebrow{
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  color:#d2fff0;
+}
+.panel-title{
+  font-size:22px;
+  font-weight:800;
+  letter-spacing:.02em;
+}
+.panel-copy{
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.6;
+}
+.market-grid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:12px;
+}
+.market-card{
+  padding:14px;
+  border:1px solid rgba(40,69,81,.7);
+  border-radius:18px;
+  background:linear-gradient(180deg, rgba(21,37,47,.96), rgba(13,24,31,.96));
+  min-height:110px;
+}
+.market-k{
+  font-size:11px;
+  color:var(--subtle);
+  text-transform:uppercase;
+  letter-spacing:.12em;
+  margin-bottom:8px;
+}
+.market-v{
+  font-size:24px;
+  font-weight:800;
+  line-height:1.05;
+  font-variant-numeric:tabular-nums;
+}
+.market-s{
+  margin-top:8px;
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.5;
+}
+.market-mini{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:10px;
+}
+.mini-chip{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:6px 10px;
+  border-radius:999px;
+  background:rgba(127,208,255,.08);
+  border:1px solid rgba(127,208,255,.18);
+  color:#e3f6ff;
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:.05em;
+}
+.toolbar{
+  padding:16px 18px;
+  display:grid;
+  gap:12px;
+}
+.toolbar-row{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  align-items:center;
+}
+.control,
+.search{
+  min-height:42px;
+  border-radius:14px;
+  border:1px solid rgba(40,69,81,.8);
+  background:rgba(9,18,24,.92);
+  color:var(--text);
+  padding:0 14px;
+}
+.search{
+  flex:1 1 240px;
+}
+.toggle{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:0 14px;
+  min-height:42px;
+  border-radius:14px;
+  border:1px solid rgba(40,69,81,.8);
+  background:rgba(9,18,24,.92);
+  color:var(--muted);
+  font-size:13px;
+  font-weight:700;
+}
+.sort-pills{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.sort-pills button{
+  padding:8px 12px;
+  min-height:auto;
+  border-radius:999px;
+}
+.board-panel{
+  overflow:hidden;
+}
+.board-wrap{
+  overflow:auto;
+}
+table{
+  width:100%;
+  border-collapse:collapse;
+  min-width:1260px;
+}
+thead th{
+  position:sticky;
+  top:0;
+  z-index:5;
+  background:rgba(12,22,28,.98);
+  padding:14px 12px;
+  border-bottom:1px solid var(--line);
+  color:#d9e8ee;
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  text-align:left;
+  white-space:nowrap;
+}
+thead th button{
+  background:none;
+  border:none;
+  color:inherit;
+  font:inherit;
+  letter-spacing:inherit;
+  text-transform:inherit;
+  padding:0;
+}
+tbody tr{
+  border-bottom:1px solid rgba(38,64,76,.7);
+  transition:background .14s ease;
+}
+tbody tr:hover{background:rgba(127,208,255,.05)}
+tbody tr.active{background:rgba(92,225,184,.08)}
+td{
+  padding:14px 12px;
+  font-size:13px;
+  color:var(--text);
+  vertical-align:middle;
+}
+.group-row td{
+  padding:10px 12px;
+  background:rgba(92,225,184,.08);
+  color:#d9fff1;
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+}
+.ticker-cell{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.pin-btn{
+  width:28px;
+  height:28px;
+  border-radius:999px;
+  border:1px solid rgba(40,69,81,.8);
+  background:rgba(9,18,24,.9);
+  color:var(--subtle);
+  font-size:13px;
+}
+.pin-btn.active{
+  border-color:rgba(255,200,105,.38);
+  color:var(--warn);
+  background:rgba(255,200,105,.12);
+}
+.ticker-main{display:grid;gap:3px}
+.ticker-symbol{
+  font-size:15px;
+  font-weight:800;
+  letter-spacing:.04em;
+}
+.ticker-name{
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.4;
+}
+.mono{font-family:"IBM Plex Mono","SFMono-Regular","Menlo",monospace;font-variant-numeric:tabular-nums}
+.tone-good{color:var(--good)}
+.tone-bad{color:var(--bad)}
+.tone-warn{color:var(--warn)}
+.tone-neutral{color:var(--muted)}
+.score-chip,
+.signal-chip,
+.quality-chip{
+  display:inline-flex;
+  align-items:center;
+  min-height:28px;
+  padding:0 10px;
+  border-radius:999px;
+  border:1px solid rgba(40,69,81,.8);
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+}
+.score-chip{background:rgba(92,225,184,.10);color:#ddfff3}
+.quality-chip[data-tone="high"]{background:rgba(92,225,184,.10);color:#ddfff3}
+.quality-chip[data-tone="medium"]{background:rgba(255,200,105,.10);color:#ffecc7}
+.quality-chip[data-tone="low"]{background:rgba(255,133,115,.12);color:#ffd4ce}
+.signal-chip[data-signal="STRONG_BUY"],.signal-chip[data-signal="BUY"]{background:rgba(92,225,184,.10);color:#ddfff3}
+.signal-chip[data-signal="HOLD"]{background:rgba(127,208,255,.10);color:#e3f6ff}
+.signal-chip[data-signal="SELL"],.signal-chip[data-signal="STRONG_SELL"]{background:rgba(255,133,115,.12);color:#ffd4ce}
+.warning-stack{
+  display:grid;
+  gap:4px;
+}
+.warning-line{
+  font-size:12px;
+  color:var(--muted);
+  line-height:1.45;
+}
+.detail-scroll{
+  overflow:auto;
+  padding:18px;
+  display:grid;
+  gap:16px;
+}
+.detail-empty{
+  min-height:320px;
+  display:grid;
+  place-items:center;
+  text-align:center;
+  color:var(--muted);
+  padding:32px;
+}
+.detail-head{
+  display:grid;
+  gap:12px;
+}
+.sheet-nav-wrap{
+  display:grid;
+  gap:10px;
+}
+.sheet-nav-label{
+  font-size:11px;
+  color:var(--subtle);
+  text-transform:uppercase;
+  letter-spacing:.16em;
+}
+.sheet-nav{
+  display:flex;
+  gap:8px;
+  overflow:auto;
+  padding-bottom:2px;
+}
+.sheet-nav::-webkit-scrollbar{height:8px}
+.sheet-nav::-webkit-scrollbar-thumb{
+  background:rgba(40,69,81,.8);
+  border-radius:999px;
+}
+.sheet-tab{
+  min-width:132px;
+  padding:10px 12px;
+  border-radius:16px;
+  border:1px solid rgba(40,69,81,.82);
+  background:rgba(10,18,24,.92);
+  color:var(--text);
+  text-align:left;
+  display:grid;
+  gap:4px;
+  flex:0 0 auto;
+}
+.sheet-tab.active{
+  border-color:rgba(92,225,184,.38);
+  background:rgba(92,225,184,.10);
+  box-shadow:inset 0 0 0 1px rgba(92,225,184,.14);
+}
+.sheet-tab-ticker{
+  font-size:13px;
+  font-weight:800;
+  letter-spacing:.04em;
+}
+.sheet-tab-meta{
+  font-size:11px;
+  color:var(--muted);
+  line-height:1.4;
+}
+.detail-title{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  align-items:flex-start;
+}
+.detail-hero{
+  display:grid;
+  grid-template-columns:minmax(0,1.3fr) minmax(260px,.7fr);
+  gap:14px;
+}
+.hero-slab{
+  padding:16px;
+  border-radius:20px;
+  border:1px solid rgba(40,69,81,.82);
+  background:
+    radial-gradient(circle at 0% 0%, rgba(92,225,184,.12), transparent 28%),
+    radial-gradient(circle at 100% 100%, rgba(127,208,255,.12), transparent 30%),
+    rgba(11,20,26,.92);
+}
+.hero-price{
+  font-size:40px;
+  font-weight:900;
+  line-height:1;
+  letter-spacing:-.03em;
+  margin:8px 0 10px;
+}
+.hero-meta{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:12px;
+}
+.hero-stack{
+  display:grid;
+  gap:12px;
+}
+.detail-name{
+  font-size:28px;
+  font-weight:800;
+  letter-spacing:.03em;
+}
+.detail-sub{
+  margin-top:4px;
+  color:var(--muted);
+  font-size:13px;
+}
+.detail-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
+.stat-card{
+  padding:12px;
+  border-radius:16px;
+  border:1px solid rgba(40,69,81,.8);
+  background:rgba(11,20,26,.9);
+}
+.stat-k{
+  font-size:11px;
+  color:var(--subtle);
+  text-transform:uppercase;
+  letter-spacing:.12em;
+  margin-bottom:6px;
+}
+.stat-v{
+  font-size:20px;
+  font-weight:800;
+}
+.section{
+  padding:14px;
+  border-radius:18px;
+  border:1px solid rgba(40,69,81,.78);
+  background:rgba(11,20,26,.88);
+}
+.section h3{
+  font-size:12px;
+  color:#d6fff0;
+  text-transform:uppercase;
+  letter-spacing:.16em;
+  margin-bottom:12px;
+}
+.kv-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
+.kv{
+  display:grid;
+  gap:4px;
+}
+.kv .k{
+  color:var(--subtle);
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.12em;
+}
+.kv .v{
+  color:var(--text);
+  font-size:14px;
+  line-height:1.45;
+}
+.driver-list{
+  display:grid;
+  gap:8px;
+}
+.driver{
+  padding:10px 12px;
+  border-radius:14px;
+  background:rgba(20,37,47,.9);
+  border:1px solid rgba(40,69,81,.7);
+  font-size:13px;
+  line-height:1.5;
+}
+.factor-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+}
+.factor-card{
+  padding:12px;
+  border-radius:16px;
+  border:1px solid rgba(40,69,81,.82);
+  background:rgba(15,26,33,.92);
+  display:grid;
+  gap:10px;
+}
+.factor-card[data-status="unknown"]{
+  border-color:rgba(255,200,105,.28);
+  background:rgba(45,34,18,.20);
+}
+.factor-head{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  align-items:flex-start;
+}
+.factor-name{
+  font-size:13px;
+  font-weight:800;
+  letter-spacing:.03em;
+}
+.factor-metric{
+  margin-top:4px;
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.4;
+}
+.factor-score{
+  min-width:62px;
+  padding:8px 10px;
+  border-radius:14px;
+  border:1px solid rgba(40,69,81,.8);
+  background:rgba(9,18,24,.9);
+  font-size:13px;
+  font-weight:800;
+  text-align:center;
+}
+.factor-score[data-tone="strong"]{
+  border-color:rgba(92,225,184,.34);
+  color:#ddfff3;
+}
+.factor-score[data-tone="weak"]{
+  border-color:rgba(255,133,115,.34);
+  color:#ffd4ce;
+}
+.factor-score[data-tone="unknown"]{
+  border-color:rgba(255,200,105,.34);
+  color:#ffecc7;
+}
+.factor-meta{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.factor-reason{
+  font-size:13px;
+  color:var(--text);
+  line-height:1.55;
+}
+.factor-bands{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+}
+.factor-band{
+  display:inline-flex;
+  align-items:center;
+  min-height:26px;
+  padding:0 8px;
+  border-radius:999px;
+  border:1px solid rgba(40,69,81,.8);
+  color:var(--muted);
+  font-size:11px;
+  letter-spacing:.04em;
+}
+.factor-band.active{
+  border-color:rgba(92,225,184,.34);
+  background:rgba(92,225,184,.10);
+  color:#ddfff3;
+}
+.history-strip{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.history-chip{
+  min-width:86px;
+  padding:8px 10px;
+  border-radius:14px;
+  background:rgba(20,37,47,.9);
+  border:1px solid rgba(40,69,81,.7);
+}
+.history-chip .ts{
+  color:var(--subtle);
+  font-size:10px;
+  margin-bottom:5px;
+  text-transform:uppercase;
+  letter-spacing:.1em;
+}
+.history-chip .sv{
+  font-size:12px;
+  line-height:1.5;
+}
+.drawer{
+  position:fixed;
+  inset:0 0 0 auto;
+  width:min(520px,100vw);
+  background:rgba(7,16,20,.98);
+  border-left:1px solid var(--line);
+  box-shadow:-26px 0 60px rgba(0,0,0,.36);
+  transform:translateX(100%);
+  transition:transform .2s ease;
+  z-index:50;
+  display:flex;
+  flex-direction:column;
+}
+.drawer.open{transform:translateX(0)}
+.drawer-head{
+  padding:18px 20px;
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  align-items:center;
+  border-bottom:1px solid var(--line);
+}
+.drawer-body{
+  flex:1;
+  overflow:auto;
+  padding:20px;
+}
+.utility-panel{
+  padding:18px;
+  display:grid;
+  gap:14px;
+}
+.utility-grid{
+  display:grid;
+  gap:10px;
+}
+.utility-note{
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.6;
+}
+.publish-link{
+  color:#d9fff1;
+  text-decoration:none;
+  border-bottom:1px dotted rgba(217,255,241,.4);
+}
+.prompt-box{
+  min-height:100%;
+  padding:16px;
+  border-radius:18px;
+  border:1px solid rgba(40,69,81,.8);
+  background:rgba(11,20,26,.92);
+  color:#dbe7ec;
+  font-family:"IBM Plex Mono","SFMono-Regular","Menlo",monospace;
+  font-size:12px;
+  white-space:pre-wrap;
+  line-height:1.75;
+}
+.empty-state{
+  min-height:320px;
+  display:grid;
+  place-items:center;
+  text-align:center;
+  color:var(--muted);
+  padding:28px;
+}
+.empty-title{
+  font-size:22px;
+  font-weight:800;
+  color:var(--text);
+  margin-bottom:10px;
+}
+.footer{
+  display:flex;
+  justify-content:flex-end;
+  gap:12px;
+  flex-wrap:wrap;
+  padding:12px 18px;
+  border-top:1px solid var(--line);
+  background:rgba(7,16,20,.9);
+  color:var(--muted);
+  font-size:11px;
+  letter-spacing:.04em;
+}
+@media (max-width:1280px){
+  .detail-hero{grid-template-columns:1fr}
+}
+@media (max-width:1080px){
+  .workspace{grid-template-columns:1fr}
+  .side-rail{position:static}
+  .market-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:760px){
+  .topbar{padding:16px}
+  .workspace{padding:12px}
+  .market-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .detail-grid,.kv-grid,.detail-hero,.factor-grid{grid-template-columns:1fr}
+  .brand-title{font-size:20px}
+  .panel-title{font-size:18px}
+  .hero-price{font-size:32px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">
+        <div class="brand-title"><span>SAIGON</span> <span>TERMINAL</span></div>
+        <div class="brand-sub">Vietnam equities monitor</div>
+      </div>
+      <span class="pill" data-tone="ok" id="status">Ready</span>
+    </div>
+    <div class="status-line">
+      <button class="btn btn-warn" id="btnTest">Test Feed</button>
+      <button class="btn btn-primary" id="btnScan">Scan Universe</button>
+      <button class="btn" id="btnPublish">Publish</button>
+      <button class="btn" id="btnPrompt">Prompt Drawer</button>
+    </div>
+  </header>
+
+  <main class="workspace">
+    <div class="main-stack">
+      <section class="panel focus-panel">
+        <div class="detail-scroll" id="detailPanel">
+          <div class="detail-empty">
+            <div>
+              <div class="empty-title">No selection</div>
+              <div>Run a scan, then the active ticker becomes the main sheet here.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel toolbar">
+        <div class="toolbar-row">
+          <input class="search" id="searchInput" type="search" placeholder="Filter by ticker, name, or warning">
+          <select class="control" id="sectorFilter"></select>
+          <select class="control" id="groupBy">
+            <option value="none">Ungrouped</option>
+            <option value="sector">Group by Sector</option>
+          </select>
+          <label class="toggle"><input type="checkbox" id="pinnedOnly"> Pins only</label>
+        </div>
+        <div class="toolbar-row">
+          <div class="sort-pills">
+            <button class="btn" data-quick-sort="observedScore">Observed Score</button>
+            <button class="btn" data-quick-sort="rs">RS</button>
+            <button class="btn" data-quick-sort="volume">Volume</button>
+            <button class="btn" data-quick-sort="value">Value</button>
+            <button class="btn" data-quick-sort="ruleStrength">Rule Strength</button>
+            <button class="btn" data-quick-sort="coverage">Low Coverage</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel board-panel">
+        <div class="board-wrap" id="boardWrap">
+          <div class="empty-state">
+            <div>
+              <div class="empty-title">Universe idle</div>
+              <div>Run a scan to populate the ranked board, then drill into a ticker in the main sheet above.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <aside class="side-rail">
+      <section class="panel market-panel">
+        <div class="panel-head">
+          <div>
+            <div class="eyebrow">Market Rail</div>
+            <div class="panel-title">Benchmarks and market context</div>
+          </div>
+          <div class="panel-copy" id="marketMeta">No scan loaded yet.</div>
+        </div>
+        <div class="market-grid" id="marketGrid"></div>
+      </section>
+
+      <section class="panel utility-panel">
+        <div class="panel-head">
+          <div>
+            <div class="eyebrow">Publish</div>
+            <div class="panel-title">Static export</div>
+          </div>
+          <div class="panel-copy" id="publishMeta">Export the current snapshot to `docs/`.</div>
+        </div>
+        <div class="utility-grid" id="utilityGrid">
+          <div class="stat-card">
+            <div class="stat-k">Target</div>
+            <div class="stat-v mono">docs/index.html</div>
+            <div>Commit `docs/` and point GitHub Pages at that folder.</div>
+          </div>
+        </div>
+        <div class="utility-note">
+          Exports a standalone page and snapshot JSON for GitHub Pages hosting.
+        </div>
+      </section>
+    </aside>
+  </main>
+
+  <footer class="footer">
+    <span id="footerMeta">Local snapshot terminal</span>
+  </footer>
+</div>
+
+<aside class="drawer" id="promptDrawer">
+  <div class="drawer-head">
+    <div>
+      <div class="eyebrow">Prompt Export</div>
+      <div class="panel-copy" id="promptMeta">Prompt opens after a scan.</div>
+    </div>
+    <div class="status-line">
+      <button class="btn btn-primary" id="copyPrompt">Copy Prompt</button>
+      <button class="btn" id="closePrompt">Close</button>
+    </div>
+  </div>
+  <div class="drawer-body">
+    <div class="prompt-box" id="promptBox">Scan first to prepare prompt export.</div>
+  </div>
+</aside>
+
+<script>
+const STORAGE_KEY = "saigon-terminal-pins";
+const SIGNAL_LABELS = {
+  STRONG_BUY: "Strong Bullish Bias",
+  BUY: "Bullish Bias",
+  HOLD: "Neutral / Mixed",
+  SELL: "Bearish Bias",
+  STRONG_SELL: "Strong Bearish Bias",
+};
+
+const state = {
+  snapshot: null,
+  prompt: "",
+  selectedTicker: null,
+  publishInfo: null,
+  sortKey: "observedScore",
+  sortDir: "desc",
+  sector: "ALL",
+  query: "",
+  pinnedOnly: false,
+  groupBy: "none",
+  pins: loadPins(),
+};
+
+function loadPins() {
+  try {
+    return new Set(JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"));
+  } catch (_) {
+    return new Set();
+  }
+}
+
+function savePins() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(Array.from(state.pins)));
+}
+
+function fNum(n) {
+  if (n == null) return "—";
+  return Number(n).toLocaleString("vi-VN");
+}
+
+function fK(n) {
+  if (n == null) return "—";
+  if (Math.abs(n) >= 1e12) return (n / 1e12).toFixed(1) + "T";
+  if (Math.abs(n) >= 1e9) return (n / 1e9).toFixed(1) + "B";
+  if (Math.abs(n) >= 1e6) return (n / 1e6).toFixed(1) + "M";
+  if (Math.abs(n) >= 1e3) return (n / 1e3).toFixed(1) + "K";
+  return String(n);
+}
+
+function fPct(n, scale = 1, digits = 1) {
+  if (n == null) return "—";
+  const value = Number(n) * scale;
+  return `${value >= 0 ? "+" : ""}${value.toFixed(digits)}%`;
+}
+
+function signalLabel(signal) {
+  return SIGNAL_LABELS[signal] || String(signal || "UNKNOWN").replace(/_/g, " ");
+}
+
+function qualityTone(label) {
+  return label === "high" ? "high" : (label === "medium" ? "medium" : "low");
+}
+
+function factorScoreTone(detail) {
+  if (detail.score == null) return "unknown";
+  return detail.score >= 8 ? "strong" : "weak";
+}
+
+function setStatus(message, tone = "ok") {
+  const el = document.getElementById("status");
+  el.textContent = message;
+  el.dataset.tone = tone;
+}
+
+function buildPrompt(snapshot) {
+  const stocks = snapshot.stocks.map((stock) => {
+    const factors = Object.entries(stock.explain.factorBreakdown)
+      .map(([factor, detail]) => `${factor}:${detail.score == null ? "?" : detail.score}`)
+      .join(" ");
+    return [
+      `▸ ${stock.ticker} (${stock.name}, ${stock.sector})`,
+      `  Price: ${fNum(stock.price)} (${stock.changePct >= 0 ? "+" : ""}${stock.changePct}%) | Value: ${fK(stock.tradedValue)} | Vol ${fK(stock.volume)} (${stock.volRatio}x avg)`,
+      `  Relative: 1W ${fPct(stock.relative.ret1w, 100)} | 1M ${fPct(stock.relative.ret1m, 100)} | 3M ${fPct(stock.relative.ret3m, 100)} | vs VNINDEX ${fPct(stock.relative.vsVNINDEX3m, 100)} | vs VN30 ${fPct(stock.relative.vsVN303m, 100)}`,
+      `  Observed CAN SLIM: ${stock.observedCanSlimTotal}/${stock.observedCanSlimMax || 0} | Coverage ${stock.coveragePct}% [${factors}]`,
+      `  Rule Read: ${stock.explain.ruleRead} | Rule Strength: ${stock.confidence}/10 (${stock.explain.ruleStrength.label})`,
+      `  Positive drivers: ${stock.explain.driversPositive.join("; ") || "—"}`,
+      `  Negative drivers: ${stock.explain.driversNegative.join("; ") || "—"}`,
+      `  Warnings: ${stock.quality.warnings.join("; ") || "—"}`,
+      `  Heuristic levels: Entry ${stock.entry.map(fNum).join("/")} | TP ${stock.tp.map(fNum).join("/")} | SL ${fNum(stock.sl)}`,
+    ].join("\n");
+  }).join("\n\n");
+
+  return `I have ${snapshot.count} Vietnam stocks monitored by my local Saigon Terminal snapshot (${snapshot.generated}).
+
+Rules:
+- VPS is the live market source.
+- KBS enriches fundamentals and ownership when reachable.
+- Missing CAN SLIM factors are unknown, not neutral.
+- Confidence is a rule-strength score, not certainty.
+
+Market:
+- Session: ${snapshot.market.session}
+- Regime: ${snapshot.market.regime}
+- Breadth: ${snapshot.market.breadth.advancers} up / ${snapshot.market.breadth.decliners} down / ${snapshot.market.breadth.unchanged} flat
+- Turnover: ${fK(snapshot.market.turnover)}
+
+Please validate the rule reads, flag weak data coverage, and identify the strongest and weakest setups.
+
+${stocks}`;
+}
+
+function updatePrompt(snapshot) {
+  state.prompt = snapshot ? buildPrompt(snapshot) : "";
+  document.getElementById("promptBox").textContent = state.prompt || "Scan first to prepare prompt export.";
+  document.getElementById("promptMeta").textContent = state.prompt
+    ? `${state.prompt.length.toLocaleString("vi-VN")} chars`
+    : "Prompt opens after a scan.";
+}
+
+function renderUtility() {
+  const meta = document.getElementById("publishMeta");
+  const grid = document.getElementById("utilityGrid");
+  const selected = state.snapshot?.stocks?.find((stock) => stock.ticker === state.selectedTicker) || null;
+  const publishedAt = state.publishInfo?.publishedAt
+    ? new Date(state.publishInfo.publishedAt).toLocaleString("vi-VN")
+    : null;
+
+  meta.textContent = publishedAt
+    ? `Published ${publishedAt}`
+    : "Export the current snapshot to `docs/`.";
+
+  grid.innerHTML = [
+    `
+      <div class="stat-card">
+        <div class="stat-k">Focus Ticker</div>
+        <div class="stat-v">${selected ? selected.ticker : "—"}</div>
+        <div>${selected ? `${selected.explain.ruleRead} · ${selected.confidence}/10` : "Pick a row to make it the main sheet."}</div>
+      </div>
+    `,
+    `
+      <div class="stat-card">
+        <div class="stat-k">Snapshot</div>
+        <div class="stat-v mono">${state.snapshot?.count ?? 0}</div>
+        <div>${state.snapshot ? "rows in current universe snapshot" : "No active snapshot yet"}</div>
+      </div>
+    `,
+    `
+      <div class="stat-card">
+        <div class="stat-k">Published</div>
+        <div class="stat-v mono">${publishedAt || "—"}</div>
+        <div>${publishedAt ? "Latest static export on disk" : "No published build yet"}</div>
+      </div>
+    `,
+    `
+      <div class="stat-card">
+        <div class="stat-k">Publish Target</div>
+        <div class="stat-v mono">docs/index.html</div>
+        <div>${state.publishInfo?.previewPath
+          ? `<a class="publish-link" href="${state.publishInfo.previewPath}" target="_blank" rel="noreferrer">Open local preview</a>`
+          : "Use GitHub Pages with `/docs` as the publish source."}</div>
+      </div>
+    `,
+  ].join("");
+}
+
+function renderMarket(snapshot) {
+  const market = snapshot?.market;
+  const grid = document.getElementById("marketGrid");
+  const meta = document.getElementById("marketMeta");
+
+  if (!market) {
+    grid.innerHTML = "";
+    meta.textContent = "No scan loaded yet.";
+    return;
+  }
+
+  meta.textContent = `As of ${new Date(market.asOf).toLocaleString("vi-VN")} · session ${market.session.replace(/_/g, " ")} · regime ${market.regime}`;
+
+  const indexes = ["VNINDEX", "VN30"].map((symbol) => {
+    const index = market.indexes[symbol];
+    if (!index) {
+      return `<div class="market-card"><div class="market-k">${symbol}</div><div class="market-v">N/A</div><div class="market-s">No benchmark data</div></div>`;
+    }
+    const tone = (index.changePct || 0) >= 0 ? "tone-good" : "tone-bad";
+    return `
+      <div class="market-card">
+        <div class="market-k">${symbol}</div>
+        <div class="market-v mono">${fNum(index.price)}</div>
+        <div class="market-s ${tone}">${index.changePct >= 0 ? "+" : ""}${index.changePct}% · ${index.regime}</div>
+        <div class="market-mini">
+          <span class="mini-chip">1M ${fPct(index.ret1m, 100)}</span>
+          <span class="mini-chip">3M ${fPct(index.ret3m, 100)}</span>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  const breadth = `
+    <div class="market-card">
+      <div class="market-k">Breadth</div>
+      <div class="market-v mono">${market.breadth.advancers} / ${market.breadth.decliners}</div>
+      <div class="market-s">${market.breadth.unchanged} unchanged in current universe</div>
+      <div class="market-mini">
+        <span class="mini-chip">Adv ${market.breadth.advancers}</span>
+        <span class="mini-chip">Dec ${market.breadth.decliners}</span>
+      </div>
+    </div>
+  `;
+
+  const turnover = `
+    <div class="market-card">
+      <div class="market-k">Turnover</div>
+      <div class="market-v mono">${fK(market.turnover)}</div>
+      <div class="market-s">Aggregated value across configured scan universe</div>
+      <div class="market-mini">
+        <span class="mini-chip">Session ${market.session.replace(/_/g, " ")}</span>
+      </div>
+    </div>
+  `;
+
+  const sectorLeader = market.sectors?.leaders?.[0];
+  const sectorLaggard = market.sectors?.laggards?.[0];
+  const sectorSummary = `
+    <div class="market-card">
+      <div class="market-k">Sector Pulse</div>
+      <div class="market-v">${sectorLeader ? sectorLeader.sector : "N/A"}</div>
+      <div class="market-s">Leader ${sectorLeader ? `${sectorLeader.avgChangePct}%` : "—"} · Laggard ${sectorLaggard ? `${sectorLaggard.sector} ${sectorLaggard.avgChangePct}%` : "—"}</div>
+      <div class="market-mini">
+        ${(market.sectors?.leaders || []).slice(0, 2).map((sector) => `<span class="mini-chip">${sector.sector} ${sector.avgChangePct >= 0 ? "+" : ""}${sector.avgChangePct}%</span>`).join("")}
+      </div>
+    </div>
+  `;
+
+  grid.innerHTML = indexes + breadth + turnover + sectorSummary;
+}
+
+function filteredStocks() {
+  const stocks = state.snapshot?.stocks || [];
+  return stocks.filter((stock) => {
+    if (state.sector !== "ALL" && stock.sector !== state.sector) return false;
+    if (state.pinnedOnly && !state.pins.has(stock.ticker)) return false;
+    if (!state.query) return true;
+    const haystack = [
+      stock.ticker,
+      stock.name,
+      stock.sector,
+      ...(stock.quality?.warnings || []),
+    ].join(" ").toLowerCase();
+    return haystack.includes(state.query.toLowerCase());
+  });
+}
+
+function sortValue(stock, key) {
+  switch (key) {
+    case "ticker": return stock.ticker;
+    case "sector": return stock.sector;
+    case "last": return stock.price;
+    case "changePct": return stock.changePct;
+    case "tradedValue": return stock.tradedValue;
+    case "volRatio": return stock.volRatio;
+    case "rsi14": return stock.rsi14;
+    case "vsVNINDEX3m": return stock.relative?.vsVNINDEX3m;
+    case "vsVN303m": return stock.relative?.vsVN303m;
+    case "priceVsSma20Pct": return stock.relative?.priceVsSma20Pct;
+    case "priceVsSma50Pct": return stock.relative?.priceVsSma50Pct;
+    case "observedScore":
+      return stock.observedCanSlimMax > 0 ? stock.observedCanSlimTotal / stock.observedCanSlimMax : -1;
+    case "ruleStrength": return stock.confidence;
+    case "coverage": return stock.coveragePct;
+    default: return stock.observedCanSlimMax > 0 ? stock.observedCanSlimTotal / stock.observedCanSlimMax : -1;
+  }
+}
+
+function sortStocks(stocks) {
+  const dir = state.sortDir === "asc" ? 1 : -1;
+  return stocks.slice().sort((a, b) => {
+    const av = sortValue(a, state.sortKey);
+    const bv = sortValue(b, state.sortKey);
+    if (typeof av === "string" || typeof bv === "string") {
+      return String(av || "").localeCompare(String(bv || "")) * dir;
+    }
+    if ((av ?? -Infinity) === (bv ?? -Infinity)) {
+      const ars = sortValue(a, "vsVNINDEX3m") ?? -999;
+      const brs = sortValue(b, "vsVNINDEX3m") ?? -999;
+      return (brs - ars) * (dir === 1 ? 1 : -1);
+    }
+    return ((av ?? -Infinity) - (bv ?? -Infinity)) * dir;
+  });
+}
+
+function warningSummary(stock) {
+  const missing = stock.quality?.missingFactors?.length ? `Missing ${stock.quality.missingFactors.join("/")}` : null;
+  const firstWarning = (stock.quality?.warnings || []).find((warning) =>
+    !missing || !warning.includes("Missing CAN SLIM factors")
+  ) || null;
+  return [missing, firstWarning].filter(Boolean).join(" · ") || "Clean";
+}
+
+function sectorOptions(snapshot) {
+  const select = document.getElementById("sectorFilter");
+  const sectors = Array.from(new Set((snapshot?.stocks || []).map((stock) => stock.sector))).sort();
+  select.innerHTML = [`<option value="ALL">All sectors</option>`]
+    .concat(sectors.map((sector) => `<option value="${sector}">${sector}</option>`))
+    .join("");
+  select.value = state.sector;
+}
+
+function boardRows(stocks) {
+  const groups = state.groupBy === "sector"
+    ? Array.from(stocks.reduce((map, stock) => {
+        if (!map.has(stock.sector)) map.set(stock.sector, []);
+        map.get(stock.sector).push(stock);
+        return map;
+      }, new Map()).entries())
+    : [["", stocks]];
+
+  return groups.map(([label, rows]) => {
+    const groupHeader = label ? `<tr class="group-row"><td colspan="14">${label}</td></tr>` : "";
+    const stockRows = rows.map((stock) => {
+      const selected = state.selectedTicker === stock.ticker ? "active" : "";
+      const changeClass = (stock.changePct || 0) >= 0 ? "tone-good" : "tone-bad";
+      const pinned = state.pins.has(stock.ticker);
+      const observedPct = stock.observedCanSlimMax > 0
+        ? `${stock.observedCanSlimTotal}/${stock.observedCanSlimMax} · ${stock.coveragePct}%`
+        : `N/A · ${stock.coveragePct}%`;
+
+      return `
+        <tr class="${selected}" data-ticker="${stock.ticker}">
+          <td>
+            <div class="ticker-cell">
+              <button class="pin-btn ${pinned ? "active" : ""}" data-pin="${stock.ticker}" title="Pin ${stock.ticker}">${pinned ? "★" : "☆"}</button>
+              <div class="ticker-main">
+                <div class="ticker-symbol">${stock.ticker}</div>
+                <div class="ticker-name">${stock.name}</div>
+              </div>
+            </div>
+          </td>
+          <td>${stock.sector}</td>
+          <td class="mono">${fNum(stock.price)}</td>
+          <td class="mono ${changeClass}">${stock.changePct >= 0 ? "+" : ""}${stock.changePct}%</td>
+          <td class="mono">${fK(stock.tradedValue)}</td>
+          <td class="mono">${stock.volRatio}x</td>
+          <td class="mono">${stock.rsi14 ?? "—"}</td>
+          <td class="mono ${stock.relative?.vsVNINDEX3m >= 0 ? "tone-good" : "tone-bad"}">${fPct(stock.relative?.vsVNINDEX3m, 100)}</td>
+          <td class="mono ${stock.relative?.vsVN303m >= 0 ? "tone-good" : "tone-bad"}">${fPct(stock.relative?.vsVN303m, 100)}</td>
+          <td class="mono ${stock.relative?.priceVsSma20Pct >= 0 ? "tone-good" : "tone-bad"}">${fPct(stock.relative?.priceVsSma20Pct, 1)}</td>
+          <td class="mono ${stock.relative?.priceVsSma50Pct >= 0 ? "tone-good" : "tone-bad"}">${fPct(stock.relative?.priceVsSma50Pct, 1)}</td>
+          <td><span class="score-chip">${observedPct}</span></td>
+          <td>
+            <div class="warning-stack">
+              <span class="signal-chip" data-signal="${stock.signal}">${signalLabel(stock.signal)}</span>
+              <span class="warning-line">${stock.confidence}/10 · ${stock.explain.ruleStrength.label}</span>
+            </div>
+          </td>
+          <td>
+            <div class="warning-stack">
+              <span class="quality-chip" data-tone="${qualityTone(stock.quality.label)}">${stock.quality.label} · ${stock.quality.coveragePct}%</span>
+              <span class="warning-line">${warningSummary(stock)}</span>
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join("");
+    return groupHeader + stockRows;
+  }).join("");
+}
+
+function renderBoard() {
+  const root = document.getElementById("boardWrap");
+  const stocks = sortStocks(filteredStocks());
+
+  if (!stocks.length) {
+    root.innerHTML = `
+      <div class="empty-state">
+        <div>
+          <div class="empty-title">No rows match the current filters</div>
+          <div>Adjust search, sector, or pin filters.</div>
+        </div>
+      </div>
+    `;
+    renderDetail();
+    return;
+  }
+
+  if (!state.selectedTicker || !stocks.some((stock) => stock.ticker === state.selectedTicker)) {
+    state.selectedTicker = stocks[0].ticker;
+  }
+
+  root.innerHTML = `
+    <table>
+      <thead>
+        <tr>
+          <th><button data-sort="ticker">Ticker</button></th>
+          <th><button data-sort="sector">Sector</button></th>
+          <th><button data-sort="last">Last</button></th>
+          <th><button data-sort="changePct">Chg%</button></th>
+          <th><button data-sort="tradedValue">Value</button></th>
+          <th><button data-sort="volRatio">Vol x Avg</button></th>
+          <th><button data-sort="rsi14">RSI14</button></th>
+          <th><button data-sort="vsVNINDEX3m">RS vs VNINDEX</button></th>
+          <th><button data-sort="vsVN303m">RS vs VN30</button></th>
+          <th><button data-sort="priceVsSma20Pct">Vs SMA20</button></th>
+          <th><button data-sort="priceVsSma50Pct">Vs SMA50</button></th>
+          <th><button data-sort="observedScore">Observed CAN SLIM</button></th>
+          <th><button data-sort="ruleStrength">Rule Read</button></th>
+          <th><button data-sort="coverage">Quality</button></th>
+        </tr>
+      </thead>
+      <tbody>
+        ${boardRows(stocks)}
+      </tbody>
+    </table>
+  `;
+
+  root.querySelectorAll("tbody tr[data-ticker]").forEach((row) => {
+    row.addEventListener("click", (event) => {
+      if (event.target.closest("[data-pin]")) return;
+      state.selectedTicker = row.dataset.ticker;
+      renderBoard();
+      renderDetail();
+    });
+  });
+
+  root.querySelectorAll("[data-pin]").forEach((button) => {
+    button.addEventListener("click", (event) => {
+      event.stopPropagation();
+      const ticker = button.dataset.pin;
+      if (state.pins.has(ticker)) state.pins.delete(ticker);
+      else state.pins.add(ticker);
+      savePins();
+      renderBoard();
+    });
+  });
+
+  root.querySelectorAll("[data-sort]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const key = button.dataset.sort;
+      if (state.sortKey === key) state.sortDir = state.sortDir === "desc" ? "asc" : "desc";
+      else {
+        state.sortKey = key;
+        state.sortDir = key === "ticker" || key === "sector" ? "asc" : "desc";
+      }
+      renderBoard();
+    });
+  });
+}
+
+function renderDetail() {
+  const root = document.getElementById("detailPanel");
+  const stock = state.snapshot?.stocks?.find((item) => item.ticker === state.selectedTicker);
+
+  if (!stock) {
+    root.innerHTML = `
+      <div class="detail-empty">
+        <div>
+          <div class="empty-title">No selection</div>
+          <div>Pick a row from the board.</div>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  const navStocks = sortStocks(filteredStocks());
+  const navUniverse = navStocks.length ? navStocks : sortStocks(state.snapshot?.stocks || []);
+  const tickerNav = navUniverse.map((item) => `
+    <button class="sheet-tab ${item.ticker === stock.ticker ? "active" : ""}" data-sheet-nav="${item.ticker}">
+      <div class="sheet-tab-ticker">${item.ticker}</div>
+      <div class="sheet-tab-meta">${item.changePct >= 0 ? "+" : ""}${item.changePct}% · ${item.confidence}/10</div>
+    </button>
+  `).join("");
+
+  const warnings = stock.quality.warnings.length
+    ? stock.quality.warnings.map((warning) => `<div class="driver tone-warn">${warning}</div>`).join("")
+    : `<div class="driver">No active warnings.</div>`;
+
+  const positives = stock.explain.driversPositive.length
+    ? stock.explain.driversPositive.map((line) => `<div class="driver tone-good">${line}</div>`).join("")
+    : `<div class="driver">No strong positive drivers.</div>`;
+
+  const negatives = stock.explain.driversNegative.length
+    ? stock.explain.driversNegative.map((line) => `<div class="driver tone-bad">${line}</div>`).join("")
+    : `<div class="driver">No major negative drivers.</div>`;
+
+  const factors = Object.entries(stock.explain.factorBreakdown).map(([factor, detail]) => `
+    <div class="factor-card" data-status="${detail.status}">
+      <div class="factor-head">
+        <div>
+          <div class="factor-name">${factor} · ${detail.factorLabel}</div>
+          <div class="factor-metric">${detail.metricLabel}</div>
+        </div>
+        <div class="factor-score" data-tone="${factorScoreTone(detail)}">${detail.score == null ? "?" : `${detail.score}/10`}</div>
+      </div>
+      <div class="factor-meta">
+        <span class="mini-chip">${detail.status}</span>
+        <span class="mini-chip">Raw ${detail.displayValue}</span>
+        <span class="mini-chip">${detail.bandLabel}</span>
+      </div>
+      <div class="factor-reason">${detail.reason}</div>
+      <div class="factor-bands">
+        ${detail.bands.map((band) => `<span class="factor-band ${band.active ? "active" : ""}">${band.score} · ${band.label}</span>`).join("")}
+      </div>
+    </div>
+  `).join("");
+
+  const history = (stock.historyMini || []).map((entry) => `
+    <div class="history-chip">
+      <div class="ts">${new Date(entry.timestamp).toLocaleString("vi-VN", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" })}</div>
+      <div class="sv mono">${fNum(entry.price)}</div>
+      <div class="sv">${signalLabel(entry.signal)}</div>
+      <div class="sv">${entry.confidence}/10 · ${entry.observedPct == null ? "N/A" : Math.round(entry.observedPct * 100) + "%"}</div>
+    </div>
+  `).join("");
+
+  const indexes = Object.entries(stock.market.indexes || {}).map(([symbol, detail]) => `
+    <div class="kv">
+      <div class="k">${symbol}</div>
+      <div class="v">${detail ? `${fNum(detail.price)} · ${detail.changePct >= 0 ? "+" : ""}${detail.changePct}% · ${detail.regime}` : "N/A"}</div>
+    </div>
+  `).join("");
+
+  root.innerHTML = `
+    <div class="sheet-nav-wrap">
+      <div class="sheet-nav-label">Quick Ticker Nav</div>
+      <div class="sheet-nav">${tickerNav}</div>
+    </div>
+
+    <div class="detail-head">
+      <div class="detail-title">
+        <div>
+          <div class="detail-name">${stock.ticker}</div>
+          <div class="detail-sub">${stock.name} · ${stock.sector} · ${new Date(stock.scanTime).toLocaleString("vi-VN")}</div>
+        </div>
+        <span class="signal-chip" data-signal="${stock.signal}">${signalLabel(stock.signal)}</span>
+      </div>
+      <div class="detail-hero">
+        <div class="hero-slab">
+          <div class="eyebrow">Main Sheet</div>
+          <div class="hero-price mono">${fNum(stock.price)}</div>
+          <div class="${stock.changePct >= 0 ? "tone-good" : "tone-bad"}">${stock.changePct >= 0 ? "+" : ""}${stock.changePct}% · ${fNum(stock.volume)} shares · ${fK(stock.tradedValue)} traded</div>
+          <div class="hero-meta">
+            <span class="score-chip">Observed ${stock.observedCanSlimTotal}/${stock.observedCanSlimMax || 0}</span>
+            <span class="quality-chip" data-tone="${qualityTone(stock.quality.label)}">${stock.quality.label} · ${stock.coveragePct}%</span>
+            <span class="mini-chip">RS vs VNINDEX ${fPct(stock.relative.vsVNINDEX3m, 100)}</span>
+            <span class="mini-chip">RSI ${stock.rsi14 ?? "—"}</span>
+          </div>
+        </div>
+        <div class="hero-stack">
+          <div class="stat-card">
+            <div class="stat-k">Rule Strength</div>
+            <div class="stat-v mono">${stock.confidence}/10</div>
+            <div>${stock.explain.ruleStrength.label}</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-k">Heuristic Levels</div>
+            <div class="v mono">Entry ${stock.entry.map(fNum).join(" / ")}</div>
+            <div class="v mono">TP ${stock.tp.map(fNum).join(" / ")} · SL ${fNum(stock.sl)}</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-k">Delta</div>
+            <div>${stock.delta}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3>Market Context</h3>
+      <div class="kv-grid">
+        <div class="kv"><div class="k">Session</div><div class="v">${stock.market.session.replace(/_/g, " ")}</div></div>
+        <div class="kv"><div class="k">Market Regime</div><div class="v">${stock.market.regime}</div></div>
+        <div class="kv"><div class="k">Value Traded</div><div class="v mono">${fK(stock.tradedValue)}</div></div>
+        <div class="kv"><div class="k">Vol x Avg20</div><div class="v mono">${stock.volRatio}x</div></div>
+        <div class="kv"><div class="k">RS vs VNINDEX 3M</div><div class="v mono">${fPct(stock.relative.vsVNINDEX3m, 100)}</div></div>
+        <div class="kv"><div class="k">RS vs VN30 3M</div><div class="v mono">${fPct(stock.relative.vsVN303m, 100)}</div></div>
+        ${indexes}
+      </div>
+    </div>
+
+    <div class="section">
+      <h3>Rule Drivers</h3>
+      <div class="driver-list">${positives}</div>
+      <div style="height:10px"></div>
+      <div class="driver-list">${negatives}</div>
+    </div>
+
+    <div class="section">
+      <h3>Factor Breakdown</h3>
+      <div class="factor-grid">${factors}</div>
+    </div>
+
+    <div class="section">
+      <h3>Heuristic Levels</h3>
+      <div class="kv-grid">
+        <div class="kv"><div class="k">Entry</div><div class="v mono">${stock.entry.map(fNum).join(" / ")}</div></div>
+        <div class="kv"><div class="k">Take Profit</div><div class="v mono">${stock.tp.map(fNum).join(" / ")}</div></div>
+        <div class="kv"><div class="k">Stop Loss</div><div class="v mono">${fNum(stock.sl)}</div></div>
+        <div class="kv"><div class="k">Delta vs prior scan</div><div class="v">${stock.delta}</div></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3>Quality and Sources</h3>
+      <div class="kv-grid">
+        <div class="kv"><div class="k">Freshness</div><div class="v">${stock.quality.freshnessSec == null ? "N/A" : stock.quality.freshnessSec + " sec"}</div></div>
+        <div class="kv"><div class="k">Snapshot overlay</div><div class="v">${stock.quality.snapshotOverlayUsed ? "yes" : "history only"}</div></div>
+        <div class="kv"><div class="k">Missing factors</div><div class="v">${stock.quality.missingFactors.join(", ") || "none"}</div></div>
+        <div class="kv"><div class="k">Missing fields</div><div class="v">${stock.quality.missingFields.join(", ") || "none"}</div></div>
+        <div class="kv"><div class="k">Price source</div><div class="v">${stock.quality.sourceFlags.price}</div></div>
+        <div class="kv"><div class="k">Fundamentals source</div><div class="v">${stock.quality.sourceFlags.fundamentals}</div></div>
+      </div>
+      <div style="height:12px"></div>
+      <div class="driver-list">${warnings}</div>
+    </div>
+
+    <div class="section">
+      <h3>Scan History</h3>
+      <div class="history-strip">${history}</div>
+    </div>
+  `;
+
+  root.querySelectorAll("[data-sheet-nav]").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.selectedTicker = button.dataset.sheetNav;
+      renderBoard();
+      renderDetail();
+    });
+  });
+}
+
+function renderAll() {
+  renderMarket(state.snapshot);
+  renderUtility();
+  sectorOptions(state.snapshot);
+  renderBoard();
+  renderDetail();
+  updatePrompt(state.snapshot);
+  const footer = document.getElementById("footerMeta");
+  footer.textContent = state.snapshot
+    ? `Snapshot ${new Date(state.snapshot.generated).toLocaleString("vi-VN")} · ${state.snapshot.count} tickers`
+    : "Local snapshot terminal";
+}
+
+async function scanUniverse() {
+  const button = document.getElementById("btnScan");
+  button.disabled = true;
+  setStatus("Scanning VPS", "warn");
+  try {
+    const response = await fetch("/api/scan", { method: "POST" });
+    const data = await response.json();
+    if (!response.ok || data.error) throw new Error(data.error || "Scan failed");
+    state.snapshot = data.snapshot;
+    state.selectedTicker = data.snapshot.stocks[0]?.ticker || null;
+    renderAll();
+    setStatus(`${data.snapshot.count} rows ready${data.errors?.length ? ` · ${data.errors.length} errors` : ""}`, data.errors?.length ? "warn" : "ok");
+  } catch (error) {
+    setStatus(error.message, "danger");
+  } finally {
+    button.disabled = false;
+  }
+}
+
+async function testFeed() {
+  const button = document.getElementById("btnTest");
+  button.disabled = true;
+  setStatus("Testing VPS + KBS", "warn");
+  try {
+    const response = await fetch("/api/test");
+    const data = await response.json();
+    if (!response.ok || data.error) throw new Error(data.error || "Feed test failed");
+    const results = data.results || {};
+    const parts = [
+      `OHLCV ${results.ohlcv?.status || "n/a"}`,
+      `Overview ${results.overview?.status || "n/a"}`,
+      `Foreign ${results.foreign?.status || "n/a"}`,
+    ];
+    setStatus(parts.join(" · "), Object.values(results).every((result) => result.status === "ok") ? "ok" : "warn");
+  } catch (error) {
+    setStatus(error.message, "danger");
+  } finally {
+    button.disabled = false;
+  }
+}
+
+async function publishSnapshot() {
+  if (!state.snapshot) {
+    setStatus("Scan first before publishing", "warn");
+    return;
+  }
+
+  const button = document.getElementById("btnPublish");
+  button.disabled = true;
+  setStatus("Publishing static page", "warn");
+
+  try {
+    const response = await fetch("/api/publish", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        snapshot: state.snapshot,
+        prompt: state.prompt,
+        selectedTicker: state.selectedTicker,
+      }),
+    });
+    const data = await response.json();
+    if (!response.ok || data.error) throw new Error(data.error || "Publish failed");
+    state.publishInfo = data;
+    renderUtility();
+    setStatus(`Published ${data.outputPath}`, "ok");
+  } catch (error) {
+    setStatus(error.message, "danger");
+  } finally {
+    button.disabled = false;
+  }
+}
+
+function togglePrompt(open) {
+  const drawer = document.getElementById("promptDrawer");
+  drawer.classList.toggle("open", open);
+}
+
+async function copyPrompt() {
+  if (!state.prompt) {
+    setStatus("No prompt prepared", "warn");
+    return;
+  }
+  try {
+    await navigator.clipboard.writeText(state.prompt);
+    setStatus("Prompt copied", "ok");
+  } catch (_) {
+    setStatus("Clipboard blocked", "warn");
+  }
+}
+
+document.getElementById("btnScan").addEventListener("click", scanUniverse);
+document.getElementById("btnTest").addEventListener("click", testFeed);
+document.getElementById("btnPublish").addEventListener("click", publishSnapshot);
+document.getElementById("btnPrompt").addEventListener("click", () => togglePrompt(true));
+document.getElementById("closePrompt").addEventListener("click", () => togglePrompt(false));
+document.getElementById("copyPrompt").addEventListener("click", copyPrompt);
+document.getElementById("searchInput").addEventListener("input", (event) => {
+  state.query = event.target.value || "";
+  renderBoard();
+});
+document.getElementById("sectorFilter").addEventListener("change", (event) => {
+  state.sector = event.target.value;
+  renderBoard();
+});
+document.getElementById("groupBy").addEventListener("change", (event) => {
+  state.groupBy = event.target.value;
+  renderBoard();
+});
+document.getElementById("pinnedOnly").addEventListener("change", (event) => {
+  state.pinnedOnly = event.target.checked;
+  renderBoard();
+});
+document.querySelectorAll("[data-quick-sort]").forEach((button) => {
+  button.addEventListener("click", () => {
+    const key = button.dataset.quickSort;
+    state.sortKey = key;
+    state.sortDir = key === "coverage" ? "asc" : "desc";
+    renderBoard();
+  });
+});
+
+renderMarket(null);
+renderUtility();
+document.getElementById("footerMeta").textContent = "Local snapshot terminal";
+</script>
+</body>
+</html>

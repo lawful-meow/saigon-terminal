@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Saigon Terminal Snapshot</title>
+<style>
+:root{
+  --bg:#071014;
+  --bg-2:#0c161c;
+  --panel:#101d24;
+  --panel-2:#14252f;
+  --line:#27414d;
+  --text:#f3f0e9;
+  --muted:#b9c7ce;
+  --subtle:#7e939d;
+  --accent:#5ce1b8;
+  --accent-2:#7fd0ff;
+  --good:#57df94;
+  --bad:#ff8573;
+  --warn:#ffc869;
+  --shadow:0 24px 60px rgba(0,0,0,.28);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:"IBM Plex Sans","Avenir Next","Segoe UI",sans-serif;
+  color:var(--text);
+  background:
+    radial-gradient(circle at top left, rgba(92,225,184,.11), transparent 24%),
+    radial-gradient(circle at 88% 0%, rgba(127,208,255,.10), transparent 22%),
+    linear-gradient(180deg, #061014 0%, #081117 38%, #071014 100%);
+}
+a{color:#d9fff1;text-decoration:none}
+.app{max-width:1500px;margin:0 auto;padding:24px}
+.topbar{
+  display:flex;justify-content:space-between;align-items:flex-start;gap:18px;flex-wrap:wrap;
+  padding:18px 20px;border:1px solid var(--line);border-radius:24px;
+  background:rgba(7,16,20,.84);backdrop-filter:blur(18px);box-shadow:var(--shadow);
+}
+.brand-title{font-size:28px;font-weight:900;letter-spacing:.12em;text-transform:uppercase}
+.brand-title span:last-child{color:var(--accent)}
+.brand-sub,.meta-copy{color:var(--muted);font-size:13px;line-height:1.6}
+.pill{
+  display:inline-flex;align-items:center;min-height:34px;padding:0 12px;border-radius:999px;
+  border:1px solid rgba(92,225,184,.28);background:rgba(92,225,184,.10);color:#d9fff0;
+  font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:18px;margin-top:18px;align-items:start}
+.stack,.rail{display:grid;gap:16px}
+.panel{
+  border:1px solid var(--line);border-radius:24px;padding:18px;
+  background:linear-gradient(180deg, rgba(16,29,36,.96), rgba(12,22,28,.96));
+  box-shadow:var(--shadow);
+}
+.eyebrow{font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#d2fff0}
+.panel-title{font-size:22px;font-weight:800;margin-top:6px}
+.sheet-nav-wrap{display:grid;gap:10px}
+.sheet-nav-label{font-size:11px;color:var(--subtle);text-transform:uppercase;letter-spacing:.16em}
+.sheet-nav{display:flex;gap:8px;overflow:auto;padding-bottom:2px}
+.sheet-nav::-webkit-scrollbar{height:8px}
+.sheet-nav::-webkit-scrollbar-thumb{background:rgba(40,69,81,.8);border-radius:999px}
+.sheet-tab{
+  min-width:132px;padding:10px 12px;border-radius:16px;border:1px solid rgba(40,69,81,.82);
+  background:rgba(10,18,24,.92);color:var(--text);text-align:left;display:grid;gap:4px;flex:0 0 auto;
+}
+.sheet-tab.active{
+  border-color:rgba(92,225,184,.38);background:rgba(92,225,184,.10);box-shadow:inset 0 0 0 1px rgba(92,225,184,.14);
+}
+.sheet-tab-ticker{font-size:13px;font-weight:800;letter-spacing:.04em}
+.sheet-tab-meta{font-size:11px;color:var(--muted);line-height:1.4}
+.focus-hero{
+  display:grid;grid-template-columns:minmax(0,1.3fr) minmax(260px,.7fr);gap:14px;margin-top:14px;
+}
+.hero-slab{
+  padding:16px;border-radius:20px;border:1px solid rgba(40,69,81,.82);
+  background:
+    radial-gradient(circle at 0% 0%, rgba(92,225,184,.12), transparent 28%),
+    radial-gradient(circle at 100% 100%, rgba(127,208,255,.12), transparent 30%),
+    rgba(11,20,26,.92);
+}
+.hero-price{font-size:42px;font-weight:900;line-height:1;letter-spacing:-.03em;margin:8px 0 10px}
+.mono{font-family:"IBM Plex Mono","SFMono-Regular","Menlo",monospace;font-variant-numeric:tabular-nums}
+.chip-row,.market-grid,.kv-grid,.history-strip{display:flex;gap:8px;flex-wrap:wrap}
+.chip,.signal-chip,.quality-chip{
+  display:inline-flex;align-items:center;min-height:30px;padding:0 10px;border-radius:999px;
+  border:1px solid rgba(40,69,81,.8);font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
+}
+.chip{background:rgba(127,208,255,.08);color:#e3f6ff}
+.signal-chip[data-signal="STRONG_BUY"],.signal-chip[data-signal="BUY"]{background:rgba(92,225,184,.10);color:#ddfff3}
+.signal-chip[data-signal="HOLD"]{background:rgba(127,208,255,.10);color:#e3f6ff}
+.signal-chip[data-signal="SELL"],.signal-chip[data-signal="STRONG_SELL"]{background:rgba(255,133,115,.12);color:#ffd4ce}
+.quality-chip[data-tone="high"]{background:rgba(92,225,184,.10);color:#ddfff3}
+.quality-chip[data-tone="medium"]{background:rgba(255,200,105,.10);color:#ffecc7}
+.quality-chip[data-tone="low"]{background:rgba(255,133,115,.12);color:#ffd4ce}
+.tone-good{color:var(--good)}
+.tone-bad{color:var(--bad)}
+.detail-grid,.kv-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}
+.stat-card,.section-card{
+  padding:12px;border-radius:16px;border:1px solid rgba(40,69,81,.78);background:rgba(11,20,26,.88);
+}
+.stat-k,.kv .k{font-size:11px;color:var(--subtle);text-transform:uppercase;letter-spacing:.12em;margin-bottom:6px}
+.stat-v{font-size:20px;font-weight:800}
+.kv{display:grid;gap:4px}
+.kv .v{font-size:14px;line-height:1.45}
+.list{display:grid;gap:8px}
+.item{
+  padding:10px 12px;border-radius:14px;background:rgba(20,37,47,.9);
+  border:1px solid rgba(40,69,81,.7);font-size:13px;line-height:1.5;
+}
+.factor-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.factor-card{
+  padding:12px;border-radius:16px;border:1px solid rgba(40,69,81,.82);background:rgba(15,26,33,.92);display:grid;gap:10px;
+}
+.factor-card[data-status="unknown"]{border-color:rgba(255,200,105,.28);background:rgba(45,34,18,.20)}
+.factor-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.factor-name{font-size:13px;font-weight:800;letter-spacing:.03em}
+.factor-metric{margin-top:4px;color:var(--muted);font-size:12px;line-height:1.4}
+.factor-score{
+  min-width:62px;padding:8px 10px;border-radius:14px;border:1px solid rgba(40,69,81,.8);
+  background:rgba(9,18,24,.9);font-size:13px;font-weight:800;text-align:center;
+}
+.factor-score[data-tone="strong"]{border-color:rgba(92,225,184,.34);color:#ddfff3}
+.factor-score[data-tone="weak"]{border-color:rgba(255,133,115,.34);color:#ffd4ce}
+.factor-score[data-tone="unknown"]{border-color:rgba(255,200,105,.34);color:#ffecc7}
+.factor-meta,.factor-bands{display:flex;gap:8px;flex-wrap:wrap}
+.factor-reason{font-size:13px;color:var(--text);line-height:1.55}
+.factor-band{
+  display:inline-flex;align-items:center;min-height:26px;padding:0 8px;border-radius:999px;
+  border:1px solid rgba(40,69,81,.8);color:var(--muted);font-size:11px;letter-spacing:.04em;
+}
+.factor-band.active{border-color:rgba(92,225,184,.34);background:rgba(92,225,184,.10);color:#ddfff3}
+.board-table{width:100%;border-collapse:collapse;margin-top:14px;min-width:1000px}
+.board-wrap{overflow:auto}
+.board-table th,.board-table td{padding:12px 10px;border-bottom:1px solid rgba(38,64,76,.7);text-align:left;font-size:13px}
+.board-table th{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#d9e8ee}
+.board-table tr.active{background:rgba(92,225,184,.08)}
+.market-grid{display:grid;grid-template-columns:1fr;gap:12px;margin-top:14px}
+.market-card{padding:14px;border-radius:18px;border:1px solid rgba(40,69,81,.7);background:linear-gradient(180deg, rgba(21,37,47,.96), rgba(13,24,31,.96))}
+.market-k{font-size:11px;color:var(--subtle);text-transform:uppercase;letter-spacing:.12em;margin-bottom:8px}
+.market-v{font-size:24px;font-weight:800;line-height:1.05}
+.market-s{margin-top:8px;color:var(--muted);font-size:13px;line-height:1.5}
+.history-chip{min-width:88px;padding:8px 10px;border-radius:14px;background:rgba(20,37,47,.9);border:1px solid rgba(40,69,81,.7)}
+.history-chip .ts{color:var(--subtle);font-size:10px;margin-bottom:5px;text-transform:uppercase;letter-spacing:.1em}
+.history-chip .sv{font-size:12px;line-height:1.5}
+details{margin-top:14px}
+summary{cursor:pointer;color:#d9fff1;font-weight:700}
+pre{
+  margin-top:10px;padding:16px;border-radius:18px;border:1px solid rgba(40,69,81,.8);
+  background:rgba(11,20,26,.92);color:#dbe7ec;font-family:"IBM Plex Mono","SFMono-Regular","Menlo",monospace;
+  font-size:12px;white-space:pre-wrap;line-height:1.7
+}
+@media (max-width:1100px){
+  .layout{grid-template-columns:1fr}
+  .focus-hero{grid-template-columns:1fr}
+  .market-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:760px){
+  .app{padding:12px}
+  .detail-grid,.kv-grid,.market-grid,.factor-grid{grid-template-columns:1fr}
+  .hero-price{font-size:34px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div>
+      <div class="brand-title"><span>SAIGON</span> <span>TERMINAL</span></div>
+      <div class="brand-sub">Published market snapshot</div>
+    </div>
+    <div>
+      <span class="pill">Snapshot</span>
+      <div class="meta-copy" id="headerMeta"></div>
+    </div>
+  </header>
+
+  <main class="layout">
+    <div class="stack">
+      <section class="panel" id="focusPanel"></section>
+      <section class="panel">
+        <div class="eyebrow">Ranked Board</div>
+        <div class="panel-title">Published universe</div>
+        <div class="board-wrap" id="boardWrap"></div>
+      </section>
+    </div>
+
+    <aside class="rail">
+      <section class="panel">
+        <div class="eyebrow">Market Rail</div>
+        <div class="panel-title">Benchmarks and breadth</div>
+        <div class="market-grid" id="marketGrid"></div>
+      </section>
+
+      <section class="panel">
+        <div class="eyebrow">Snapshot</div>
+        <div class="panel-title">Publish details</div>
+        <div class="detail-grid" id="publishStats"></div>
+      </section>
+    </aside>
+  </main>
+</div>
+
+<script>
+const DATA = {"snapshot":{"generated":"2026-03-25T09:37:02.468Z","engine":"Saigon Terminal v2.0","dataSource":"VPS + KBS","note":"Board data is VPS-first. KBS now enriches fundamentals and ownership when available. Missing CAN SLIM factors still stay unknown instead of being faked as neutral.","count":5,"market":{"asOf":"2026-03-25T09:37:02.456Z","session":"closed","regime":"bearish","indexes":{"VNINDEX":{"price":1658.19,"changePct":2.69,"ret1m":-0.1121,"ret3m":-0.0414,"sma20":1730.3,"sma50":1795.61,"regime":"bearish","trendScore":0.25,"date":"2026-03-25"},"VN30":{"price":1814.73,"changePct":2.52,"ret1m":-0.1151,"ret3m":-0.0769,"sma20":1884.99,"sma50":1974.03,"regime":"bearish","trendScore":0.25,"date":"2026-03-25"}},"breadth":{"advancers":5,"decliners":0,"unchanged":0},"turnover":1951389876000,"sectors":{"leaders":[{"sector":"RETAIL","count":1,"turnover":592388692000,"avgChangePct":4.21,"avgObservedScorePct":60},{"sector":"BANK","count":3,"turnover":791254078000,"avgChangePct":2.38,"avgObservedScorePct":57.1},{"sector":"TECH","count":1,"turnover":567747106000,"avgChangePct":2.12,"avgObservedScorePct":45.7}],"laggards":[{"sector":"TECH","count":1,"turnover":567747106000,"avgChangePct":2.12,"avgObservedScorePct":45.7},{"sector":"BANK","count":3,"turnover":791254078000,"avgChangePct":2.38,"avgObservedScorePct":57.1},{"sector":"RETAIL","count":1,"turnover":592388692000,"avgChangePct":4.21,"avgObservedScorePct":60}],"all":[{"sector":"RETAIL","count":1,"turnover":592388692000,"avgChangePct":4.21,"avgObservedScorePct":60},{"sector":"BANK","count":3,"turnover":791254078000,"avgChangePct":2.38,"avgObservedScorePct":57.1},{"sector":"TECH","count":1,"turnover":567747106000,"avgChangePct":2.12,"avgObservedScorePct":45.7}]}},"providers":{"active":["vps","kbs"],"roadmap":{"kbs":{"status":"active","role":"fundamentals_ownership_enrichment"},"fireant":{"status":"planned","role":"fundamentals_enrichment"},"ssi":{"status":"planned","role":"execution_metadata"},"fiingroup":{"status":"vendor_review","role":"enterprise_datafeed"},"vietstock":{"status":"vendor_review","role":"enterprise_datafeed"},"vnstock":{"status":"reference_only","role":"research_prototyping"}}},"stocks":[{"ticker":"CTG","name":"VietinBank","sector":"BANK","scanTime":"2026-03-25T09:37:02.456Z","price":34050,"open":33750,"high":34100,"low":33700,"changePct":1.49,"priceDate":"2026-03-25","volume":6241100,"avgVol20":12468162,"volRatio":0.5,"tradedValue":211635701000,"avgValue20":439196901130,"sma20":35065,"sma50":37470,"sma200":37273,"rsi14":40.3,"macd":-1071,"atr14":1086,"pe":5.5,"pb":1.1,"eps":6441,"roe":21.1,"marketCap":264464464889850,"foreignNet5d":null,"canslim":{"C":6,"A":10,"N":4,"S":4,"L":6,"I":10,"M":2},"observedCanSlim":{"C":6,"A":10,"N":4,"S":4,"L":6,"I":10,"M":2},"canslimTotal":42,"observedCanSlimTotal":42,"observedCanSlimMax":70,"coveragePct":100,"volumeSignal":"NORMAL","wyckoffPhase":"Markdown","relative":{"ret1d":0.0149,"ret1w":-0.0271,"ret1m":-0.1086,"ret3m":-0.0327,"vsVNINDEX3m":0.0087,"vsVN303m":0.0442,"priceVsSma20Pct":-2.89,"priceVsSma50Pct":-9.13},"market":{"session":"closed","regime":"bearish","trendScore":0.25,"indexes":{"VNINDEX":{"price":1658.19,"changePct":2.69,"ret1m":-0.1121,"ret3m":-0.0414,"sma20":1730.3,"sma50":1795.61,"regime":"bearish","trendScore":0.25,"date":"2026-03-25"},"VN30":{"price":1814.73,"changePct":2.52,"ret1m":-0.1151,"ret3m":-0.0769,"sma20":1884.99,"sma50":1974.03,"regime":"bearish","trendScore":0.25,"date":"2026-03-25"}}},"quality":{"score":100,"label":"high","coveragePct":100,"coverageLabel":"strong","historyBars":57,"freshnessSec":0,"snapshotOverlayUsed":true,"missingFactors":[],"missingFields":["foreignNet5d"],"sourceFlags":{"price":"vps_snapshot_overlay","market":"vps_history","fundamentals":"kbs_enrichment","ownership":"kbs_profile","foreign":"unavailable","providerRoadmap":{"kbs":{"status":"active","role":"fundamentals_ownership_enrichment"},"fireant":{"status":"planned","role":"fundamentals_enrichment"},"ssi":{"status":"planned","role":"execution_metadata"},"fiingroup":{"status":"vendor_review","role":"enterprise_datafeed"},"vietstock":{"status":"vendor_review","role":"enterprise_datafeed"},"vnstock":{"status":"reference_only","role":"research_prototyping"}}},"warnings":["Foreign flow unavailable"]},"explain":{"ruleRead":"Neutral / Mixed","ruleStrength":{"score":5,"label":"moderate conviction","rawScore":39},"driversPositive":["RS vs VNINDEX 3M +0.9%","RSI 40.3 in healthy range"],"driversNegative":["Price -9.1% vs SMA50","Volume only 0.5x avg20","Market regime bearish","Foreign flow unavailable"],"factorBreakdown":{"C":{"metric":"epsGrowthQoQ","rawValue":0.1239,"thresholds":[0,0.1,0.2,0.4],"score":6,"status":"observed","legacyScore":6,"factorLabel":"Current earnings","metricLabel":"Quarterly EPS growth","displayValue":"+12.4%","bandLabel":"10.0% to 20.0%","bands":[{"score":2,"label":"\u003c 0.0%","active":false},{"score":4,"label":"0.0% to 10.0%","active":false},{"score":6,"label":"10.0% to 20.0%","active":true},{"score":8,"label":"20.0% to 40.0%","active":false},{"score":10,"label":">= 40.0%","active":false}],"reason":"Quarterly EPS growth is +12.4%, between 10.0% and 20.0%, so C scores 6/10."},"A":{"metric":"epsGrowth1Y","rawValue":0.3683,"thresholds":[0,0.08,0.15,0.25],"score":10,"status":"observed","legacyScore":10,"factorLabel":"Annual growth","metricLabel":"Annual EPS growth","displayValue":"+36.8%","bandLabel":">= 25.0%","bands":[{"score":2,"label":"\u003c 0.0%","active":false},{"score":4,"label":"0.0% to 8.0%","active":false},{"score":6,"label":"8.0% to 15.0%","active":false},{"score":8,"label":"15.0% to 25.0%","active":false},{"score":10,"label":">= 25.0%","active":true}],"reason":"Annual EPS growth is +36.8%, at or above 25.0%, so A scores 10/10."},"N":{"metric":"nearHighPct","rawValue":0.783,"thresholds":[0.7,0.8,0.9,0.95],"score":4,"status":"observed","legacyScore":4,"factorLabel":"New highs","metricLabel":"Price vs 52W high","displayValue":"78.3% of 52W high","bandLabel":"70.0% to 80.0%","bands":[{"score":2,"label":"\u003c 70.0%","active":false},{"score":4,"label":"70.0% to 80.0%","active":true},{"score":6,"label":"80.0% to 90.0%","active":false},{"score":8,"label":"90.0% to 95.0%","active":false},{"score":10,"label":">= 95.0%","active":false}],"reason":"Price vs 52W high is 78.3% of 52W high, between 70.0% and 80.0%, so N scores 4/10."},"S":{"metric":"volScore","rawValue":0.5,"thresholds":[0.4,0.7,1,1.5],"score":4,"status":"observed","legacyScore":4,"factorLabel":"Supply / demand","metricLabel":"Volume vs avg20","displayValue":"0.50x","bandLabel":"0.40x to 0.70x","bands":[{"score":2,"label":"\u003c 0.40x","active":false},{"score":4,"label":"0.40x to 0.70x","active":true},{"score":6,"label":"0.70x to 1.00x","active":false},{"score":8,"label":"1.00x to 1.50x","active":false},{"score":10,"label":">= 1.50x","active":false}],"reason":"Volume vs avg20 is 0.50x, between 0.40x and 0.70x, so S scores 4/10."},"L":{"metric":"rs3m","rawValue":0.0264,"thresholds":[-0.05,0,0.05,0.15],"score":6,"status":"observed","legacyScore":6,"factorLabel":"Leader / laggard","metricLabel":"3M relative strength","displayValue":"+2.6%","bandLabel":"0.0% to 5.0%","bands":[{"score":2,"label":"\u003c -5.0%","active":false},{"score":4,"label":"-5.0% to 0.0%","active":false},{"score":6,"label":"0.0% to 5.0%","active":true},{"score":8,"label":"5.0% to 15.0%","active":false},{"score":10,"label":">= 15.0%","active":false}],"reason":"3M relative strength is +2.6%, between 0.0% and 5.0%, so L scores 6/10."},"I":{"metric":"institutionScore","rawValue":0.9994,"thresholds":[0.05,0.1,0.2,0.35],"score":10,"status":"observed","legacyScore":10,"factorLabel":"Institutional support","metricLabel":"Institutional ownership proxy","displayValue":"+99.9%","bandLabel":">= 35.0%","bands":[{"score":2,"label":"\u003c 5.0%","active":false},{"score":4,"label":"5.0% to 10.0%","active":false},{"score":6,"label":"10.0% to 20.0%","active":false},{"score":8,"label":"20.0% to 35.0%","active":false},{"score":10,"label":">= 35.0%","active":true}],"reason":"Institutional ownership proxy is +99.9%, at or above 35.0%, so I scores 10/10."},"M":{"metric":"marketTrend","rawValue":0.25,"thresholds":[0.3,0.5,0.6,0.8],"score":2,"status":"observed","legacyScore":2,"factorLabel":"Market direction","metricLabel":"Market trend score","displayValue":"0.25","bandLabel":"\u003c 0.30","bands":[{"score":2,"label":"\u003c 0.30","active":true},{"score":4,"label":"0.30 to 0.50","active":false},{"score":6,"label":"0.50 to 0.60","active":false},{"score":8,"label":"0.60 to 0.80","active":false},{"score":10,"label":">= 0.80","active":false}],"reason":"Market trend score is 0.25, below 0.30, so M scores 2/10."}},"normalizedCanSlim":42},"entry":[34050,33507,32615],"tp":[35679,36764,39836],"sl":31457,"signal":"HOLD","confidence":5,"rawScore":39,"delta":"no change","historyMini":[{"timestamp":"2026-03-25T09:02:10.411Z","price":34050,"signal":"HOLD","confidence":5,"observedPct":0.6},{"timestamp":"2026-03-25T09:05:49.310Z","price":34050,"signal":"HOLD","confidence":5,"observedPct":0.6},{"timestamp":"2026-03-25T09:14:28.980Z","price":34050,"signal":"HOLD","confidence":5,"observedPct":0.6},{"timestamp":"2026-03-25T09:16:35.962Z","price":34050,"signal":"HOLD","confidence":5,"observedPct":0.6},{"timestamp":"2026-03-25T09:37:02.456Z","price":34050,"signal":"HOLD","confidence":5,"observedPct":0.6}]},{"ticker":"MWG","name":"Thế Giới Di Động","sector":"RETAIL","scanTime":"2026-03-25T09:37:02.137Z","price":79200,"open":77000,"high":79500,"low":76800,"changePct":4.21,"priceDate":"2026-03-25","volume":7550200,"avgVol20":9646817,"volRatio":0.78,"tradedValue":592388692000,"avgValue20":804081109990,"sma20":83560,"sma50":86654,"sma200":86837,"rsi14":42.7,"macd":-2835,"atr14":3543,"pe":18.5,"pb":3.9,"eps":4773,"roe":23.1,"marketCap":116299143496800,"foreignNet5d":null,"canslim":{"C":4,"A":10,"N":6,"S":6,"L":4,"I":10,"M":2},"observedCanSlim":{"C":4,"A":10,"N":6,"S":6,"L":4,"I":10,"M":2},"canslimTotal":42,"observedCanSlimTotal":42,"observedCanSlimMax":70,"coveragePct":100,"volumeSignal":"NORMAL","wyckoffPhase":"Markdown","relative":{"ret1d":0.0421,"ret1w":-0.0538,"ret1m":-0.141,"ret3m":-0.0897,"vsVNINDEX3m":-0.0483,"vsVN303m":-0.0128,"priceVsSma20Pct":-5.22,"priceVsSma50Pct":-8.6},"market":{"session":"closed","regime":"bearish","trendScore":0.25,"indexes":{"VNINDEX":{"price":1658.19,"changePct":2.69,"ret1m":-0.1121,"ret3m":-0.0414,"sma20":1730.3,"sma50":1795.61,"regime":"bearish","trendScore":0.25,"date":"2026-03-25"},"VN30":{"price":1814.73,"changePct":2.52,"ret1m":-0.1151,"ret3m":-0.0769,"sma20":1884.99,"sma50":1974.03,"regime":"bearish","trendScore":0.25,"date":"2026-03-25"}}},"quality":{"score":100,"label":"high","coveragePct":100,"coverageLabel":"strong","historyBars":57,"freshnessSec":0,"snapshotOverlayUsed":true,"missingFactors":[],"missingFields":["foreignNet5d"],"sourceFlags":{"price":"vps_snapshot_overlay","market":"vps_history","fundamentals":"kbs_enrichment","ownership":"kbs_profile","foreign":"unavailable","providerRoadmap":{"kbs":{"status":"active","role":"fundamentals_ownership_enrichment"},"fireant":{"status":"planned","role":"fundamentals_enrichment"},"ssi":{"status":"planned","role":"execution_metadata"},"fiingroup":{"status":"vendor_review","role":"enterprise_datafeed"},"vietstock":{"status":"vendor_review","role":"enterprise_datafeed"},"vnstock":{"status":"reference_only","role":"research_prototyping"}}},"warnings":["Foreign flow unavailable"]},"explain":{"ruleRead":"Neutral / Mixed","ruleStrength":{"score":5,"label":"moderate conviction","rawScore":39},"driversPositive":["RSI 42.7 in healthy range"],"driversNegative":["RS vs VNINDEX 3M -4.8%","Price -8.6% vs SMA50","Market regime bearish","Foreign flow unavailable"],"factorBreakdown":{"C":{"metric":"epsGrowthQoQ","rawValue":0.0169,"thresholds":[0,0.1,0.2,0.4],"score":4,"status":"observed","legacyScore":4,"factorLabel":"Current earnings","metricLabel":"Quarterly EPS growth","displayValue":"+1.7%","bandLabel":"0.0% to 10.0%","bands":[{"score":2,"label":"\u003c 0.0%","active":false},{"score":4,"label":"0.0% to 10.0%","active":true},{"score":6,"label":"10.0% to 20.0%","active":false},{"score":8,"label":"20.0% to 40.0%","active":false},{"score":10,"label":">= 40.0%","active":false}],"reason":"Quarterly EPS growth is +1.7%, between 0.0% and 10.0%, so C scores 4/10."},"A":{"metric":"epsGrowth1Y","rawValue":0.9383,"thresholds":[0,0.08,0.15,0.25],"score":10,"status":"observed","legacyScore":10,"factorLabel":"Annual growth","metricLabel":"Annual EPS growth","displayValue":"+93.8%","bandLabel":">= 25.0%","bands":[{"score":2,"label":"\u003c 0.0%","active":false},{"score":4,"label":"0.0% to 8.0%","active":false},{"score":6,"label":"8.0% to 15.0%","active":false},{"score":8,"label":"15.0% to 25.0%","active":false},{"score":10,"label":">= 25.0%","active":true}],"reason":"Annual EPS growth is +93.8%, at or above 25.0%, so A scores 10/10."},"N":{"metric":"nearHighPct","rawValue":0.839,"thresholds":[0.7,0.8,0.9,0.95],"score":6,"status":"observed","legacyScore":6,"factorLabel":"New highs","metricLabel":"Price vs 52W high","displayValue":"83.9% of 52W high","bandLabel":"80.0% to 90.0%","bands":[{"score":2,"label":"\u003c 70.0%","active":false},{"score":4,"label":"70.0% to 80.0%","active":false},{"score":6,"label":"80.0% to 90.0%","active":true},{"score":8,"label":"90.0% to 95.0%","active":false},{"score":10,"label":">= 95.0%","active":false}],"reason":"Price vs 52W high is 83.9% of 52W high, between 80.0% and 90.0%, so N scores 6/10."},"S":{"metric":"volScore","rawValue":0.78,"thresholds":[0.4,0.7,1,1.5],"score":6,"status":"observed","legacyScore":6,"factorLabel":"Supply / demand","metricLabel":"Volume vs avg20","displayValue":"0.78x","bandLabel":"0.70x to 1.00x","bands":[{"score":2,"label":"\u003c 0.40x","active":false},{"score":4,"label":"0.40x to 0.70x","active":false},{"score":6,"label":"0.70x to 1.00x","active":true},{"score":8,"label":"1.00x to 1.50x","active":false},{"score":10,"label":">= 1.50x","active":false}],"reason":"Volume vs avg20 is 0.78x, between 0.70x and 1.00x, so S scores 6/10."},"L":{"metric":"rs3m","rawValue":-0.0306,"thresholds":[-0.05,0,0.05,0.15],"score":4,"status":"observed","legacyScore":4,"factorLabel":"Leader / laggard","metricLabel":"3M relative strength","displayValue":"-3.1%","bandLabel":"-5.0% to 0.0%","bands":[{"score":2,"label":"\u003c -5.0%","active":false},{"score":4,"label":"-5.0% to 0.0%","active":true},{"score":6,"label":"0.0% to 5.0%","active":false},{"score":8,"label":"5.0% to 15.0%","active":false},{"score":10,"label":">= 15.0%","active":false}],"reason":"3M relative strength is -3.1%, between -5.0% and 0.0%, so L scores 4/10."},"I":{"metric":"institutionScore","rawValue":1,"thresholds":[0.05,0.1,0.2,0.35],"score":10,"status":"observed","legacyScore":10,"factorLabel":"Institutional support","metricLabel":"Institutional ownership proxy","displayValue":"+100.0%","bandLabel":">= 35.0%","bands":[{"score":2,"label":"\u003c 5.0%","active":false},{"score":4,"label":"5.0% to 10.0%","active":false},{"score":6,"label":"10.0% to 20.0%","active":false},{"score":8,"label":"20.0% to 35.0%","active":false},{"score":10,"label":">= 35.0%","active":true}],"reason":"Institutional ownership proxy is +100.0%, at or above 35.0%, so I scores 10/10."},"M":{"metric":"marketTrend","rawValue":0.25,"thresholds":[0.3,0.5,0.6,0.8],"score":2,"status":"observed","legacyScore":2,"factorLabel":"Market direction","metricLabel":"Market trend score","displayValue":"0.25","bandLabel":"\u003c 0.30","bands":[{"score":2,"label":"\u003c 0.30","active":true},{"score":4,"label":"0.30 to 0.50","active":false},{"score":6,"label":"0.50 to 0.60","active":false},{"score":8,"label":"0.60 to 0.80","active":false},{"score":10,"label":">= 0.80","active":false}],"reason":"Market trend score is 0.25, below 0.30, so M scores 2/10."}},"normalizedCanSlim":42},"entry":[79200,77429,75700],"tp":[84514,88057,97843],"sl":72429,"signal":"HOLD","confidence":5,"rawScore":39,"delta":"no change","historyMini":[{"timestamp":"2026-03-25T09:02:10.341Z","price":79200,"signal":"HOLD","confidence":5,"observedPct":0.6},{"timestamp":"2026-03-25T09:05:48.991Z","price":79200,"signal":"HOLD","confidence":5,"observedPct":0.6},{"timestamp":"2026-03-25T09:14:28.558Z","price":79200,"signal":"HOLD","confidence":5,"observedPct":0.6},{"timestamp":"2026-03-25T09:16:35.772Z","price":79200,"signal":"HOLD","confidence":5,"observedPct":0.6},{"timestamp":"2026-03-25T09:37:02.137Z","price":79200,"signal":"HOLD","confidence":5,"observedPct":0.6}]},{"ticker":"HDB","name":"HDBank","sector":"BANK","scanTime":"2026-03-25T09:37:01.818Z","price":24900,"open":24500,"high":25000,"low":24500,"changePct":2.47,"priceDate":"2026-03-25","volume":11108800,"avgVol20":15414085,"volRatio":0.72,"tradedValue":274276272000,"avgValue20":396024661468,"sma20":25773,"sma50":27231,"sma200":27395,"rsi14":40.9,"macd":-745,"atr14":846,"pe":6.4,"pb":1.5,"eps":4644,"roe":24.5,"marketCap":124631380442700,"foreignNet5d":null,"canslim":{"C":10,"A":10,"N":6,"S":6,"L":4,"I":2,"M":2},"observedCanSlim":{"C":10,"A":10,"N":6,"S":6,"L":4,"I":2,"M":2},"canslimTotal":40,"observedCanSlimTotal":40,"observedCanSlimMax":70,"coveragePct":100,"volumeSignal":"NORMAL","wyckoffPhase":"Markdown","relative":{"ret1d":0.0247,"ret1w":-0.0311,"ret1m":-0.1263,"ret3m":-0.0978,"vsVNINDEX3m":-0.0564,"vsVN303m":-0.0209,"priceVsSma20Pct":-3.39,"priceVsSma50Pct":-8.56},"market":{"session":"closed","regime":"bearish","trendScore":0.25,"indexes":{"VNINDEX":{"price":1658.19,"changePct":2.69,"ret1m":-0.1121,"ret3m":-0.0414,"sma20":1730.3,"sma50":1795.61,"regime":"bearish","trendScore":0.25,"date":"2026-03-25"},"VN30":{"price":1814.73,"changePct":2.52,"ret1m":-0.1151,"ret3m":-0.0769,"sma20":1884.99,"sma50":1974.03,"regime":"bearish","trendScore":0.25,"date":"2026-03-25"}}},"quality":{"score":100,"label":"high","coveragePct":100,"coverageLabel":"strong","historyBars":57,"freshnessSec":0,"snapshotOverlayUsed":true,"missingFactors":[],"missingFields":["foreignNet5d"],"sourceFlags":{"price":"vps_snapshot_overlay","market":"vps_history","fundamentals":"kbs_enrichment","ownership":"kbs_profile","foreign":"unavailable","providerRoadmap":{"kbs":{"status":"active","role":"fundamentals_ownership_enrichment"},"fireant":{"status":"planned","role":"fundamentals_enrichment"},"ssi":{"status":"planned","role":"execution_metadata"},"fiingroup":{"status":"vendor_review","role":"enterprise_datafeed"},"vietstock":{"status":"vendor_review","role":"enterprise_datafeed"},"vnstock":{"status":"reference_only","role":"research_prototyping"}}},"warnings":["Foreign flow unavailable"]},"explain":{"ruleRead":"Neutral / Mixed","ruleStrength":{"score":5,"label":"moderate conviction","rawScore":38},"driversPositive":["RSI 40.9 in healthy range"],"driversNegative":["RS vs VNINDEX 3M -5.6%","Price -8.6% vs SMA50","Market regime bearish","Foreign flow unavailable"],"factorBreakdown":{"C":{"metric":"epsGrowthQoQ","rawValue":0.6125,"thresholds":[0,0.1,0.2,0.4],"score":10,"status":"observed","legacyScore":10,"factorLabel":"Current earnings","metricLabel":"Quarterly EPS growth","displayValue":"+61.3%","bandLabel":">= 40.0%","bands":[{"score":2,"label":"\u003c 0.0%","active":false},{"score":4,"label":"0.0% to 10.0%","active":false},{"score":6,"label":"10.0% to 20.0%","active":false},{"score":8,"label":"20.0% to 40.0%","active":false},{"score":10,"label":">= 40.0%","active":true}],"reason":"Quarterly EPS growth is +61.3%, at or above 40.0%, so C scores 10/10."},"A":{"metric":"epsGrowth1Y","rawValue":0.2872,"thresholds":[0,0.08,0.15,0.25],"score":10,"status":"observed","legacyScore":10,"factorLabel":"Annual growth","metricLabel":"Annual EPS growth","displayValue":"+28.7%","bandLabel":">= 25.0%","bands":[{"score":2,"label":"\u003c 0.0%","active":false},{"score":4,"label":"0.0% to 8.0%","active":false},{"score":6,"label":"8.0% to 15.0%","active":false},{"score":8,"label":"15.0% to 25.0%","active":false},{"score":10,"label":">= 25.0%","active":true}],"reason":"Annual EPS growth is +28.7%, at or above 25.0%, so A scores 10/10."},"N":{"metric":"nearHighPct","rawValue":0.83,"thresholds":[0.7,0.8,0.9,0.95],"score":6,"status":"observed","legacyScore":6,"factorLabel":"New highs","metricLabel":"Price vs 52W high","displayValue":"83.0% of 52W high","bandLabel":"80.0% to 90.0%","bands":[{"score":2,"label":"\u003c 70.0%","active":false},{"score":4,"label":"70.0% to 80.0%","active":false},{"score":6,"label":"80.0% to 90.0%","active":true},{"score":8,"label":"90.0% to 95.0%","active":false},{"score":10,"label":">= 95.0%","active":false}],"reason":"Price vs 52W high is 83.0% of 52W high, between 80.0% and 90.0%, so N scores 6/10."},"S":{"metric":"volScore","rawValue":0.72,"thresholds":[0.4,0.7,1,1.5],"score":6,"status":"observed","legacyScore":6,"factorLabel":"Supply / demand","metricLabel":"Volume vs avg20","displayValue":"0.72x","bandLabel":"0.70x to 1.00x","bands":[{"score":2,"label":"\u003c 0.40x","active":false},{"score":4,"label":"0.40x to 0.70x","active":false},{"score":6,"label":"0.70x to 1.00x","active":true},{"score":8,"label":"1.00x to 1.50x","active":false},{"score":10,"label":">= 1.50x","active":false}],"reason":"Volume vs avg20 is 0.72x, between 0.70x and 1.00x, so S scores 6/10."},"L":{"metric":"rs3m","rawValue":-0.0387,"thresholds":[-0.05,0,0.05,0.15],"score":4,"status":"observed","legacyScore":4,"factorLabel":"Leader / laggard","metricLabel":"3M relative strength","displayValue":"-3.9%","bandLabel":"-5.0% to 0.0%","bands":[{"score":2,"label":"\u003c -5.0%","active":false},{"score":4,"label":"-5.0% to 0.0%","active":true},{"score":6,"label":"0.0% to 5.0%","active":false},{"score":8,"label":"5.0% to 15.0%","active":false},{"score":10,"label":">= 15.0%","active":false}],"reason":"3M relative strength is -3.9%, between -5.0% and 0.0%, so L scores 4/10."},"I":{"metric":"institutionScore","rawValue":0.01,"thresholds":[0.05,0.1,0.2,0.35],"score":2,"status":"observed","legacyScore":2,"factorLabel":"Institutional support","metricLabel":"Institutional ownership proxy","displayValue":"+1.0%","bandLabel":"\u003c 5.0%","bands":[{"score":2,"label":"\u003c 5.0%","active":true},{"score":4,"label":"5.0% to 10.0%","active":false},{"score":6,"label":"10.0% to 20.0%","active":false},{"score":8,"label":"20.0% to 35.0%","active":false},{"score":10,"label":">= 35.0%","active":false}],"reason":"Institutional ownership proxy is +1.0%, below 5.0%, so I scores 2/10."},"M":{"metric":"marketTrend","rawValue":0.25,"thresholds":[0.3,0.5,0.6,0.8],"score":2,"status":"observed","legacyScore":2,"factorLabel":"Market direction","metricLabel":"Market trend score","displayValue":"0.25","bandLabel":"\u003c 0.30","bands":[{"score":2,"label":"\u003c 0.30","active":true},{"score":4,"label":"0.30 to 0.50","active":false},{"score":6,"label":"0.50 to 0.60","active":false},{"score":8,"label":"0.60 to 0.80","active":false},{"score":10,"label":">= 0.80","active":false}],"reason":"Market trend score is 0.25, below 0.30, so M scores 2/10."}},"normalizedCanSlim":40},"entry":[24900,24477,24130],"tp":[26170,27016,29396],"sl":23377,"signal":"HOLD","confidence":5,"rawScore":38,"delta":"no change","historyMini":[{"timestamp":"2026-03-25T09:02:10.269Z","price":24900,"signal":"HOLD","confidence":5,"observedPct":0.57},{"timestamp":"2026-03-25T09:05:48.642Z","price":24900,"signal":"HOLD","confidence":5,"observedPct":0.57},{"timestamp":"2026-03-25T09:14:28.131Z","price":24900,"signal":"HOLD","confidence":5,"observedPct":0.57},{"timestamp":"2026-03-25T09:16:35.381Z","price":24900,"signal":"HOLD","confidence":5,"observedPct":0.57},{"timestamp":"2026-03-25T09:37:01.818Z","price":24900,"signal":"HOLD","confidence":5,"observedPct":0.57}]},{"ticker":"TCB","name":"Techcombank","sector":"BANK","scanTime":"2026-03-25T09:37:01.596Z","price":30800,"open":30300,"high":30900,"low":30050,"changePct":3.18,"priceDate":"2026-03-25","volume":10014500,"avgVol20":14685205,"volRatio":0.68,"tradedValue":305342105000,"avgValue20":459344220435,"sma20":31400,"sma50":33945,"sma200":34067,"rsi14":42.6,"macd":-1264,"atr14":954,"pe":9.8,"pb":1.4,"eps":3576,"roe":15.4,"marketCap":218256204751200,"foreignNet5d":null,"canslim":{"C":4,"A":8,"N":6,"S":4,"L":4,"I":10,"M":2},"observedCanSlim":{"C":4,"A":8,"N":6,"S":4,"L":4,"I":10,"M":2},"canslimTotal":38,"observedCanSlimTotal":38,"observedCanSlimMax":70,"coveragePct":100,"volumeSignal":"NORMAL","wyckoffPhase":"Markdown","relative":{"ret1d":0.0318,"ret1w":0.0165,"ret1m":-0.1397,"ret3m":-0.0914,"vsVNINDEX3m":-0.05,"vsVN303m":-0.0145,"priceVsSma20Pct":-1.91,"priceVsSma50Pct":-9.26},"market":{"session":"closed","regime":"bearish","trendScore":0.25,"indexes":{"VNINDEX":{"price":1658.19,"changePct":2.69,"ret1m":-0.1121,"ret3m":-0.0414,"sma20":1730.3,"sma50":1795.61,"regime":"bearish","trendScore":0.25,"date":"2026-03-25"},"VN30":{"price":1814.73,"changePct":2.52,"ret1m":-0.1151,"ret3m":-0.0769,"sma20":1884.99,"sma50":1974.03,"regime":"bearish","trendScore":0.25,"date":"2026-03-25"}}},"quality":{"score":100,"label":"high","coveragePct":100,"coverageLabel":"strong","historyBars":57,"freshnessSec":0,"snapshotOverlayUsed":true,"missingFactors":[],"missingFields":["foreignNet5d"],"sourceFlags":{"price":"vps_snapshot_overlay","market":"vps_history","fundamentals":"kbs_enrichment","ownership":"kbs_profile","foreign":"unavailable","providerRoadmap":{"kbs":{"status":"active","role":"fundamentals_ownership_enrichment"},"fireant":{"status":"planned","role":"fundamentals_enrichment"},"ssi":{"status":"planned","role":"execution_metadata"},"fiingroup":{"status":"vendor_review","role":"enterprise_datafeed"},"vietstock":{"status":"vendor_review","role":"enterprise_datafeed"},"vnstock":{"status":"reference_only","role":"research_prototyping"}}},"warnings":["Foreign flow unavailable"]},"explain":{"ruleRead":"Neutral / Mixed","ruleStrength":{"score":5,"label":"moderate conviction","rawScore":37},"driversPositive":["RSI 42.6 in healthy range"],"driversNegative":["RS vs VNINDEX 3M -5.0%","Price -9.3% vs SMA50","Volume only 0.68x avg20","Market regime bearish","Foreign flow unavailable"],"factorBreakdown":{"C":{"metric":"epsGrowthQoQ","rawValue":0.0104,"thresholds":[0,0.1,0.2,0.4],"score":4,"status":"observed","legacyScore":4,"factorLabel":"Current earnings","metricLabel":"Quarterly EPS growth","displayValue":"+1.0%","bandLabel":"0.0% to 10.0%","bands":[{"score":2,"label":"\u003c 0.0%","active":false},{"score":4,"label":"0.0% to 10.0%","active":true},{"score":6,"label":"10.0% to 20.0%","active":false},{"score":8,"label":"20.0% to 40.0%","active":false},{"score":10,"label":">= 40.0%","active":false}],"reason":"Quarterly EPS growth is +1.0%, between 0.0% and 10.0%, so C scores 4/10."},"A":{"metric":"epsGrowth1Y","rawValue":0.1928,"thresholds":[0,0.08,0.15,0.25],"score":8,"status":"observed","legacyScore":8,"factorLabel":"Annual growth","metricLabel":"Annual EPS growth","displayValue":"+19.3%","bandLabel":"15.0% to 25.0%","bands":[{"score":2,"label":"\u003c 0.0%","active":false},{"score":4,"label":"0.0% to 8.0%","active":false},{"score":6,"label":"8.0% to 15.0%","active":false},{"score":8,"label":"15.0% to 25.0%","active":true},{"score":10,"label":">= 25.0%","active":false}],"reason":"Annual EPS growth is +19.3%, between 15.0% and 25.0%, so A scores 8/10."},"N":{"metric":"nearHighPct","rawValue":0.806,"thresholds":[0.7,0.8,0.9,0.95],"score":6,"status":"observed","legacyScore":6,"factorLabel":"New highs","metricLabel":"Price vs 52W high","displayValue":"80.6% of 52W high","bandLabel":"80.0% to 90.0%","bands":[{"score":2,"label":"\u003c 70.0%","active":false},{"score":4,"label":"70.0% to 80.0%","active":false},{"score":6,"label":"80.0% to 90.0%","active":true},{"score":8,"label":"90.0% to 95.0%","active":false},{"score":10,"label":">= 95.0%","active":false}],"reason":"Price vs 52W high is 80.6% of 52W high, between 80.0% and 90.0%, so N scores 6/10."},"S":{"metric":"volScore","rawValue":0.68,"thresholds":[0.4,0.7,1,1.5],"score":4,"status":"observed","legacyScore":4,"factorLabel":"Supply / demand","metricLabel":"Volume vs avg20","displayValue":"0.68x","bandLabel":"0.40x to 0.70x","bands":[{"score":2,"label":"\u003c 0.40x","active":false},{"score":4,"label":"0.40x to 0.70x","active":true},{"score":6,"label":"0.70x to 1.00x","active":false},{"score":8,"label":"1.00x to 1.50x","active":false},{"score":10,"label":">= 1.50x","active":false}],"reason":"Volume vs avg20 is 0.68x, between 0.40x and 0.70x, so S scores 4/10."},"L":{"metric":"rs3m","rawValue":-0.0323,"thresholds":[-0.05,0,0.05,0.15],"score":4,"status":"observed","legacyScore":4,"factorLabel":"Leader / laggard","metricLabel":"3M relative strength","displayValue":"-3.2%","bandLabel":"-5.0% to 0.0%","bands":[{"score":2,"label":"\u003c -5.0%","active":false},{"score":4,"label":"-5.0% to 0.0%","active":true},{"score":6,"label":"0.0% to 5.0%","active":false},{"score":8,"label":"5.0% to 15.0%","active":false},{"score":10,"label":">= 15.0%","active":false}],"reason":"3M relative strength is -3.2%, between -5.0% and 0.0%, so L scores 4/10."},"I":{"metric":"institutionScore","rawValue":1,"thresholds":[0.05,0.1,0.2,0.35],"score":10,"status":"observed","legacyScore":10,"factorLabel":"Institutional support","metricLabel":"Institutional ownership proxy","displayValue":"+100.0%","bandLabel":">= 35.0%","bands":[{"score":2,"label":"\u003c 5.0%","active":false},{"score":4,"label":"5.0% to 10.0%","active":false},{"score":6,"label":"10.0% to 20.0%","active":false},{"score":8,"label":"20.0% to 35.0%","active":false},{"score":10,"label":">= 35.0%","active":true}],"reason":"Institutional ownership proxy is +100.0%, at or above 35.0%, so I scores 10/10."},"M":{"metric":"marketTrend","rawValue":0.25,"thresholds":[0.3,0.5,0.6,0.8],"score":2,"status":"observed","legacyScore":2,"factorLabel":"Market direction","metricLabel":"Market trend score","displayValue":"0.25","bandLabel":"\u003c 0.30","bands":[{"score":2,"label":"\u003c 0.30","active":true},{"score":4,"label":"0.30 to 0.50","active":false},{"score":6,"label":"0.50 to 0.60","active":false},{"score":8,"label":"0.60 to 0.80","active":false},{"score":10,"label":">= 0.80","active":false}],"reason":"Market trend score is 0.25, below 0.30, so M scores 2/10."}},"normalizedCanSlim":38},"entry":[30800,30323,29470],"tp":[32230,33184,37404],"sl":28423,"signal":"HOLD","confidence":5,"rawScore":37,"delta":"no change","historyMini":[{"timestamp":"2026-03-25T09:02:10.187Z","price":30800,"signal":"HOLD","confidence":5,"observedPct":0.54},{"timestamp":"2026-03-25T09:05:48.247Z","price":30800,"signal":"HOLD","confidence":5,"observedPct":0.54},{"timestamp":"2026-03-25T09:14:27.646Z","price":30800,"signal":"HOLD","confidence":5,"observedPct":0.54},{"timestamp":"2026-03-25T09:16:35.133Z","price":30800,"signal":"HOLD","confidence":5,"observedPct":0.54},{"timestamp":"2026-03-25T09:37:01.596Z","price":30800,"signal":"HOLD","confidence":5,"observedPct":0.54}]},{"ticker":"FPT","name":"FPT Corp","sector":"TECH","scanTime":"2026-03-25T09:37:01.250Z","price":77000,"open":76200,"high":77000,"low":75600,"changePct":2.12,"priceDate":"2026-03-25","volume":7429300,"avgVol20":14406322,"volRatio":0.52,"tradedValue":567747106000,"avgValue20":1176422612080,"sma20":80725,"sma50":92376,"sma200":92709,"rsi14":37.1,"macd":-4900,"atr14":2979,"pe":15.9,"pb":3.7,"eps":6021,"roe":23.6,"marketCap":131170048317000,"foreignNet5d":null,"canslim":{"C":6,"A":4,"N":4,"S":4,"L":2,"I":10,"M":2},"observedCanSlim":{"C":6,"A":4,"N":4,"S":4,"L":2,"I":10,"M":2},"canslimTotal":32,"observedCanSlimTotal":32,"observedCanSlimMax":70,"coveragePct":100,"volumeSignal":"NORMAL","wyckoffPhase":"Markdown","relative":{"ret1d":0.0212,"ret1w":-0.0204,"ret1m":-0.1676,"ret3m":-0.1676,"vsVNINDEX3m":-0.1262,"vsVN303m":-0.0907,"priceVsSma20Pct":-4.61,"priceVsSma50Pct":-16.65},"market":{"session":"closed","regime":"bearish","trendScore":0.25,"indexes":{"VNINDEX":{"price":1658.19,"changePct":2.69,"ret1m":-0.1121,"ret3m":-0.0414,"sma20":1730.3,"sma50":1795.61,"regime":"bearish","trendScore":0.25,"date":"2026-03-25"},"VN30":{"price":1814.73,"changePct":2.52,"ret1m":-0.1151,"ret3m":-0.0769,"sma20":1884.99,"sma50":1974.03,"regime":"bearish","trendScore":0.25,"date":"2026-03-25"}}},"quality":{"score":100,"label":"high","coveragePct":100,"coverageLabel":"strong","historyBars":57,"freshnessSec":1,"snapshotOverlayUsed":true,"missingFactors":[],"missingFields":["foreignNet5d"],"sourceFlags":{"price":"vps_snapshot_overlay","market":"vps_history","fundamentals":"kbs_enrichment","ownership":"kbs_profile","foreign":"unavailable","providerRoadmap":{"kbs":{"status":"active","role":"fundamentals_ownership_enrichment"},"fireant":{"status":"planned","role":"fundamentals_enrichment"},"ssi":{"status":"planned","role":"execution_metadata"},"fiingroup":{"status":"vendor_review","role":"enterprise_datafeed"},"vietstock":{"status":"vendor_review","role":"enterprise_datafeed"},"vnstock":{"status":"reference_only","role":"research_prototyping"}}},"warnings":["Foreign flow unavailable"]},"explain":{"ruleRead":"Bearish Bias","ruleStrength":{"score":4,"label":"low conviction","rawScore":31},"driversPositive":[],"driversNegative":["RS vs VNINDEX 3M -12.6%","Price -16.6% vs SMA50","Volume only 0.52x avg20","Market regime bearish","Foreign flow unavailable"],"factorBreakdown":{"C":{"metric":"epsGrowthQoQ","rawValue":0.1751,"thresholds":[0,0.1,0.2,0.4],"score":6,"status":"observed","legacyScore":6,"factorLabel":"Current earnings","metricLabel":"Quarterly EPS growth","displayValue":"+17.5%","bandLabel":"10.0% to 20.0%","bands":[{"score":2,"label":"\u003c 0.0%","active":false},{"score":4,"label":"0.0% to 10.0%","active":false},{"score":6,"label":"10.0% to 20.0%","active":true},{"score":8,"label":"20.0% to 40.0%","active":false},{"score":10,"label":">= 40.0%","active":false}],"reason":"Quarterly EPS growth is +17.5%, between 10.0% and 20.0%, so C scores 6/10."},"A":{"metric":"epsGrowth1Y","rawValue":0.0553,"thresholds":[0,0.08,0.15,0.25],"score":4,"status":"observed","legacyScore":4,"factorLabel":"Annual growth","metricLabel":"Annual EPS growth","displayValue":"+5.5%","bandLabel":"0.0% to 8.0%","bands":[{"score":2,"label":"\u003c 0.0%","active":false},{"score":4,"label":"0.0% to 8.0%","active":true},{"score":6,"label":"8.0% to 15.0%","active":false},{"score":8,"label":"15.0% to 25.0%","active":false},{"score":10,"label":">= 25.0%","active":false}],"reason":"Annual EPS growth is +5.5%, between 0.0% and 8.0%, so A scores 4/10."},"N":{"metric":"nearHighPct","rawValue":0.708,"thresholds":[0.7,0.8,0.9,0.95],"score":4,"status":"observed","legacyScore":4,"factorLabel":"New highs","metricLabel":"Price vs 52W high","displayValue":"70.8% of 52W high","bandLabel":"70.0% to 80.0%","bands":[{"score":2,"label":"\u003c 70.0%","active":false},{"score":4,"label":"70.0% to 80.0%","active":true},{"score":6,"label":"80.0% to 90.0%","active":false},{"score":8,"label":"90.0% to 95.0%","active":false},{"score":10,"label":">= 95.0%","active":false}],"reason":"Price vs 52W high is 70.8% of 52W high, between 70.0% and 80.0%, so N scores 4/10."},"S":{"metric":"volScore","rawValue":0.52,"thresholds":[0.4,0.7,1,1.5],"score":4,"status":"observed","legacyScore":4,"factorLabel":"Supply / demand","metricLabel":"Volume vs avg20","displayValue":"0.52x","bandLabel":"0.40x to 0.70x","bands":[{"score":2,"label":"\u003c 0.40x","active":false},{"score":4,"label":"0.40x to 0.70x","active":true},{"score":6,"label":"0.70x to 1.00x","active":false},{"score":8,"label":"1.00x to 1.50x","active":false},{"score":10,"label":">= 1.50x","active":false}],"reason":"Volume vs avg20 is 0.52x, between 0.40x and 0.70x, so S scores 4/10."},"L":{"metric":"rs3m","rawValue":-0.1085,"thresholds":[-0.05,0,0.05,0.15],"score":2,"status":"observed","legacyScore":2,"factorLabel":"Leader / laggard","metricLabel":"3M relative strength","displayValue":"-10.8%","bandLabel":"\u003c -5.0%","bands":[{"score":2,"label":"\u003c -5.0%","active":true},{"score":4,"label":"-5.0% to 0.0%","active":false},{"score":6,"label":"0.0% to 5.0%","active":false},{"score":8,"label":"5.0% to 15.0%","active":false},{"score":10,"label":">= 15.0%","active":false}],"reason":"3M relative strength is -10.8%, below -5.0%, so L scores 2/10."},"I":{"metric":"institutionScore","rawValue":0.5699,"thresholds":[0.05,0.1,0.2,0.35],"score":10,"status":"observed","legacyScore":10,"factorLabel":"Institutional support","metricLabel":"Institutional ownership proxy","displayValue":"+57.0%","bandLabel":">= 35.0%","bands":[{"score":2,"label":"\u003c 5.0%","active":false},{"score":4,"label":"5.0% to 10.0%","active":false},{"score":6,"label":"10.0% to 20.0%","active":false},{"score":8,"label":"20.0% to 35.0%","active":false},{"score":10,"label":">= 35.0%","active":true}],"reason":"Institutional ownership proxy is +57.0%, at or above 35.0%, so I scores 10/10."},"M":{"metric":"marketTrend","rawValue":0.25,"thresholds":[0.3,0.5,0.6,0.8],"score":2,"status":"observed","legacyScore":2,"factorLabel":"Market direction","metricLabel":"Market trend score","displayValue":"0.25","bandLabel":"\u003c 0.30","bands":[{"score":2,"label":"\u003c 0.30","active":true},{"score":4,"label":"0.30 to 0.50","active":false},{"score":6,"label":"0.50 to 0.60","active":false},{"score":8,"label":"0.60 to 0.80","active":false},{"score":10,"label":">= 0.80","active":false}],"reason":"Market trend score is 0.25, below 0.30, so M scores 2/10."}},"normalizedCanSlim":32},"entry":[77000,75511,73220],"tp":[81468,84446,96479],"sl":70111,"signal":"SELL","confidence":4,"rawScore":31,"delta":"no change","historyMini":[{"timestamp":"2026-03-25T09:05:47.834Z","price":77000,"signal":"SELL","confidence":4,"observedPct":0.46},{"timestamp":"2026-03-25T09:14:27.045Z","price":77000,"signal":"SELL","confidence":4,"observedPct":0.46},{"timestamp":"2026-03-25T09:14:27.062Z","price":77000,"signal":"SELL","confidence":4,"observedPct":0.46},{"timestamp":"2026-03-25T09:16:34.642Z","price":77000,"signal":"SELL","confidence":4,"observedPct":0.46},{"timestamp":"2026-03-25T09:37:01.250Z","price":77000,"signal":"SELL","confidence":4,"observedPct":0.46}]}]},"prompt":"I have 5 Vietnam stocks monitored by my local Saigon Terminal snapshot (2026-03-25T09:37:02.468Z).\n\nRules:\n- VPS is the live market source.\n- KBS enriches fundamentals and ownership when reachable.\n- Missing CAN SLIM factors are unknown, not neutral.\n- Confidence is a rule-strength score, not certainty.\n\nMarket:\n- Session: closed\n- Regime: bearish\n- Breadth: 5 up / 0 down / 0 flat\n- Turnover: 2.0T\n\nPlease validate the rule reads, flag weak data coverage, and identify the strongest and weakest setups.\n\n▸ CTG (VietinBank, BANK)\n  Price: 34.050 (+1.49%) | Value: 211.6B | Vol 6.2M (0.5x avg)\n  Relative: 1W -2.7% | 1M -10.9% | 3M -3.3% | vs VNINDEX +0.9% | vs VN30 +4.4%\n  Observed CAN SLIM: 42/70 | Coverage 100% [C:6 A:10 N:4 S:4 L:6 I:10 M:2]\n  Rule Read: Neutral / Mixed | Rule Strength: 5/10 (moderate conviction)\n  Positive drivers: RS vs VNINDEX 3M +0.9%; RSI 40.3 in healthy range\n  Negative drivers: Price -9.1% vs SMA50; Volume only 0.5x avg20; Market regime bearish; Foreign flow unavailable\n  Warnings: Foreign flow unavailable\n  Heuristic levels: Entry 34.050/33.507/32.615 | TP 35.679/36.764/39.836 | SL 31.457\n\n▸ MWG (Thế Giới Di Động, RETAIL)\n  Price: 79.200 (+4.21%) | Value: 592.4B | Vol 7.6M (0.78x avg)\n  Relative: 1W -5.4% | 1M -14.1% | 3M -9.0% | vs VNINDEX -4.8% | vs VN30 -1.3%\n  Observed CAN SLIM: 42/70 | Coverage 100% [C:4 A:10 N:6 S:6 L:4 I:10 M:2]\n  Rule Read: Neutral / Mixed | Rule Strength: 5/10 (moderate conviction)\n  Positive drivers: RSI 42.7 in healthy range\n  Negative drivers: RS vs VNINDEX 3M -4.8%; Price -8.6% vs SMA50; Market regime bearish; Foreign flow unavailable\n  Warnings: Foreign flow unavailable\n  Heuristic levels: Entry 79.200/77.429/75.700 | TP 84.514/88.057/97.843 | SL 72.429\n\n▸ HDB (HDBank, BANK)\n  Price: 24.900 (+2.47%) | Value: 274.3B | Vol 11.1M (0.72x avg)\n  Relative: 1W -3.1% | 1M -12.6% | 3M -9.8% | vs VNINDEX -5.6% | vs VN30 -2.1%\n  Observed CAN SLIM: 40/70 | Coverage 100% [C:10 A:10 N:6 S:6 L:4 I:2 M:2]\n  Rule Read: Neutral / Mixed | Rule Strength: 5/10 (moderate conviction)\n  Positive drivers: RSI 40.9 in healthy range\n  Negative drivers: RS vs VNINDEX 3M -5.6%; Price -8.6% vs SMA50; Market regime bearish; Foreign flow unavailable\n  Warnings: Foreign flow unavailable\n  Heuristic levels: Entry 24.900/24.477/24.130 | TP 26.170/27.016/29.396 | SL 23.377\n\n▸ TCB (Techcombank, BANK)\n  Price: 30.800 (+3.18%) | Value: 305.3B | Vol 10.0M (0.68x avg)\n  Relative: 1W +1.7% | 1M -14.0% | 3M -9.1% | vs VNINDEX -5.0% | vs VN30 -1.5%\n  Observed CAN SLIM: 38/70 | Coverage 100% [C:4 A:8 N:6 S:4 L:4 I:10 M:2]\n  Rule Read: Neutral / Mixed | Rule Strength: 5/10 (moderate conviction)\n  Positive drivers: RSI 42.6 in healthy range\n  Negative drivers: RS vs VNINDEX 3M -5.0%; Price -9.3% vs SMA50; Volume only 0.68x avg20; Market regime bearish; Foreign flow unavailable\n  Warnings: Foreign flow unavailable\n  Heuristic levels: Entry 30.800/30.323/29.470 | TP 32.230/33.184/37.404 | SL 28.423\n\n▸ FPT (FPT Corp, TECH)\n  Price: 77.000 (+2.12%) | Value: 567.7B | Vol 7.4M (0.52x avg)\n  Relative: 1W -2.0% | 1M -16.8% | 3M -16.8% | vs VNINDEX -12.6% | vs VN30 -9.1%\n  Observed CAN SLIM: 32/70 | Coverage 100% [C:6 A:4 N:4 S:4 L:2 I:10 M:2]\n  Rule Read: Bearish Bias | Rule Strength: 4/10 (low conviction)\n  Positive drivers: —\n  Negative drivers: RS vs VNINDEX 3M -12.6%; Price -16.6% vs SMA50; Volume only 0.52x avg20; Market regime bearish; Foreign flow unavailable\n  Warnings: Foreign flow unavailable\n  Heuristic levels: Entry 77.000/75.511/73.220 | TP 81.468/84.446/96.479 | SL 70.111","selectedTicker":"CTG"};
+const SIGNAL_LABELS = {
+  STRONG_BUY: "Strong Bullish Bias",
+  BUY: "Bullish Bias",
+  HOLD: "Neutral / Mixed",
+  SELL: "Bearish Bias",
+  STRONG_SELL: "Strong Bearish Bias",
+};
+
+const state = {
+  snapshot: DATA.snapshot,
+  prompt: DATA.prompt || "",
+  selectedTicker: DATA.selectedTicker || DATA.snapshot?.stocks?.[0]?.ticker || null,
+};
+
+function fNum(n) {
+  if (n == null) return "—";
+  return Number(n).toLocaleString("vi-VN");
+}
+
+function fK(n) {
+  if (n == null) return "—";
+  if (Math.abs(n) >= 1e12) return (n / 1e12).toFixed(1) + "T";
+  if (Math.abs(n) >= 1e9) return (n / 1e9).toFixed(1) + "B";
+  if (Math.abs(n) >= 1e6) return (n / 1e6).toFixed(1) + "M";
+  if (Math.abs(n) >= 1e3) return (n / 1e3).toFixed(1) + "K";
+  return String(n);
+}
+
+function fPct(n, scale = 1, digits = 1) {
+  if (n == null) return "—";
+  const value = Number(n) * scale;
+  return `${value >= 0 ? "+" : ""}${value.toFixed(digits)}%`;
+}
+
+function signalLabel(signal) {
+  return SIGNAL_LABELS[signal] || String(signal || "UNKNOWN").replace(/_/g, " ");
+}
+
+function qualityTone(label) {
+  return label === "high" ? "high" : (label === "medium" ? "medium" : "low");
+}
+
+function factorScoreTone(detail) {
+  if (detail.score == null) return "unknown";
+  return detail.score >= 8 ? "strong" : "weak";
+}
+
+function warningSummary(stock) {
+  const missing = stock.quality?.missingFactors?.length ? `Missing ${stock.quality.missingFactors.join("/")}` : null;
+  const firstWarning = (stock.quality?.warnings || []).find((warning) =>
+    !missing || !warning.includes("Missing CAN SLIM factors")
+  ) || null;
+  return [missing, firstWarning].filter(Boolean).join(" · ") || "Clean";
+}
+
+function renderHeader() {
+  const meta = document.getElementById("headerMeta");
+  meta.textContent = `${new Date(state.snapshot.generated).toLocaleString("vi-VN")} · ${state.snapshot.count} tickers`;
+}
+
+function renderMarket() {
+  const market = state.snapshot.market;
+  const grid = document.getElementById("marketGrid");
+  const cards = ["VNINDEX", "VN30"].map((symbol) => {
+    const index = market.indexes[symbol];
+    if (!index) return "";
+    const tone = (index.changePct || 0) >= 0 ? "tone-good" : "tone-bad";
+    return `
+      <div class="market-card">
+        <div class="market-k">${symbol}</div>
+        <div class="market-v mono">${fNum(index.price)}</div>
+        <div class="market-s ${tone}">${index.changePct >= 0 ? "+" : ""}${index.changePct}% · ${index.regime}</div>
+        <div class="chip-row">
+          <span class="chip">1M ${fPct(index.ret1m, 100)}</span>
+          <span class="chip">3M ${fPct(index.ret3m, 100)}</span>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  grid.innerHTML = cards + `
+    <div class="market-card">
+      <div class="market-k">Breadth</div>
+      <div class="market-v mono">${market.breadth.advancers} / ${market.breadth.decliners}</div>
+      <div class="market-s">${market.breadth.unchanged} unchanged · session ${market.session.replace(/_/g, " ")}</div>
+    </div>
+    <div class="market-card">
+      <div class="market-k">Turnover</div>
+      <div class="market-v mono">${fK(market.turnover)}</div>
+      <div class="market-s">Universe turnover in this snapshot</div>
+    </div>
+  `;
+}
+
+function renderPublishStats() {
+  const root = document.getElementById("publishStats");
+  const selected = state.snapshot.stocks.find((stock) => stock.ticker === state.selectedTicker) || state.snapshot.stocks[0];
+  root.innerHTML = [
+    `<div class="stat-card"><div class="stat-k">Focus</div><div class="stat-v">${selected?.ticker || "—"}</div><div>${selected ? selected.explain.ruleRead : "—"}</div></div>`,
+    `<div class="stat-card"><div class="stat-k">Universe</div><div class="stat-v mono">${state.snapshot.count}</div><div>Tickers in this published snapshot</div></div>`,
+    `<div class="stat-card"><div class="stat-k">Published</div><div class="stat-v mono">${new Date(state.snapshot.generated).toLocaleString("vi-VN")}</div><div>Snapshot timestamp</div></div>`,
+    `<div class="stat-card"><div class="stat-k">Coverage</div><div class="stat-v mono">${selected?.coveragePct ?? "—"}%</div><div>Observed CAN SLIM coverage for focus ticker</div></div>`,
+  ].join("");
+}
+
+function renderBoard() {
+  const root = document.getElementById("boardWrap");
+  root.innerHTML = `
+    <table class="board-table">
+      <thead>
+        <tr>
+          <th>Ticker</th>
+          <th>Sector</th>
+          <th>Last</th>
+          <th>Chg%</th>
+          <th>Value</th>
+          <th>Vol x Avg</th>
+          <th>RS vs VNINDEX</th>
+          <th>Observed CAN SLIM</th>
+          <th>Rule Read</th>
+          <th>Quality</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${state.snapshot.stocks.map((stock) => {
+          const selected = stock.ticker === state.selectedTicker ? "active" : "";
+          const observedPct = stock.observedCanSlimMax > 0
+            ? `${stock.observedCanSlimTotal}/${stock.observedCanSlimMax} · ${stock.coveragePct}%`
+            : `N/A · ${stock.coveragePct}%`;
+          return `
+            <tr class="${selected}" data-ticker="${stock.ticker}">
+              <td><strong>${stock.ticker}</strong><div style="color:var(--muted);font-size:12px;margin-top:4px">${stock.name}</div></td>
+              <td>${stock.sector}</td>
+              <td class="mono">${fNum(stock.price)}</td>
+              <td class="${(stock.changePct || 0) >= 0 ? "tone-good" : "tone-bad"}">${stock.changePct >= 0 ? "+" : ""}${stock.changePct}%</td>
+              <td class="mono">${fK(stock.tradedValue)}</td>
+              <td class="mono">${stock.volRatio}x</td>
+              <td class="${stock.relative?.vsVNINDEX3m >= 0 ? "tone-good" : "tone-bad"}">${fPct(stock.relative?.vsVNINDEX3m, 100)}</td>
+              <td><span class="chip">${observedPct}</span></td>
+              <td><span class="signal-chip" data-signal="${stock.signal}">${signalLabel(stock.signal)}</span></td>
+              <td><span class="quality-chip" data-tone="${qualityTone(stock.quality.label)}">${stock.quality.label}</span><div style="color:var(--muted);font-size:12px;margin-top:5px">${warningSummary(stock)}</div></td>
+            </tr>
+          `;
+        }).join("")}
+      </tbody>
+    </table>
+  `;
+
+  root.querySelectorAll("[data-ticker]").forEach((row) => {
+    row.addEventListener("click", () => {
+      state.selectedTicker = row.dataset.ticker;
+      renderBoard();
+      renderFocus();
+      renderPublishStats();
+    });
+  });
+}
+
+function renderFocus() {
+  const stock = state.snapshot.stocks.find((item) => item.ticker === state.selectedTicker) || state.snapshot.stocks[0];
+  const tickerNav = state.snapshot.stocks.map((item) => `
+    <button class="sheet-tab ${item.ticker === stock.ticker ? "active" : ""}" data-sheet-nav="${item.ticker}">
+      <div class="sheet-tab-ticker">${item.ticker}</div>
+      <div class="sheet-tab-meta">${item.changePct >= 0 ? "+" : ""}${item.changePct}% · ${item.confidence}/10</div>
+    </button>
+  `).join("");
+  const positives = stock.explain.driversPositive.length
+    ? stock.explain.driversPositive.map((line) => `<div class="item tone-good">${line}</div>`).join("")
+    : `<div class="item">No strong positive drivers.</div>`;
+  const negatives = stock.explain.driversNegative.length
+    ? stock.explain.driversNegative.map((line) => `<div class="item tone-bad">${line}</div>`).join("")
+    : `<div class="item">No major negative drivers.</div>`;
+  const warnings = stock.quality.warnings.length
+    ? stock.quality.warnings.map((line) => `<div class="item">${line}</div>`).join("")
+    : `<div class="item">No active warnings.</div>`;
+  const factors = Object.entries(stock.explain.factorBreakdown).map(([factor, detail]) =>
+    `
+      <div class="factor-card" data-status="${detail.status}">
+        <div class="factor-head">
+          <div>
+            <div class="factor-name">${factor} · ${detail.factorLabel}</div>
+            <div class="factor-metric">${detail.metricLabel}</div>
+          </div>
+          <div class="factor-score" data-tone="${factorScoreTone(detail)}">${detail.score == null ? "?" : `${detail.score}/10`}</div>
+        </div>
+        <div class="factor-meta">
+          <span class="chip">${detail.status}</span>
+          <span class="chip">Raw ${detail.displayValue}</span>
+          <span class="chip">${detail.bandLabel}</span>
+        </div>
+        <div class="factor-reason">${detail.reason}</div>
+        <div class="factor-bands">
+          ${detail.bands.map((band) => `<span class="factor-band ${band.active ? "active" : ""}">${band.score} · ${band.label}</span>`).join("")}
+        </div>
+      </div>
+    `
+  ).join("");
+  const history = (stock.historyMini || []).map((entry) => `
+    <div class="history-chip">
+      <div class="ts">${new Date(entry.timestamp).toLocaleString("vi-VN", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" })}</div>
+      <div class="sv mono">${fNum(entry.price)}</div>
+      <div class="sv">${signalLabel(entry.signal)}</div>
+      <div class="sv">${entry.confidence}/10</div>
+    </div>
+  `).join("");
+
+  document.getElementById("focusPanel").innerHTML = `
+    <div class="sheet-nav-wrap">
+      <div class="sheet-nav-label">Quick Ticker Nav</div>
+      <div class="sheet-nav">${tickerNav}</div>
+    </div>
+
+    <div class="eyebrow">Main Sheet</div>
+    <div class="panel-title">${stock.ticker} · ${stock.name}</div>
+    <div class="meta-copy">${stock.sector} · ${new Date(stock.scanTime).toLocaleString("vi-VN")} · ${stock.market.session.replace(/_/g, " ")} market</div>
+
+    <div class="focus-hero">
+      <div class="hero-slab">
+        <div class="hero-price mono">${fNum(stock.price)}</div>
+        <div class="${stock.changePct >= 0 ? "tone-good" : "tone-bad"}">${stock.changePct >= 0 ? "+" : ""}${stock.changePct}% · ${fK(stock.tradedValue)} traded · ${fNum(stock.volume)} volume</div>
+        <div class="chip-row" style="margin-top:12px">
+          <span class="signal-chip" data-signal="${stock.signal}">${signalLabel(stock.signal)}</span>
+          <span class="quality-chip" data-tone="${qualityTone(stock.quality.label)}">${stock.quality.label} · ${stock.coveragePct}%</span>
+          <span class="chip">Observed ${stock.observedCanSlimTotal}/${stock.observedCanSlimMax || 0}</span>
+          <span class="chip">RS vs VNINDEX ${fPct(stock.relative.vsVNINDEX3m, 100)}</span>
+        </div>
+      </div>
+      <div class="stack" style="gap:12px">
+        <div class="stat-card"><div class="stat-k">Rule Strength</div><div class="stat-v mono">${stock.confidence}/10</div><div>${stock.explain.ruleStrength.label}</div></div>
+        <div class="stat-card"><div class="stat-k">Heuristic Levels</div><div>Entry ${stock.entry.map(fNum).join(" / ")}</div><div>TP ${stock.tp.map(fNum).join(" / ")} · SL ${fNum(stock.sl)}</div></div>
+        <div class="stat-card"><div class="stat-k">Delta</div><div>${stock.delta}</div></div>
+      </div>
+    </div>
+
+    <div class="detail-grid">
+      <div class="section-card">
+        <div class="eyebrow">Context</div>
+        <div class="kv-grid">
+          <div class="kv"><div class="k">RS vs VNINDEX</div><div class="v mono">${fPct(stock.relative.vsVNINDEX3m, 100)}</div></div>
+          <div class="kv"><div class="k">RS vs VN30</div><div class="v mono">${fPct(stock.relative.vsVN303m, 100)}</div></div>
+          <div class="kv"><div class="k">Vol x Avg20</div><div class="v mono">${stock.volRatio}x</div></div>
+          <div class="kv"><div class="k">RSI14</div><div class="v mono">${stock.rsi14 ?? "—"}</div></div>
+          <div class="kv"><div class="k">PE / PB</div><div class="v mono">${stock.pe ?? "—"} / ${stock.pb ?? "—"}</div></div>
+          <div class="kv"><div class="k">ROE</div><div class="v mono">${stock.roe ?? "—"}</div></div>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <div class="eyebrow">Quality & Sources</div>
+        <div class="kv-grid">
+          <div class="kv"><div class="k">Freshness</div><div class="v">${stock.quality.freshnessSec == null ? "N/A" : stock.quality.freshnessSec + " sec"}</div></div>
+          <div class="kv"><div class="k">Price Source</div><div class="v">${stock.quality.sourceFlags.price}</div></div>
+          <div class="kv"><div class="k">Fundamentals</div><div class="v">${stock.quality.sourceFlags.fundamentals}</div></div>
+          <div class="kv"><div class="k">Ownership</div><div class="v">${stock.quality.sourceFlags.ownership}</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="detail-grid">
+      <div class="section-card">
+        <div class="eyebrow">Positive Drivers</div>
+        <div class="list" style="margin-top:12px">${positives}</div>
+      </div>
+      <div class="section-card">
+        <div class="eyebrow">Negative Drivers</div>
+        <div class="list" style="margin-top:12px">${negatives}</div>
+      </div>
+    </div>
+
+    <div class="section-card" style="margin-top:14px">
+      <div class="eyebrow">Factor Breakdown</div>
+      <div class="factor-grid" style="margin-top:12px">${factors}</div>
+    </div>
+
+    <div class="section-card" style="margin-top:14px">
+      <div class="eyebrow">Warnings</div>
+      <div class="list" style="margin-top:12px">${warnings}</div>
+    </div>
+
+    <div class="section-card" style="margin-top:14px">
+      <div class="eyebrow">History Strip</div>
+      <div class="history-strip" style="margin-top:12px">${history}</div>
+    </div>
+  `;
+
+  document.querySelectorAll("[data-sheet-nav]").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.selectedTicker = button.dataset.sheetNav;
+      renderBoard();
+      renderFocus();
+      renderPublishStats();
+    });
+  });
+}
+
+renderHeader();
+renderMarket();
+renderPublishStats();
+renderBoard();
+renderFocus();
+</script>
+</body>
+</html>

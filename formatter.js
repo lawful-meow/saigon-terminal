@@ -245,6 +245,82 @@ function buildBreakout(metrics) {
   };
 }
 
+function roundLot(shares, lotSize) {
+  if (!Number.isFinite(shares) || shares <= 0) return 0;
+  return Math.floor(shares / lotSize) * lotSize;
+}
+
+function buildExecutionRisk(metrics) {
+  const riskConfig = config.risk || {};
+  const lotSize = riskConfig.lotSize || 100;
+  const accountSize = riskConfig.accountSizeVnd || 1_000_000_000;
+  const fullRiskBudget = accountSize * (riskConfig.fullRiskPct || 0.005);
+  const pilotRiskBudget = accountSize * (riskConfig.pilotRiskPct || 0.0025);
+  const maxPositionBudget = accountSize * (riskConfig.maxPositionPct || 0.10);
+  const minAvgValue20 = riskConfig.minAvgValue20Vnd || 50_000_000_000;
+  const activePlan = (metrics.wyckoff?.entry?.plans || []).find((plan) =>
+    plan.kind === "buy" && Number.isFinite(plan.price) && Number.isFinite(plan.stop)
+  ) || null;
+  const entryPrice = activePlan?.price ?? null;
+  const stopPrice = activePlan?.stop ?? null;
+  const perShareRisk = Number.isFinite(entryPrice) && Number.isFinite(stopPrice)
+    ? Math.abs(entryPrice - stopPrice)
+    : null;
+  const stopDistancePct = Number.isFinite(perShareRisk) && Number.isFinite(entryPrice) && entryPrice > 0
+    ? +((perShareRisk / entryPrice) * 100).toFixed(2)
+    : null;
+  const stopDistanceAtr = Number.isFinite(perShareRisk) && Number.isFinite(metrics.atr14) && metrics.atr14 > 0
+    ? +(perShareRisk / metrics.atr14).toFixed(2)
+    : null;
+  const fullShares = Number.isFinite(perShareRisk) && perShareRisk > 0
+    ? roundLot(Math.min(fullRiskBudget / perShareRisk, maxPositionBudget / entryPrice), lotSize)
+    : 0;
+  const pilotShares = Number.isFinite(perShareRisk) && perShareRisk > 0
+    ? roundLot(Math.min(pilotRiskBudget / perShareRisk, maxPositionBudget / entryPrice), lotSize)
+    : 0;
+  const tradedValue = metrics.tradedValue || 0;
+  const avgValue20 = metrics.avgValue20 || 0;
+  const weakTurnover = tradedValue > 0 && avgValue20 > 0 && tradedValue < avgValue20 * 0.75;
+
+  let status = "ready";
+  let liquidityLabel = "tradeable";
+  let reason = "Sizing available from active buy plan.";
+
+  if (!activePlan || !Number.isFinite(perShareRisk) || perShareRisk <= 0) {
+    status = "unavailable";
+    liquidityLabel = "trap_risk";
+    reason = "No valid active buy plan with entry and stop exists yet.";
+  } else if (avgValue20 < minAvgValue20 || stopDistancePct > 12) {
+    liquidityLabel = "trap_risk";
+    reason = avgValue20 < minAvgValue20
+      ? "Average value traded is below the minimum liquidity threshold."
+      : "Stop distance is too wide for a controlled execution plan.";
+  } else if (stopDistancePct >= 8 || avgValue20 < minAvgValue20 * 1.5 || weakTurnover) {
+    liquidityLabel = "caution";
+    reason = stopDistancePct >= 8
+      ? "Stop distance is wide enough to require caution."
+      : (avgValue20 < minAvgValue20 * 1.5
+        ? "Liquidity clears the floor but still sits near the minimum threshold."
+        : "Current turnover is lagging the recent average.");
+  }
+
+  return {
+    status,
+    liquidityLabel,
+    avgValue20,
+    tradedValue,
+    stopDistancePct,
+    stopDistanceAtr,
+    riskReward1: activePlan?.riskReward1 ?? null,
+    riskReward2: activePlan?.riskReward2 ?? null,
+    pilotShares,
+    fullShares,
+    pilotNotional: pilotShares > 0 && entryPrice ? Math.round(pilotShares * entryPrice) : 0,
+    fullNotional: fullShares > 0 && entryPrice ? Math.round(fullShares * entryPrice) : 0,
+    reason,
+  };
+}
+
 function factorReason(factor, detail) {
   const factorLabel = FACTOR_META[factor]?.label || factor;
   const metricLabel = METRIC_META[detail.metric]?.label || detail.metric;
@@ -389,6 +465,7 @@ function tickerSnapshot(ticker, stockInfo, metrics, scores, prevScan, history = 
   const drivers = driverText(metrics, scores, warnings);
   const qScore = qualityScore(metrics, scores);
   const breakout = buildBreakout(metrics);
+  const executionRisk = buildExecutionRisk(metrics);
 
   const snapshot = {
     ticker,
@@ -480,6 +557,7 @@ function tickerSnapshot(ticker, stockInfo, metrics, scores, prevScan, history = 
     confidence: scores.confidence,
     rawScore: scores.rawScore,
     breakout,
+    executionRisk,
 
     delta: prevScan ? describeDelta(metrics, scores, prevScan) : "FIRST_SCAN",
   };
@@ -667,4 +745,5 @@ module.exports = {
   signalLabel,
   confidenceLabel,
   buildBreakout,
+  buildExecutionRisk,
 };

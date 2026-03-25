@@ -1,14 +1,14 @@
 {
-  "publishedAt": "2026-03-25T09:37:04.387Z",
-  "selectedTicker": "CTG",
+  "publishedAt": "2026-03-25T10:37:21.806Z",
+  "selectedTicker": "MWG",
   "snapshot": {
-    "generated": "2026-03-25T09:37:02.468Z",
+    "generated": "2026-03-25T10:35:45.570Z",
     "engine": "Saigon Terminal v2.0",
     "dataSource": "VPS + KBS",
-    "note": "Board data is VPS-first. KBS now enriches fundamentals and ownership when available. Missing CAN SLIM factors still stay unknown instead of being faked as neutral.",
+    "note": "Board data is VPS-first. KBS now enriches fundamentals and ownership when available. Missing CAN SLIM factors still stay unknown instead of being faked as neutral. Wyckoff output is a daily-bar structural heuristic with explicit action steps and entry conditions.",
     "count": 5,
     "market": {
-      "asOf": "2026-03-25T09:37:02.456Z",
+      "asOf": "2026-03-25T10:35:45.552Z",
       "session": "closed",
       "regime": "bearish",
       "indexes": {
@@ -150,7 +150,7 @@
         "ticker": "CTG",
         "name": "VietinBank",
         "sector": "BANK",
-        "scanTime": "2026-03-25T09:37:02.456Z",
+        "scanTime": "2026-03-25T10:35:45.552Z",
         "price": 34050,
         "open": 33750,
         "high": 34100,
@@ -198,6 +198,131 @@
         "coveragePct": 100,
         "volumeSignal": "NORMAL",
         "wyckoffPhase": "Markdown",
+        "wyckoffStage": "Phase E",
+        "wyckoffBias": "avoid",
+        "wyckoff": {
+          "phase": "Markdown",
+          "stage": "Phase E",
+          "label": "Markdown Phase E - Active Downtrend",
+          "code": "markdown",
+          "confidence": 54,
+          "confidenceLabel": "low",
+          "bias": "avoid",
+          "levels": {
+            "support": 32000,
+            "resistance": 39700,
+            "midpoint": 35850,
+            "rangeWidthPct": 22.61,
+            "pricePositionPct": 26.6,
+            "atr": 1086
+          },
+          "events": {
+            "spring": {
+              "active": false,
+              "name": "spring"
+            },
+            "upthrust": {
+              "active": false,
+              "name": "upthrust"
+            },
+            "sos": {
+              "active": false,
+              "name": "SOS"
+            },
+            "sow": {
+              "active": false,
+              "name": "SOW"
+            },
+            "stoppingVolume": {
+              "active": false,
+              "name": "stopping_volume"
+            },
+            "buyingClimax": {
+              "active": false,
+              "name": "buying_climax"
+            },
+            "backup": {
+              "active": false,
+              "name": "backup",
+              "date": "2026-03-25",
+              "price": 34050,
+              "support": 32000,
+              "resistance": 39700,
+              "volumeRatio": 0.5
+            },
+            "lpsy": {
+              "active": false,
+              "name": "LPSY",
+              "date": "2026-03-25",
+              "price": 34050,
+              "support": 32000,
+              "resistance": 39700,
+              "volumeRatio": 0.5
+            }
+          },
+          "action": {
+            "label": "No long entries in active markdown",
+            "summary": "Trend and structure are both hostile. The correct action is patience.",
+            "steps": [
+              "Stand aside while price stays below key moving averages and keeps making weak rebounds.",
+              "Wait for stopping action, a spring, or a new range before reconsidering any long.",
+              "Do not treat 32.000 as stable support if price is already below it.",
+              "Keep the name on a watchlist, not in a fresh long position."
+            ],
+            "shouldAvoid": [
+              "Do not catch a falling knife in Phase E markdown.",
+              "Do not set a buy just because RSI looks low without structural repair."
+            ]
+          },
+          "entry": {
+            "status": "avoid",
+            "summary": "Do not buy into active markdown. Wait for stopping action or a spring first.",
+            "plans": [],
+            "watch": [
+              {
+                "label": "Only reconsider long if demand wins",
+                "price": 39898,
+                "why": "A decisive move through 39.898 is needed before the structure becomes a real buy setup."
+              }
+            ],
+            "invalidation": "A clean move below 31.840 keeps the structure defensive."
+          },
+          "reasoning": [
+            {
+              "step": 1,
+              "title": "Trend Context",
+              "detail": "40-session backdrop is downtrend; price is -9.1% vs SMA50 with 1M return -11.6%."
+            },
+            {
+              "step": 2,
+              "title": "Trading Range Map",
+              "detail": "30-session support/resistance sit near 32.000 / 39.700; range width is 22.6% and the close sits at 27% of that box (lower third)."
+            },
+            {
+              "step": 3,
+              "title": "Supply / Demand Event",
+              "detail": "No decisive spring, upthrust, SOS, or SOW is visible in the recent daily-bar window, so the read leans more on range position and trend state than on a fresh Wyckoff trigger."
+            },
+            {
+              "step": 4,
+              "title": "Phase Decision",
+              "detail": "The structure is classified as Markdown Phase E - Active Downtrend because the stock is still below trend support and no convincing stopping or spring event has appeared yet."
+            }
+          ],
+          "context": {
+            "trendBias": "downtrend",
+            "volumeDry": true,
+            "priceVsSma50Pct": -9.13,
+            "ret20": -0.1156,
+            "ret40": -0.153,
+            "distanceFromSma20Atr": -0.93,
+            "rangeLocation": "lower third"
+          },
+          "notes": [
+            "Wyckoff output is inferred from daily OHLCV, not intraday tape.",
+            "The entry plan is only active when price behavior matches the listed confirmation condition."
+          ]
+        },
         "relative": {
           "ret1d": 0.0149,
           "ret1w": -0.0271,
@@ -283,15 +408,16 @@
             }
           },
           "warnings": [
-            "Foreign flow unavailable"
+            "Foreign flow unavailable",
+            "Wyckoff read is low-confidence"
           ]
         },
         "explain": {
-          "ruleRead": "Neutral / Mixed",
+          "ruleRead": "Bearish Bias",
           "ruleStrength": {
-            "score": 5,
-            "label": "moderate conviction",
-            "rawScore": 39
+            "score": 4,
+            "label": "low conviction",
+            "rawScore": 32
           },
           "driversPositive": [
             "RS vs VNINDEX 3M +0.9%",
@@ -301,6 +427,7 @@
             "Price -9.1% vs SMA50",
             "Volume only 0.5x avg20",
             "Market regime bearish",
+            "Wyckoff Markdown Phase E - Active Downtrend",
             "Foreign flow unavailable"
           ],
           "factorBreakdown": {
@@ -620,7 +747,56 @@
               "reason": "Market trend score is 0.25, below 0.30, so M scores 2/10."
             }
           },
-          "normalizedCanSlim": 42
+          "normalizedCanSlim": 42,
+          "wyckoffAction": {
+            "label": "No long entries in active markdown",
+            "summary": "Trend and structure are both hostile. The correct action is patience.",
+            "steps": [
+              "Stand aside while price stays below key moving averages and keeps making weak rebounds.",
+              "Wait for stopping action, a spring, or a new range before reconsidering any long.",
+              "Do not treat 32.000 as stable support if price is already below it.",
+              "Keep the name on a watchlist, not in a fresh long position."
+            ],
+            "shouldAvoid": [
+              "Do not catch a falling knife in Phase E markdown.",
+              "Do not set a buy just because RSI looks low without structural repair."
+            ]
+          },
+          "wyckoffEntry": {
+            "status": "avoid",
+            "summary": "Do not buy into active markdown. Wait for stopping action or a spring first.",
+            "plans": [],
+            "watch": [
+              {
+                "label": "Only reconsider long if demand wins",
+                "price": 39898,
+                "why": "A decisive move through 39.898 is needed before the structure becomes a real buy setup."
+              }
+            ],
+            "invalidation": "A clean move below 31.840 keeps the structure defensive."
+          },
+          "wyckoffReasoning": [
+            {
+              "step": 1,
+              "title": "Trend Context",
+              "detail": "40-session backdrop is downtrend; price is -9.1% vs SMA50 with 1M return -11.6%."
+            },
+            {
+              "step": 2,
+              "title": "Trading Range Map",
+              "detail": "30-session support/resistance sit near 32.000 / 39.700; range width is 22.6% and the close sits at 27% of that box (lower third)."
+            },
+            {
+              "step": 3,
+              "title": "Supply / Demand Event",
+              "detail": "No decisive spring, upthrust, SOS, or SOW is visible in the recent daily-bar window, so the read leans more on range position and trend state than on a fresh Wyckoff trigger."
+            },
+            {
+              "step": 4,
+              "title": "Phase Decision",
+              "detail": "The structure is classified as Markdown Phase E - Active Downtrend because the stock is still below trend support and no convincing stopping or spring event has appeared yet."
+            }
+          ]
         },
         "entry": [
           34050,
@@ -633,18 +809,11 @@
           39836
         ],
         "sl": 31457,
-        "signal": "HOLD",
-        "confidence": 5,
-        "rawScore": 39,
-        "delta": "no change",
+        "signal": "SELL",
+        "confidence": 4,
+        "rawScore": 32,
+        "delta": "signal HOLD→SELL",
         "historyMini": [
-          {
-            "timestamp": "2026-03-25T09:02:10.411Z",
-            "price": 34050,
-            "signal": "HOLD",
-            "confidence": 5,
-            "observedPct": 0.6
-          },
           {
             "timestamp": "2026-03-25T09:05:49.310Z",
             "price": 34050,
@@ -672,6 +841,13 @@
             "signal": "HOLD",
             "confidence": 5,
             "observedPct": 0.6
+          },
+          {
+            "timestamp": "2026-03-25T10:35:45.552Z",
+            "price": 34050,
+            "signal": "SELL",
+            "confidence": 4,
+            "observedPct": 0.6
           }
         ]
       },
@@ -679,7 +855,7 @@
         "ticker": "MWG",
         "name": "Thế Giới Di Động",
         "sector": "RETAIL",
-        "scanTime": "2026-03-25T09:37:02.137Z",
+        "scanTime": "2026-03-25T10:35:45.261Z",
         "price": 79200,
         "open": 77000,
         "high": 79500,
@@ -727,6 +903,140 @@
         "coveragePct": 100,
         "volumeSignal": "NORMAL",
         "wyckoffPhase": "Markdown",
+        "wyckoffStage": "Phase E",
+        "wyckoffBias": "avoid",
+        "wyckoff": {
+          "phase": "Markdown",
+          "stage": "Phase E",
+          "label": "Markdown Phase E - Active Downtrend",
+          "code": "markdown",
+          "confidence": 72,
+          "confidenceLabel": "moderate",
+          "bias": "avoid",
+          "levels": {
+            "support": 74200,
+            "resistance": 94300,
+            "midpoint": 84250,
+            "rangeWidthPct": 25.38,
+            "pricePositionPct": 24.9,
+            "atr": 3543
+          },
+          "events": {
+            "spring": {
+              "active": false,
+              "name": "spring"
+            },
+            "upthrust": {
+              "active": false,
+              "name": "upthrust"
+            },
+            "sos": {
+              "active": false,
+              "name": "SOS"
+            },
+            "sow": {
+              "active": true,
+              "name": "SOW",
+              "index": 54,
+              "date": "2026-03-23",
+              "price": 74200,
+              "low": 74200,
+              "high": 78100,
+              "support": 77000,
+              "resistance": 94400,
+              "volumeRatio": 1.98,
+              "closeLocation": 0
+            },
+            "stoppingVolume": {
+              "active": false,
+              "name": "stopping_volume"
+            },
+            "buyingClimax": {
+              "active": false,
+              "name": "buying_climax"
+            },
+            "backup": {
+              "active": false,
+              "name": "backup",
+              "date": "2026-03-25",
+              "price": 79200,
+              "support": 74200,
+              "resistance": 94300,
+              "volumeRatio": 0.78
+            },
+            "lpsy": {
+              "active": false,
+              "name": "LPSY",
+              "date": "2026-03-25",
+              "price": 79200,
+              "support": 77000,
+              "resistance": 94300,
+              "volumeRatio": 0.78
+            }
+          },
+          "action": {
+            "label": "No long entries in active markdown",
+            "summary": "Trend and structure are both hostile. The correct action is patience.",
+            "steps": [
+              "Stand aside while price stays below key moving averages and keeps making weak rebounds.",
+              "Wait for stopping action, a spring, or a new range before reconsidering any long.",
+              "Do not treat 74.200 as stable support if price is already below it.",
+              "Keep the name on a watchlist, not in a fresh long position."
+            ],
+            "shouldAvoid": [
+              "Do not catch a falling knife in Phase E markdown.",
+              "Do not set a buy just because RSI looks low without structural repair."
+            ]
+          },
+          "entry": {
+            "status": "avoid",
+            "summary": "Do not buy into active markdown. Wait for stopping action or a spring first.",
+            "plans": [],
+            "watch": [
+              {
+                "label": "Only reconsider long if demand wins",
+                "price": 94771,
+                "why": "A decisive move through 94.771 is needed before the structure becomes a real buy setup."
+              }
+            ],
+            "invalidation": "A clean move below 73.829 keeps the structure defensive."
+          },
+          "reasoning": [
+            {
+              "step": 1,
+              "title": "Trend Context",
+              "detail": "40-session backdrop is downtrend; price is -8.6% vs SMA50 with 1M return -14.8%."
+            },
+            {
+              "step": 2,
+              "title": "Trading Range Map",
+              "detail": "30-session support/resistance sit near 74.200 / 94.300; range width is 25.4% and the close sits at 25% of that box (lower third)."
+            },
+            {
+              "step": 3,
+              "title": "Supply / Demand Event",
+              "detail": "Recent structural signals: SOW on 2026-03-23 (1.98x vol)."
+            },
+            {
+              "step": 4,
+              "title": "Phase Decision",
+              "detail": "The structure is classified as Markdown Phase E - Active Downtrend because the stock is still below trend support and no convincing stopping or spring event has appeared yet."
+            }
+          ],
+          "context": {
+            "trendBias": "downtrend",
+            "volumeDry": false,
+            "priceVsSma50Pct": -8.6,
+            "ret20": -0.1484,
+            "ret40": -0.0726,
+            "distanceFromSma20Atr": -1.23,
+            "rangeLocation": "lower third"
+          },
+          "notes": [
+            "Wyckoff output is inferred from daily OHLCV, not intraday tape.",
+            "The entry plan is only active when price behavior matches the listed confirmation condition."
+          ]
+        },
         "relative": {
           "ret1d": 0.0421,
           "ret1w": -0.0538,
@@ -816,11 +1126,11 @@
           ]
         },
         "explain": {
-          "ruleRead": "Neutral / Mixed",
+          "ruleRead": "Bearish Bias",
           "ruleStrength": {
-            "score": 5,
-            "label": "moderate conviction",
-            "rawScore": 39
+            "score": 4,
+            "label": "low conviction",
+            "rawScore": 32
           },
           "driversPositive": [
             "RSI 42.7 in healthy range"
@@ -829,6 +1139,7 @@
             "RS vs VNINDEX 3M -4.8%",
             "Price -8.6% vs SMA50",
             "Market regime bearish",
+            "Wyckoff Markdown Phase E - Active Downtrend",
             "Foreign flow unavailable"
           ],
           "factorBreakdown": {
@@ -1148,7 +1459,56 @@
               "reason": "Market trend score is 0.25, below 0.30, so M scores 2/10."
             }
           },
-          "normalizedCanSlim": 42
+          "normalizedCanSlim": 42,
+          "wyckoffAction": {
+            "label": "No long entries in active markdown",
+            "summary": "Trend and structure are both hostile. The correct action is patience.",
+            "steps": [
+              "Stand aside while price stays below key moving averages and keeps making weak rebounds.",
+              "Wait for stopping action, a spring, or a new range before reconsidering any long.",
+              "Do not treat 74.200 as stable support if price is already below it.",
+              "Keep the name on a watchlist, not in a fresh long position."
+            ],
+            "shouldAvoid": [
+              "Do not catch a falling knife in Phase E markdown.",
+              "Do not set a buy just because RSI looks low without structural repair."
+            ]
+          },
+          "wyckoffEntry": {
+            "status": "avoid",
+            "summary": "Do not buy into active markdown. Wait for stopping action or a spring first.",
+            "plans": [],
+            "watch": [
+              {
+                "label": "Only reconsider long if demand wins",
+                "price": 94771,
+                "why": "A decisive move through 94.771 is needed before the structure becomes a real buy setup."
+              }
+            ],
+            "invalidation": "A clean move below 73.829 keeps the structure defensive."
+          },
+          "wyckoffReasoning": [
+            {
+              "step": 1,
+              "title": "Trend Context",
+              "detail": "40-session backdrop is downtrend; price is -8.6% vs SMA50 with 1M return -14.8%."
+            },
+            {
+              "step": 2,
+              "title": "Trading Range Map",
+              "detail": "30-session support/resistance sit near 74.200 / 94.300; range width is 25.4% and the close sits at 25% of that box (lower third)."
+            },
+            {
+              "step": 3,
+              "title": "Supply / Demand Event",
+              "detail": "Recent structural signals: SOW on 2026-03-23 (1.98x vol)."
+            },
+            {
+              "step": 4,
+              "title": "Phase Decision",
+              "detail": "The structure is classified as Markdown Phase E - Active Downtrend because the stock is still below trend support and no convincing stopping or spring event has appeared yet."
+            }
+          ]
         },
         "entry": [
           79200,
@@ -1161,18 +1521,11 @@
           97843
         ],
         "sl": 72429,
-        "signal": "HOLD",
-        "confidence": 5,
-        "rawScore": 39,
-        "delta": "no change",
+        "signal": "SELL",
+        "confidence": 4,
+        "rawScore": 32,
+        "delta": "signal HOLD→SELL",
         "historyMini": [
-          {
-            "timestamp": "2026-03-25T09:02:10.341Z",
-            "price": 79200,
-            "signal": "HOLD",
-            "confidence": 5,
-            "observedPct": 0.6
-          },
           {
             "timestamp": "2026-03-25T09:05:48.991Z",
             "price": 79200,
@@ -1200,6 +1553,13 @@
             "signal": "HOLD",
             "confidence": 5,
             "observedPct": 0.6
+          },
+          {
+            "timestamp": "2026-03-25T10:35:45.261Z",
+            "price": 79200,
+            "signal": "SELL",
+            "confidence": 4,
+            "observedPct": 0.6
           }
         ]
       },
@@ -1207,7 +1567,7 @@
         "ticker": "HDB",
         "name": "HDBank",
         "sector": "BANK",
-        "scanTime": "2026-03-25T09:37:01.818Z",
+        "scanTime": "2026-03-25T10:35:45.008Z",
         "price": 24900,
         "open": 24500,
         "high": 25000,
@@ -1255,6 +1615,131 @@
         "coveragePct": 100,
         "volumeSignal": "NORMAL",
         "wyckoffPhase": "Markdown",
+        "wyckoffStage": "Phase E",
+        "wyckoffBias": "avoid",
+        "wyckoff": {
+          "phase": "Markdown",
+          "stage": "Phase E",
+          "label": "Markdown Phase E - Active Downtrend",
+          "code": "markdown",
+          "confidence": 54,
+          "confidenceLabel": "low",
+          "bias": "avoid",
+          "levels": {
+            "support": 23800,
+            "resistance": 28850,
+            "midpoint": 26325,
+            "rangeWidthPct": 20.28,
+            "pricePositionPct": 21.8,
+            "atr": 846
+          },
+          "events": {
+            "spring": {
+              "active": false,
+              "name": "spring"
+            },
+            "upthrust": {
+              "active": false,
+              "name": "upthrust"
+            },
+            "sos": {
+              "active": false,
+              "name": "SOS"
+            },
+            "sow": {
+              "active": false,
+              "name": "SOW"
+            },
+            "stoppingVolume": {
+              "active": false,
+              "name": "stopping_volume"
+            },
+            "buyingClimax": {
+              "active": false,
+              "name": "buying_climax"
+            },
+            "backup": {
+              "active": false,
+              "name": "backup",
+              "date": "2026-03-25",
+              "price": 24900,
+              "support": 23800,
+              "resistance": 28850,
+              "volumeRatio": 0.72
+            },
+            "lpsy": {
+              "active": false,
+              "name": "LPSY",
+              "date": "2026-03-25",
+              "price": 24900,
+              "support": 23800,
+              "resistance": 28850,
+              "volumeRatio": 0.72
+            }
+          },
+          "action": {
+            "label": "No long entries in active markdown",
+            "summary": "Trend and structure are both hostile. The correct action is patience.",
+            "steps": [
+              "Stand aside while price stays below key moving averages and keeps making weak rebounds.",
+              "Wait for stopping action, a spring, or a new range before reconsidering any long.",
+              "Do not treat 23.800 as stable support if price is already below it.",
+              "Keep the name on a watchlist, not in a fresh long position."
+            ],
+            "shouldAvoid": [
+              "Do not catch a falling knife in Phase E markdown.",
+              "Do not set a buy just because RSI looks low without structural repair."
+            ]
+          },
+          "entry": {
+            "status": "avoid",
+            "summary": "Do not buy into active markdown. Wait for stopping action or a spring first.",
+            "plans": [],
+            "watch": [
+              {
+                "label": "Only reconsider long if demand wins",
+                "price": 28994,
+                "why": "A decisive move through 28.994 is needed before the structure becomes a real buy setup."
+              }
+            ],
+            "invalidation": "A clean move below 23.681 keeps the structure defensive."
+          },
+          "reasoning": [
+            {
+              "step": 1,
+              "title": "Trend Context",
+              "detail": "40-session backdrop is downtrend; price is -8.6% vs SMA50 with 1M return -12.5%."
+            },
+            {
+              "step": 2,
+              "title": "Trading Range Map",
+              "detail": "30-session support/resistance sit near 23.800 / 28.850; range width is 20.3% and the close sits at 22% of that box (lower third)."
+            },
+            {
+              "step": 3,
+              "title": "Supply / Demand Event",
+              "detail": "No decisive spring, upthrust, SOS, or SOW is visible in the recent daily-bar window, so the read leans more on range position and trend state than on a fresh Wyckoff trigger."
+            },
+            {
+              "step": 4,
+              "title": "Phase Decision",
+              "detail": "The structure is classified as Markdown Phase E - Active Downtrend because the stock is still below trend support and no convincing stopping or spring event has appeared yet."
+            }
+          ],
+          "context": {
+            "trendBias": "downtrend",
+            "volumeDry": false,
+            "priceVsSma50Pct": -8.56,
+            "ret20": -0.1248,
+            "ret40": -0.1429,
+            "distanceFromSma20Atr": -1.03,
+            "rangeLocation": "lower third"
+          },
+          "notes": [
+            "Wyckoff output is inferred from daily OHLCV, not intraday tape.",
+            "The entry plan is only active when price behavior matches the listed confirmation condition."
+          ]
+        },
         "relative": {
           "ret1d": 0.0247,
           "ret1w": -0.0311,
@@ -1340,15 +1825,16 @@
             }
           },
           "warnings": [
-            "Foreign flow unavailable"
+            "Foreign flow unavailable",
+            "Wyckoff read is low-confidence"
           ]
         },
         "explain": {
-          "ruleRead": "Neutral / Mixed",
+          "ruleRead": "Bearish Bias",
           "ruleStrength": {
-            "score": 5,
-            "label": "moderate conviction",
-            "rawScore": 38
+            "score": 4,
+            "label": "low conviction",
+            "rawScore": 31
           },
           "driversPositive": [
             "RSI 40.9 in healthy range"
@@ -1357,6 +1843,7 @@
             "RS vs VNINDEX 3M -5.6%",
             "Price -8.6% vs SMA50",
             "Market regime bearish",
+            "Wyckoff Markdown Phase E - Active Downtrend",
             "Foreign flow unavailable"
           ],
           "factorBreakdown": {
@@ -1676,7 +2163,56 @@
               "reason": "Market trend score is 0.25, below 0.30, so M scores 2/10."
             }
           },
-          "normalizedCanSlim": 40
+          "normalizedCanSlim": 40,
+          "wyckoffAction": {
+            "label": "No long entries in active markdown",
+            "summary": "Trend and structure are both hostile. The correct action is patience.",
+            "steps": [
+              "Stand aside while price stays below key moving averages and keeps making weak rebounds.",
+              "Wait for stopping action, a spring, or a new range before reconsidering any long.",
+              "Do not treat 23.800 as stable support if price is already below it.",
+              "Keep the name on a watchlist, not in a fresh long position."
+            ],
+            "shouldAvoid": [
+              "Do not catch a falling knife in Phase E markdown.",
+              "Do not set a buy just because RSI looks low without structural repair."
+            ]
+          },
+          "wyckoffEntry": {
+            "status": "avoid",
+            "summary": "Do not buy into active markdown. Wait for stopping action or a spring first.",
+            "plans": [],
+            "watch": [
+              {
+                "label": "Only reconsider long if demand wins",
+                "price": 28994,
+                "why": "A decisive move through 28.994 is needed before the structure becomes a real buy setup."
+              }
+            ],
+            "invalidation": "A clean move below 23.681 keeps the structure defensive."
+          },
+          "wyckoffReasoning": [
+            {
+              "step": 1,
+              "title": "Trend Context",
+              "detail": "40-session backdrop is downtrend; price is -8.6% vs SMA50 with 1M return -12.5%."
+            },
+            {
+              "step": 2,
+              "title": "Trading Range Map",
+              "detail": "30-session support/resistance sit near 23.800 / 28.850; range width is 20.3% and the close sits at 22% of that box (lower third)."
+            },
+            {
+              "step": 3,
+              "title": "Supply / Demand Event",
+              "detail": "No decisive spring, upthrust, SOS, or SOW is visible in the recent daily-bar window, so the read leans more on range position and trend state than on a fresh Wyckoff trigger."
+            },
+            {
+              "step": 4,
+              "title": "Phase Decision",
+              "detail": "The structure is classified as Markdown Phase E - Active Downtrend because the stock is still below trend support and no convincing stopping or spring event has appeared yet."
+            }
+          ]
         },
         "entry": [
           24900,
@@ -1689,18 +2225,11 @@
           29396
         ],
         "sl": 23377,
-        "signal": "HOLD",
-        "confidence": 5,
-        "rawScore": 38,
-        "delta": "no change",
+        "signal": "SELL",
+        "confidence": 4,
+        "rawScore": 31,
+        "delta": "signal HOLD→SELL",
         "historyMini": [
-          {
-            "timestamp": "2026-03-25T09:02:10.269Z",
-            "price": 24900,
-            "signal": "HOLD",
-            "confidence": 5,
-            "observedPct": 0.57
-          },
           {
             "timestamp": "2026-03-25T09:05:48.642Z",
             "price": 24900,
@@ -1728,6 +2257,13 @@
             "signal": "HOLD",
             "confidence": 5,
             "observedPct": 0.57
+          },
+          {
+            "timestamp": "2026-03-25T10:35:45.008Z",
+            "price": 24900,
+            "signal": "SELL",
+            "confidence": 4,
+            "observedPct": 0.57
           }
         ]
       },
@@ -1735,7 +2271,7 @@
         "ticker": "TCB",
         "name": "Techcombank",
         "sector": "BANK",
-        "scanTime": "2026-03-25T09:37:01.596Z",
+        "scanTime": "2026-03-25T10:35:44.574Z",
         "price": 30800,
         "open": 30300,
         "high": 30900,
@@ -1783,6 +2319,131 @@
         "coveragePct": 100,
         "volumeSignal": "NORMAL",
         "wyckoffPhase": "Markdown",
+        "wyckoffStage": "Phase E",
+        "wyckoffBias": "avoid",
+        "wyckoff": {
+          "phase": "Markdown",
+          "stage": "Phase E",
+          "label": "Markdown Phase E - Active Downtrend",
+          "code": "markdown",
+          "confidence": 54,
+          "confidenceLabel": "low",
+          "bias": "avoid",
+          "levels": {
+            "support": 28900,
+            "resistance": 36450,
+            "midpoint": 32675,
+            "rangeWidthPct": 24.51,
+            "pricePositionPct": 25.2,
+            "atr": 954
+          },
+          "events": {
+            "spring": {
+              "active": false,
+              "name": "spring"
+            },
+            "upthrust": {
+              "active": false,
+              "name": "upthrust"
+            },
+            "sos": {
+              "active": false,
+              "name": "SOS"
+            },
+            "sow": {
+              "active": false,
+              "name": "SOW"
+            },
+            "stoppingVolume": {
+              "active": false,
+              "name": "stopping_volume"
+            },
+            "buyingClimax": {
+              "active": false,
+              "name": "buying_climax"
+            },
+            "backup": {
+              "active": false,
+              "name": "backup",
+              "date": "2026-03-25",
+              "price": 30800,
+              "support": 28900,
+              "resistance": 36450,
+              "volumeRatio": 0.68
+            },
+            "lpsy": {
+              "active": false,
+              "name": "LPSY",
+              "date": "2026-03-25",
+              "price": 30800,
+              "support": 28900,
+              "resistance": 36450,
+              "volumeRatio": 0.68
+            }
+          },
+          "action": {
+            "label": "No long entries in active markdown",
+            "summary": "Trend and structure are both hostile. The correct action is patience.",
+            "steps": [
+              "Stand aside while price stays below key moving averages and keeps making weak rebounds.",
+              "Wait for stopping action, a spring, or a new range before reconsidering any long.",
+              "Do not treat 28.900 as stable support if price is already below it.",
+              "Keep the name on a watchlist, not in a fresh long position."
+            ],
+            "shouldAvoid": [
+              "Do not catch a falling knife in Phase E markdown.",
+              "Do not set a buy just because RSI looks low without structural repair."
+            ]
+          },
+          "entry": {
+            "status": "avoid",
+            "summary": "Do not buy into active markdown. Wait for stopping action or a spring first.",
+            "plans": [],
+            "watch": [
+              {
+                "label": "Only reconsider long if demand wins",
+                "price": 36632,
+                "why": "A decisive move through 36.632 is needed before the structure becomes a real buy setup."
+              }
+            ],
+            "invalidation": "A clean move below 28.756 keeps the structure defensive."
+          },
+          "reasoning": [
+            {
+              "step": 1,
+              "title": "Trend Context",
+              "detail": "40-session backdrop is downtrend; price is -9.3% vs SMA50 with 1M return -14.4%."
+            },
+            {
+              "step": 2,
+              "title": "Trading Range Map",
+              "detail": "30-session support/resistance sit near 28.900 / 36.450; range width is 24.5% and the close sits at 25% of that box (lower third)."
+            },
+            {
+              "step": 3,
+              "title": "Supply / Demand Event",
+              "detail": "No decisive spring, upthrust, SOS, or SOW is visible in the recent daily-bar window, so the read leans more on range position and trend state than on a fresh Wyckoff trigger."
+            },
+            {
+              "step": 4,
+              "title": "Phase Decision",
+              "detail": "The structure is classified as Markdown Phase E - Active Downtrend because the stock is still below trend support and no convincing stopping or spring event has appeared yet."
+            }
+          ],
+          "context": {
+            "trendBias": "downtrend",
+            "volumeDry": true,
+            "priceVsSma50Pct": -9.26,
+            "ret20": -0.1444,
+            "ret40": -0.1397,
+            "distanceFromSma20Atr": -0.63,
+            "rangeLocation": "lower third"
+          },
+          "notes": [
+            "Wyckoff output is inferred from daily OHLCV, not intraday tape.",
+            "The entry plan is only active when price behavior matches the listed confirmation condition."
+          ]
+        },
         "relative": {
           "ret1d": 0.0318,
           "ret1w": 0.0165,
@@ -1868,15 +2529,16 @@
             }
           },
           "warnings": [
-            "Foreign flow unavailable"
+            "Foreign flow unavailable",
+            "Wyckoff read is low-confidence"
           ]
         },
         "explain": {
-          "ruleRead": "Neutral / Mixed",
+          "ruleRead": "Bearish Bias",
           "ruleStrength": {
-            "score": 5,
-            "label": "moderate conviction",
-            "rawScore": 37
+            "score": 4,
+            "label": "low conviction",
+            "rawScore": 30
           },
           "driversPositive": [
             "RSI 42.6 in healthy range"
@@ -1886,7 +2548,7 @@
             "Price -9.3% vs SMA50",
             "Volume only 0.68x avg20",
             "Market regime bearish",
-            "Foreign flow unavailable"
+            "Wyckoff Markdown Phase E - Active Downtrend"
           ],
           "factorBreakdown": {
             "C": {
@@ -2205,7 +2867,56 @@
               "reason": "Market trend score is 0.25, below 0.30, so M scores 2/10."
             }
           },
-          "normalizedCanSlim": 38
+          "normalizedCanSlim": 38,
+          "wyckoffAction": {
+            "label": "No long entries in active markdown",
+            "summary": "Trend and structure are both hostile. The correct action is patience.",
+            "steps": [
+              "Stand aside while price stays below key moving averages and keeps making weak rebounds.",
+              "Wait for stopping action, a spring, or a new range before reconsidering any long.",
+              "Do not treat 28.900 as stable support if price is already below it.",
+              "Keep the name on a watchlist, not in a fresh long position."
+            ],
+            "shouldAvoid": [
+              "Do not catch a falling knife in Phase E markdown.",
+              "Do not set a buy just because RSI looks low without structural repair."
+            ]
+          },
+          "wyckoffEntry": {
+            "status": "avoid",
+            "summary": "Do not buy into active markdown. Wait for stopping action or a spring first.",
+            "plans": [],
+            "watch": [
+              {
+                "label": "Only reconsider long if demand wins",
+                "price": 36632,
+                "why": "A decisive move through 36.632 is needed before the structure becomes a real buy setup."
+              }
+            ],
+            "invalidation": "A clean move below 28.756 keeps the structure defensive."
+          },
+          "wyckoffReasoning": [
+            {
+              "step": 1,
+              "title": "Trend Context",
+              "detail": "40-session backdrop is downtrend; price is -9.3% vs SMA50 with 1M return -14.4%."
+            },
+            {
+              "step": 2,
+              "title": "Trading Range Map",
+              "detail": "30-session support/resistance sit near 28.900 / 36.450; range width is 24.5% and the close sits at 25% of that box (lower third)."
+            },
+            {
+              "step": 3,
+              "title": "Supply / Demand Event",
+              "detail": "No decisive spring, upthrust, SOS, or SOW is visible in the recent daily-bar window, so the read leans more on range position and trend state than on a fresh Wyckoff trigger."
+            },
+            {
+              "step": 4,
+              "title": "Phase Decision",
+              "detail": "The structure is classified as Markdown Phase E - Active Downtrend because the stock is still below trend support and no convincing stopping or spring event has appeared yet."
+            }
+          ]
         },
         "entry": [
           30800,
@@ -2218,18 +2929,11 @@
           37404
         ],
         "sl": 28423,
-        "signal": "HOLD",
-        "confidence": 5,
-        "rawScore": 37,
-        "delta": "no change",
+        "signal": "SELL",
+        "confidence": 4,
+        "rawScore": 30,
+        "delta": "signal HOLD→SELL",
         "historyMini": [
-          {
-            "timestamp": "2026-03-25T09:02:10.187Z",
-            "price": 30800,
-            "signal": "HOLD",
-            "confidence": 5,
-            "observedPct": 0.54
-          },
           {
             "timestamp": "2026-03-25T09:05:48.247Z",
             "price": 30800,
@@ -2257,6 +2961,13 @@
             "signal": "HOLD",
             "confidence": 5,
             "observedPct": 0.54
+          },
+          {
+            "timestamp": "2026-03-25T10:35:44.574Z",
+            "price": 30800,
+            "signal": "SELL",
+            "confidence": 4,
+            "observedPct": 0.54
           }
         ]
       },
@@ -2264,7 +2975,7 @@
         "ticker": "FPT",
         "name": "FPT Corp",
         "sector": "TECH",
-        "scanTime": "2026-03-25T09:37:01.250Z",
+        "scanTime": "2026-03-25T10:35:44.319Z",
         "price": 77000,
         "open": 76200,
         "high": 77000,
@@ -2312,6 +3023,140 @@
         "coveragePct": 100,
         "volumeSignal": "NORMAL",
         "wyckoffPhase": "Markdown",
+        "wyckoffStage": "Phase E",
+        "wyckoffBias": "avoid",
+        "wyckoff": {
+          "phase": "Markdown",
+          "stage": "Phase E",
+          "label": "Markdown Phase E - Active Downtrend",
+          "code": "markdown",
+          "confidence": 72,
+          "confidenceLabel": "moderate",
+          "bias": "avoid",
+          "levels": {
+            "support": 71600,
+            "resistance": 101900,
+            "midpoint": 86750,
+            "rangeWidthPct": 39.35,
+            "pricePositionPct": 17.8,
+            "atr": 2979
+          },
+          "events": {
+            "spring": {
+              "active": false,
+              "name": "spring"
+            },
+            "upthrust": {
+              "active": false,
+              "name": "upthrust"
+            },
+            "sos": {
+              "active": false,
+              "name": "SOS"
+            },
+            "sow": {
+              "active": true,
+              "name": "SOW",
+              "index": 53,
+              "date": "2026-03-20",
+              "price": 74600,
+              "low": 73600,
+              "high": 76500,
+              "support": 75900,
+              "resistance": 106400,
+              "volumeRatio": 1.43,
+              "closeLocation": 0.34
+            },
+            "stoppingVolume": {
+              "active": false,
+              "name": "stopping_volume"
+            },
+            "buyingClimax": {
+              "active": false,
+              "name": "buying_climax"
+            },
+            "backup": {
+              "active": false,
+              "name": "backup",
+              "date": "2026-03-25",
+              "price": 77000,
+              "support": 71600,
+              "resistance": 101900,
+              "volumeRatio": 0.52
+            },
+            "lpsy": {
+              "active": false,
+              "name": "LPSY",
+              "date": "2026-03-25",
+              "price": 77000,
+              "support": 75900,
+              "resistance": 101900,
+              "volumeRatio": 0.52
+            }
+          },
+          "action": {
+            "label": "No long entries in active markdown",
+            "summary": "Trend and structure are both hostile. The correct action is patience.",
+            "steps": [
+              "Stand aside while price stays below key moving averages and keeps making weak rebounds.",
+              "Wait for stopping action, a spring, or a new range before reconsidering any long.",
+              "Do not treat 71.600 as stable support if price is already below it.",
+              "Keep the name on a watchlist, not in a fresh long position."
+            ],
+            "shouldAvoid": [
+              "Do not catch a falling knife in Phase E markdown.",
+              "Do not set a buy just because RSI looks low without structural repair."
+            ]
+          },
+          "entry": {
+            "status": "avoid",
+            "summary": "Do not buy into active markdown. Wait for stopping action or a spring first.",
+            "plans": [],
+            "watch": [
+              {
+                "label": "Only reconsider long if demand wins",
+                "price": 102409,
+                "why": "A decisive move through 102.409 is needed before the structure becomes a real buy setup."
+              }
+            ],
+            "invalidation": "A clean move below 71.242 keeps the structure defensive."
+          },
+          "reasoning": [
+            {
+              "step": 1,
+              "title": "Trend Context",
+              "detail": "40-session backdrop is downtrend; price is -16.6% vs SMA50 with 1M return -13.6%."
+            },
+            {
+              "step": 2,
+              "title": "Trading Range Map",
+              "detail": "30-session support/resistance sit near 71.600 / 101.900; range width is 39.4% and the close sits at 18% of that box (lower third)."
+            },
+            {
+              "step": 3,
+              "title": "Supply / Demand Event",
+              "detail": "Recent structural signals: SOW on 2026-03-20 (1.43x vol)."
+            },
+            {
+              "step": 4,
+              "title": "Phase Decision",
+              "detail": "The structure is classified as Markdown Phase E - Active Downtrend because the stock is still below trend support and no convincing stopping or spring event has appeared yet."
+            }
+          ],
+          "context": {
+            "trendBias": "downtrend",
+            "volumeDry": true,
+            "priceVsSma50Pct": -16.65,
+            "ret20": -0.1358,
+            "ret40": -0.2667,
+            "distanceFromSma20Atr": -1.25,
+            "rangeLocation": "lower third"
+          },
+          "notes": [
+            "Wyckoff output is inferred from daily OHLCV, not intraday tape.",
+            "The entry plan is only active when price behavior matches the listed confirmation condition."
+          ]
+        },
         "relative": {
           "ret1d": 0.0212,
           "ret1w": -0.0204,
@@ -2357,7 +3202,7 @@
           "coveragePct": 100,
           "coverageLabel": "strong",
           "historyBars": 57,
-          "freshnessSec": 1,
+          "freshnessSec": 0,
           "snapshotOverlayUsed": true,
           "missingFactors": [],
           "missingFields": [
@@ -2403,9 +3248,9 @@
         "explain": {
           "ruleRead": "Bearish Bias",
           "ruleStrength": {
-            "score": 4,
+            "score": 3,
             "label": "low conviction",
-            "rawScore": 31
+            "rawScore": 24
           },
           "driversPositive": [],
           "driversNegative": [
@@ -2413,7 +3258,7 @@
             "Price -16.6% vs SMA50",
             "Volume only 0.52x avg20",
             "Market regime bearish",
-            "Foreign flow unavailable"
+            "Wyckoff Markdown Phase E - Active Downtrend"
           ],
           "factorBreakdown": {
             "C": {
@@ -2732,7 +3577,56 @@
               "reason": "Market trend score is 0.25, below 0.30, so M scores 2/10."
             }
           },
-          "normalizedCanSlim": 32
+          "normalizedCanSlim": 32,
+          "wyckoffAction": {
+            "label": "No long entries in active markdown",
+            "summary": "Trend and structure are both hostile. The correct action is patience.",
+            "steps": [
+              "Stand aside while price stays below key moving averages and keeps making weak rebounds.",
+              "Wait for stopping action, a spring, or a new range before reconsidering any long.",
+              "Do not treat 71.600 as stable support if price is already below it.",
+              "Keep the name on a watchlist, not in a fresh long position."
+            ],
+            "shouldAvoid": [
+              "Do not catch a falling knife in Phase E markdown.",
+              "Do not set a buy just because RSI looks low without structural repair."
+            ]
+          },
+          "wyckoffEntry": {
+            "status": "avoid",
+            "summary": "Do not buy into active markdown. Wait for stopping action or a spring first.",
+            "plans": [],
+            "watch": [
+              {
+                "label": "Only reconsider long if demand wins",
+                "price": 102409,
+                "why": "A decisive move through 102.409 is needed before the structure becomes a real buy setup."
+              }
+            ],
+            "invalidation": "A clean move below 71.242 keeps the structure defensive."
+          },
+          "wyckoffReasoning": [
+            {
+              "step": 1,
+              "title": "Trend Context",
+              "detail": "40-session backdrop is downtrend; price is -16.6% vs SMA50 with 1M return -13.6%."
+            },
+            {
+              "step": 2,
+              "title": "Trading Range Map",
+              "detail": "30-session support/resistance sit near 71.600 / 101.900; range width is 39.4% and the close sits at 18% of that box (lower third)."
+            },
+            {
+              "step": 3,
+              "title": "Supply / Demand Event",
+              "detail": "Recent structural signals: SOW on 2026-03-20 (1.43x vol)."
+            },
+            {
+              "step": 4,
+              "title": "Phase Decision",
+              "detail": "The structure is classified as Markdown Phase E - Active Downtrend because the stock is still below trend support and no convincing stopping or spring event has appeared yet."
+            }
+          ]
         },
         "entry": [
           77000,
@@ -2746,17 +3640,10 @@
         ],
         "sl": 70111,
         "signal": "SELL",
-        "confidence": 4,
-        "rawScore": 31,
+        "confidence": 3,
+        "rawScore": 24,
         "delta": "no change",
         "historyMini": [
-          {
-            "timestamp": "2026-03-25T09:05:47.834Z",
-            "price": 77000,
-            "signal": "SELL",
-            "confidence": 4,
-            "observedPct": 0.46
-          },
           {
             "timestamp": "2026-03-25T09:14:27.045Z",
             "price": 77000,
@@ -2784,10 +3671,17 @@
             "signal": "SELL",
             "confidence": 4,
             "observedPct": 0.46
+          },
+          {
+            "timestamp": "2026-03-25T10:35:44.319Z",
+            "price": 77000,
+            "signal": "SELL",
+            "confidence": 3,
+            "observedPct": 0.46
           }
         ]
       }
     ]
   },
-  "prompt": "I have 5 Vietnam stocks monitored by my local Saigon Terminal snapshot (2026-03-25T09:37:02.468Z).\n\nRules:\n- VPS is the live market source.\n- KBS enriches fundamentals and ownership when reachable.\n- Missing CAN SLIM factors are unknown, not neutral.\n- Confidence is a rule-strength score, not certainty.\n\nMarket:\n- Session: closed\n- Regime: bearish\n- Breadth: 5 up / 0 down / 0 flat\n- Turnover: 2.0T\n\nPlease validate the rule reads, flag weak data coverage, and identify the strongest and weakest setups.\n\n▸ CTG (VietinBank, BANK)\n  Price: 34.050 (+1.49%) | Value: 211.6B | Vol 6.2M (0.5x avg)\n  Relative: 1W -2.7% | 1M -10.9% | 3M -3.3% | vs VNINDEX +0.9% | vs VN30 +4.4%\n  Observed CAN SLIM: 42/70 | Coverage 100% [C:6 A:10 N:4 S:4 L:6 I:10 M:2]\n  Rule Read: Neutral / Mixed | Rule Strength: 5/10 (moderate conviction)\n  Positive drivers: RS vs VNINDEX 3M +0.9%; RSI 40.3 in healthy range\n  Negative drivers: Price -9.1% vs SMA50; Volume only 0.5x avg20; Market regime bearish; Foreign flow unavailable\n  Warnings: Foreign flow unavailable\n  Heuristic levels: Entry 34.050/33.507/32.615 | TP 35.679/36.764/39.836 | SL 31.457\n\n▸ MWG (Thế Giới Di Động, RETAIL)\n  Price: 79.200 (+4.21%) | Value: 592.4B | Vol 7.6M (0.78x avg)\n  Relative: 1W -5.4% | 1M -14.1% | 3M -9.0% | vs VNINDEX -4.8% | vs VN30 -1.3%\n  Observed CAN SLIM: 42/70 | Coverage 100% [C:4 A:10 N:6 S:6 L:4 I:10 M:2]\n  Rule Read: Neutral / Mixed | Rule Strength: 5/10 (moderate conviction)\n  Positive drivers: RSI 42.7 in healthy range\n  Negative drivers: RS vs VNINDEX 3M -4.8%; Price -8.6% vs SMA50; Market regime bearish; Foreign flow unavailable\n  Warnings: Foreign flow unavailable\n  Heuristic levels: Entry 79.200/77.429/75.700 | TP 84.514/88.057/97.843 | SL 72.429\n\n▸ HDB (HDBank, BANK)\n  Price: 24.900 (+2.47%) | Value: 274.3B | Vol 11.1M (0.72x avg)\n  Relative: 1W -3.1% | 1M -12.6% | 3M -9.8% | vs VNINDEX -5.6% | vs VN30 -2.1%\n  Observed CAN SLIM: 40/70 | Coverage 100% [C:10 A:10 N:6 S:6 L:4 I:2 M:2]\n  Rule Read: Neutral / Mixed | Rule Strength: 5/10 (moderate conviction)\n  Positive drivers: RSI 40.9 in healthy range\n  Negative drivers: RS vs VNINDEX 3M -5.6%; Price -8.6% vs SMA50; Market regime bearish; Foreign flow unavailable\n  Warnings: Foreign flow unavailable\n  Heuristic levels: Entry 24.900/24.477/24.130 | TP 26.170/27.016/29.396 | SL 23.377\n\n▸ TCB (Techcombank, BANK)\n  Price: 30.800 (+3.18%) | Value: 305.3B | Vol 10.0M (0.68x avg)\n  Relative: 1W +1.7% | 1M -14.0% | 3M -9.1% | vs VNINDEX -5.0% | vs VN30 -1.5%\n  Observed CAN SLIM: 38/70 | Coverage 100% [C:4 A:8 N:6 S:4 L:4 I:10 M:2]\n  Rule Read: Neutral / Mixed | Rule Strength: 5/10 (moderate conviction)\n  Positive drivers: RSI 42.6 in healthy range\n  Negative drivers: RS vs VNINDEX 3M -5.0%; Price -9.3% vs SMA50; Volume only 0.68x avg20; Market regime bearish; Foreign flow unavailable\n  Warnings: Foreign flow unavailable\n  Heuristic levels: Entry 30.800/30.323/29.470 | TP 32.230/33.184/37.404 | SL 28.423\n\n▸ FPT (FPT Corp, TECH)\n  Price: 77.000 (+2.12%) | Value: 567.7B | Vol 7.4M (0.52x avg)\n  Relative: 1W -2.0% | 1M -16.8% | 3M -16.8% | vs VNINDEX -12.6% | vs VN30 -9.1%\n  Observed CAN SLIM: 32/70 | Coverage 100% [C:6 A:4 N:4 S:4 L:2 I:10 M:2]\n  Rule Read: Bearish Bias | Rule Strength: 4/10 (low conviction)\n  Positive drivers: —\n  Negative drivers: RS vs VNINDEX 3M -12.6%; Price -16.6% vs SMA50; Volume only 0.52x avg20; Market regime bearish; Foreign flow unavailable\n  Warnings: Foreign flow unavailable\n  Heuristic levels: Entry 77.000/75.511/73.220 | TP 81.468/84.446/96.479 | SL 70.111"
+  "prompt": "I have 5 Vietnam stocks monitored by my local Saigon Terminal snapshot (2026-03-25T10:35:45.570Z).\n\nRules:\n- VPS is the live market source.\n- KBS enriches fundamentals and ownership when reachable.\n- Missing CAN SLIM factors are unknown, not neutral.\n- Confidence is a rule-strength score, not certainty.\n\nMarket:\n- Session: closed\n- Regime: bearish\n- Breadth: 5 up / 0 down / 0 flat\n- Turnover: 2.0T\n\nPlease validate the rule reads, flag weak data coverage, and identify the strongest and weakest setups.\n\n▸ CTG (VietinBank, BANK)\n  Price: 34.050 (+1.49%) | Value: 211.6B | Vol 6.2M (0.5x avg)\n  Relative: 1W -2.7% | 1M -10.9% | 3M -3.3% | vs VNINDEX +0.9% | vs VN30 +4.4%\n  Wyckoff: Markdown Phase E - Active Downtrend | Bias avoid | Confidence 54 | Action No long entries in active markdown\n  Wyckoff plan: Do not buy into active markdown. Wait for stopping action or a spring first.\n  Observed CAN SLIM: 42/70 | Coverage 100% [C:6 A:10 N:4 S:4 L:6 I:10 M:2]\n  Rule Read: Bearish Bias | Rule Strength: 4/10 (low conviction)\n  Positive drivers: RS vs VNINDEX 3M +0.9%; RSI 40.3 in healthy range\n  Negative drivers: Price -9.1% vs SMA50; Volume only 0.5x avg20; Market regime bearish; Wyckoff Markdown Phase E - Active Downtrend; Foreign flow unavailable\n  Warnings: Foreign flow unavailable; Wyckoff read is low-confidence\n  Heuristic levels: Entry 34.050/33.507/32.615 | TP 35.679/36.764/39.836 | SL 31.457\n\n▸ MWG (Thế Giới Di Động, RETAIL)\n  Price: 79.200 (+4.21%) | Value: 592.4B | Vol 7.6M (0.78x avg)\n  Relative: 1W -5.4% | 1M -14.1% | 3M -9.0% | vs VNINDEX -4.8% | vs VN30 -1.3%\n  Wyckoff: Markdown Phase E - Active Downtrend | Bias avoid | Confidence 72 | Action No long entries in active markdown\n  Wyckoff plan: Do not buy into active markdown. Wait for stopping action or a spring first.\n  Observed CAN SLIM: 42/70 | Coverage 100% [C:4 A:10 N:6 S:6 L:4 I:10 M:2]\n  Rule Read: Bearish Bias | Rule Strength: 4/10 (low conviction)\n  Positive drivers: RSI 42.7 in healthy range\n  Negative drivers: RS vs VNINDEX 3M -4.8%; Price -8.6% vs SMA50; Market regime bearish; Wyckoff Markdown Phase E - Active Downtrend; Foreign flow unavailable\n  Warnings: Foreign flow unavailable\n  Heuristic levels: Entry 79.200/77.429/75.700 | TP 84.514/88.057/97.843 | SL 72.429\n\n▸ HDB (HDBank, BANK)\n  Price: 24.900 (+2.47%) | Value: 274.3B | Vol 11.1M (0.72x avg)\n  Relative: 1W -3.1% | 1M -12.6% | 3M -9.8% | vs VNINDEX -5.6% | vs VN30 -2.1%\n  Wyckoff: Markdown Phase E - Active Downtrend | Bias avoid | Confidence 54 | Action No long entries in active markdown\n  Wyckoff plan: Do not buy into active markdown. Wait for stopping action or a spring first.\n  Observed CAN SLIM: 40/70 | Coverage 100% [C:10 A:10 N:6 S:6 L:4 I:2 M:2]\n  Rule Read: Bearish Bias | Rule Strength: 4/10 (low conviction)\n  Positive drivers: RSI 40.9 in healthy range\n  Negative drivers: RS vs VNINDEX 3M -5.6%; Price -8.6% vs SMA50; Market regime bearish; Wyckoff Markdown Phase E - Active Downtrend; Foreign flow unavailable\n  Warnings: Foreign flow unavailable; Wyckoff read is low-confidence\n  Heuristic levels: Entry 24.900/24.477/24.130 | TP 26.170/27.016/29.396 | SL 23.377\n\n▸ TCB (Techcombank, BANK)\n  Price: 30.800 (+3.18%) | Value: 305.3B | Vol 10.0M (0.68x avg)\n  Relative: 1W +1.7% | 1M -14.0% | 3M -9.1% | vs VNINDEX -5.0% | vs VN30 -1.5%\n  Wyckoff: Markdown Phase E - Active Downtrend | Bias avoid | Confidence 54 | Action No long entries in active markdown\n  Wyckoff plan: Do not buy into active markdown. Wait for stopping action or a spring first.\n  Observed CAN SLIM: 38/70 | Coverage 100% [C:4 A:8 N:6 S:4 L:4 I:10 M:2]\n  Rule Read: Bearish Bias | Rule Strength: 4/10 (low conviction)\n  Positive drivers: RSI 42.6 in healthy range\n  Negative drivers: RS vs VNINDEX 3M -5.0%; Price -9.3% vs SMA50; Volume only 0.68x avg20; Market regime bearish; Wyckoff Markdown Phase E - Active Downtrend\n  Warnings: Foreign flow unavailable; Wyckoff read is low-confidence\n  Heuristic levels: Entry 30.800/30.323/29.470 | TP 32.230/33.184/37.404 | SL 28.423\n\n▸ FPT (FPT Corp, TECH)\n  Price: 77.000 (+2.12%) | Value: 567.7B | Vol 7.4M (0.52x avg)\n  Relative: 1W -2.0% | 1M -16.8% | 3M -16.8% | vs VNINDEX -12.6% | vs VN30 -9.1%\n  Wyckoff: Markdown Phase E - Active Downtrend | Bias avoid | Confidence 72 | Action No long entries in active markdown\n  Wyckoff plan: Do not buy into active markdown. Wait for stopping action or a spring first.\n  Observed CAN SLIM: 32/70 | Coverage 100% [C:6 A:4 N:4 S:4 L:2 I:10 M:2]\n  Rule Read: Bearish Bias | Rule Strength: 3/10 (low conviction)\n  Positive drivers: —\n  Negative drivers: RS vs VNINDEX 3M -12.6%; Price -16.6% vs SMA50; Volume only 0.52x avg20; Market regime bearish; Wyckoff Markdown Phase E - Active Downtrend\n  Warnings: Foreign flow unavailable\n  Heuristic levels: Entry 77.000/75.511/73.220 | TP 81.468/84.446/96.479 | SL 70.111"
 }

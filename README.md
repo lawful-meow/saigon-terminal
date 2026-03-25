@@ -25,7 +25,7 @@ If you are still jumping between broker tabs, spreadsheets, and half-broken scre
 ## What You Get
 
 - Ranked market board with market header, benchmark context, breadth, turnover, and sector leaders/laggards
-- Per-ticker detail layer with price action, relative strength, volume behavior, Wyckoff phase, CAN SLIM breakdown, and warnings
+- Per-ticker detail layer with price action, relative strength, volume behavior, step-by-step Wyckoff phase/action/entry playbook, CAN SLIM breakdown, and warnings
 - History persistence in `data/scans.json`
 - HTTP API for full scans, single-ticker scans, prompt export, publish flow, history, and health checks
 - Static publish flow for GitHub Pages
@@ -146,6 +146,7 @@ fetcher.js     VPS history/snapshot + KBS enrichment I/O
 resolver.js    source precedence / canonical source flags
 analyzer.js    pure metric computation + market context
 rules.js       CAN SLIM scoring + signal logic
+wyckoff.js     daily-bar Wyckoff structure, action plan, and entry logic
 formatter.js   terminal snapshot + explanation layer + prompt export
 store.js       JSON history persistence
 engine.js      orchestration
@@ -158,6 +159,7 @@ The separation matters:
 - `fetcher.js` does I/O
 - `analyzer.js` does math
 - `rules.js` does scoring
+- `wyckoff.js` turns daily bars into a structural phase, action plan, and entry map
 - `engine.js` orchestrates
 - `formatter.js` turns the result into something a human can read quickly
 

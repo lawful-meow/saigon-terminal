@@ -284,6 +284,70 @@ function warningSummary(stock) {
   return [missing, firstWarning].filter(Boolean).join(" · ") || "Clean";
 }
 
+function fRR(value) {
+  if (value == null) return "—";
+  return \`\${Number(value).toFixed(2)}R\`;
+}
+
+function activeWyckoffEvents(wyckoff) {
+  return Object.values(wyckoff?.events || {}).filter((event) => event && event.active);
+}
+
+function renderWyckoffPlans(wyckoff) {
+  const plans = wyckoff?.entry?.plans || [];
+  if (!plans.length) {
+    return \`<div class="item">\${wyckoff?.entry?.summary || "No active long entry."}</div>\`;
+  }
+
+  return plans.map((plan) => \`
+    <div class="factor-card">
+      <div class="factor-head">
+        <div>
+          <div class="factor-name">\${plan.label}</div>
+          <div class="factor-metric">\${plan.why || "No rationale provided."}</div>
+        </div>
+        <div class="factor-score" data-tone="\${plan.kind === "buy" ? "strong" : "unknown"}">\${plan.kind === "buy" ? "BUY" : "WAIT"}</div>
+      </div>
+      <div class="factor-meta">
+        <span class="chip">Entry \${fNum(plan.price)}</span>
+        <span class="chip">Stop \${fNum(plan.stop)}</span>
+        <span class="chip">T1 \${fNum(plan.target1)}</span>
+        <span class="chip">T2 \${fNum(plan.target2)}</span>
+      </div>
+      <div class="factor-reason">Risk / reward: \${fRR(plan.riskReward1)} to T1, \${fRR(plan.riskReward2)} to T2.</div>
+    </div>
+  \`).join("");
+}
+
+function renderWyckoffWatch(wyckoff) {
+  const watch = wyckoff?.entry?.watch || [];
+  if (!watch.length) {
+    return \`<div class="item">\${wyckoff?.entry?.invalidation || "No watch trigger defined."}</div>\`;
+  }
+
+  return watch.map((item) => \`
+    <div class="item">
+      <strong>\${item.label}</strong><br>
+      \${item.price != null ? \`Trigger \${fNum(item.price)}. \` : ""}\${item.why || ""}
+    </div>
+  \`).join("");
+}
+
+function renderWyckoffReasoning(wyckoff) {
+  const reasoning = wyckoff?.reasoning || [];
+  return reasoning.map((item) => \`
+    <div class="item">
+      <strong>Step \${item.step}. \${item.title}</strong><br>
+      \${item.detail}
+    </div>
+  \`).join("") || \`<div class="item">No reasoning available.</div>\`;
+}
+
+function renderActionItems(items, emptyCopy) {
+  if (!items?.length) return \`<div class="item">\${emptyCopy}</div>\`;
+  return items.map((item) => \`<div class="item">\${item}</div>\`).join("");
+}
+
 function renderHeader() {
   const meta = document.getElementById("headerMeta");
   meta.textContent = \`\${new Date(state.snapshot.generated).toLocaleString("vi-VN")} · \${state.snapshot.count} tickers\`;
@@ -435,6 +499,22 @@ function renderFocus() {
     </div>
   \`).join("");
 
+  const wyckoff = stock.wyckoff || {};
+  const activeEvents = activeWyckoffEvents(wyckoff);
+  const eventChips = activeEvents.length
+    ? activeEvents.map((event) => \`<span class="chip">\${event.name} \${event.volumeRatio != null ? \`\${event.volumeRatio}x\` : ""}</span>\`).join("")
+    : \`<span class="chip">No fresh Wyckoff trigger</span>\`;
+  const primaryPlan = wyckoff.entry?.plans?.[0] || null;
+  const primaryPlanText = primaryPlan
+    ? \`Entry \${fNum(primaryPlan.price)} · Stop \${fNum(primaryPlan.stop)}\`
+    : (wyckoff.entry?.summary || "No active long entry.");
+  const invalidationText = wyckoff.entry?.invalidation || "No invalidation level recorded.";
+  const reasoning = renderWyckoffReasoning(wyckoff);
+  const planCards = renderWyckoffPlans(wyckoff);
+  const watchItems = renderWyckoffWatch(wyckoff);
+  const actionSteps = renderActionItems(wyckoff.action?.steps, "No action steps recorded.");
+  const avoidSteps = renderActionItems(wyckoff.action?.shouldAvoid, "No avoid list recorded.");
+
   document.getElementById("focusPanel").innerHTML = \`
     <div class="sheet-nav-wrap">
       <div class="sheet-nav-label">Quick Ticker Nav</div>
@@ -454,11 +534,14 @@ function renderFocus() {
           <span class="quality-chip" data-tone="\${qualityTone(stock.quality.label)}">\${stock.quality.label} · \${stock.coveragePct}%</span>
           <span class="chip">Observed \${stock.observedCanSlimTotal}/\${stock.observedCanSlimMax || 0}</span>
           <span class="chip">RS vs VNINDEX \${fPct(stock.relative.vsVNINDEX3m, 100)}</span>
+          <span class="chip">\${wyckoff.stage || stock.wyckoffStage || stock.wyckoffPhase || "Wyckoff n/a"}</span>
+          <span class="chip">Wyckoff \${wyckoff.confidence || "—"}/100</span>
         </div>
       </div>
       <div class="stack" style="gap:12px">
         <div class="stat-card"><div class="stat-k">Rule Strength</div><div class="stat-v mono">\${stock.confidence}/10</div><div>\${stock.explain.ruleStrength.label}</div></div>
-        <div class="stat-card"><div class="stat-k">Heuristic Levels</div><div>Entry \${stock.entry.map(fNum).join(" / ")}</div><div>TP \${stock.tp.map(fNum).join(" / ")} · SL \${fNum(stock.sl)}</div></div>
+        <div class="stat-card"><div class="stat-k">Wyckoff Action</div><div class="stat-v">\${wyckoff.action?.label || "No action"}</div><div>\${wyckoff.action?.summary || wyckoff.entry?.summary || "No Wyckoff action summary."}</div></div>
+        <div class="stat-card"><div class="stat-k">Primary Entry</div><div>\${primaryPlanText}</div><div>\${primaryPlan ? \`T1 \${fNum(primaryPlan.target1)} · T2 \${fNum(primaryPlan.target2)}\` : invalidationText}</div></div>
         <div class="stat-card"><div class="stat-k">Delta</div><div>\${stock.delta}</div></div>
       </div>
     </div>
@@ -477,17 +560,46 @@ function renderFocus() {
       </div>
 
       <div class="section-card">
-        <div class="eyebrow">Quality & Sources</div>
+        <div class="eyebrow">Wyckoff Map</div>
         <div class="kv-grid">
-          <div class="kv"><div class="k">Freshness</div><div class="v">\${stock.quality.freshnessSec == null ? "N/A" : stock.quality.freshnessSec + " sec"}</div></div>
-          <div class="kv"><div class="k">Price Source</div><div class="v">\${stock.quality.sourceFlags.price}</div></div>
-          <div class="kv"><div class="k">Fundamentals</div><div class="v">\${stock.quality.sourceFlags.fundamentals}</div></div>
-          <div class="kv"><div class="k">Ownership</div><div class="v">\${stock.quality.sourceFlags.ownership}</div></div>
+          <div class="kv"><div class="k">Phase</div><div class="v">\${wyckoff.label || stock.wyckoffPhase || "N/A"}</div></div>
+          <div class="kv"><div class="k">Bias</div><div class="v">\${wyckoff.bias || stock.wyckoffBias || "N/A"}</div></div>
+          <div class="kv"><div class="k">Support / Resistance</div><div class="v mono">\${fNum(wyckoff.levels?.support)} / \${fNum(wyckoff.levels?.resistance)}</div></div>
+          <div class="kv"><div class="k">Range Position</div><div class="v">\${wyckoff.levels?.pricePositionPct == null ? "N/A" : \`\${wyckoff.levels.pricePositionPct}% · \${wyckoff.context?.rangeLocation || ""}\`}</div></div>
+          <div class="kv"><div class="k">Trend Bias</div><div class="v">\${wyckoff.context?.trendBias || "N/A"}</div></div>
+          <div class="kv"><div class="k">Invalidation</div><div class="v">\${invalidationText}</div></div>
         </div>
+        <div class="chip-row" style="margin-top:12px">\${eventChips}</div>
       </div>
     </div>
 
     <div class="detail-grid">
+      <div class="section-card">
+        <div class="eyebrow">Wyckoff Steps</div>
+        <div class="list" style="margin-top:12px">\${reasoning}</div>
+      </div>
+      <div class="section-card">
+        <div class="eyebrow">Action Plan</div>
+        <div class="list" style="margin-top:12px">\${actionSteps}</div>
+      </div>
+    </div>
+
+    <div class="section-card" style="margin-top:14px">
+      <div class="eyebrow">Avoid</div>
+      <div class="list" style="margin-top:12px">\${avoidSteps}</div>
+    </div>
+
+    <div class="section-card" style="margin-top:14px">
+      <div class="eyebrow">Wyckoff Entry Plans</div>
+      <div class="factor-grid" style="margin-top:12px">\${planCards}</div>
+    </div>
+
+    <div class="section-card" style="margin-top:14px">
+      <div class="eyebrow">Watch Triggers</div>
+      <div class="list" style="margin-top:12px">\${watchItems}</div>
+    </div>
+
+    <div class="detail-grid" style="margin-top:14px">
       <div class="section-card">
         <div class="eyebrow">Positive Drivers</div>
         <div class="list" style="margin-top:12px">\${positives}</div>
@@ -501,6 +613,16 @@ function renderFocus() {
     <div class="section-card" style="margin-top:14px">
       <div class="eyebrow">Factor Breakdown</div>
       <div class="factor-grid" style="margin-top:12px">\${factors}</div>
+    </div>
+
+    <div class="section-card" style="margin-top:14px">
+      <div class="eyebrow">Quality & Sources</div>
+      <div class="kv-grid" style="margin-top:12px">
+        <div class="kv"><div class="k">Freshness</div><div class="v">\${stock.quality.freshnessSec == null ? "N/A" : stock.quality.freshnessSec + " sec"}</div></div>
+        <div class="kv"><div class="k">Price Source</div><div class="v">\${stock.quality.sourceFlags.price}</div></div>
+        <div class="kv"><div class="k">Fundamentals</div><div class="v">\${stock.quality.sourceFlags.fundamentals}</div></div>
+        <div class="kv"><div class="k">Ownership</div><div class="v">\${stock.quality.sourceFlags.ownership}</div></div>
+      </div>
     </div>
 
     <div class="section-card" style="margin-top:14px">

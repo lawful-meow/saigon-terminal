@@ -5,6 +5,7 @@
 
 const config = require("./config");
 const { buildSourceFlags } = require("./resolver");
+const { analyzeWyckoff } = require("./wyckoff");
 
 function sma(values, period) {
   if (values.length < period) return null;
@@ -373,7 +374,7 @@ function computeMetrics(rawOhlcv, rawOverview, rawForeign, rawMarket, rawMeta = 
     }),
   };
 
-  return {
+  const baseMetrics = {
     price: latest.c,
     open: latest.o,
     high: latest.h,
@@ -462,6 +463,27 @@ function computeMetrics(rawOhlcv, rawOverview, rawForeign, rawMarket, rawMeta = 
     sl,
 
     recent20: bars.slice(-20),
+  };
+
+  const wyckoff = analyzeWyckoff(bars, baseMetrics);
+  const primaryPlan = wyckoff.entry?.plans?.[0] || null;
+  const activeBuyPlans = (wyckoff.entry?.plans || []).filter((plan) => Number.isFinite(plan.price));
+  const entryLevels = activeBuyPlans.length
+    ? activeBuyPlans.map((plan) => plan.price)
+    : baseMetrics.entry;
+  const tpLevels = primaryPlan && Number.isFinite(primaryPlan.target1) && Number.isFinite(primaryPlan.target2)
+    ? [primaryPlan.target1, primaryPlan.target2].sort((a, b) => a - b)
+    : baseMetrics.tp;
+  const stopLevel = primaryPlan && Number.isFinite(primaryPlan.stop)
+    ? primaryPlan.stop
+    : baseMetrics.sl;
+
+  return {
+    ...baseMetrics,
+    wyckoff,
+    entry: entryLevels,
+    tp: tpLevels,
+    sl: stopLevel,
   };
 }
 

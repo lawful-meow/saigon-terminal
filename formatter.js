@@ -94,6 +94,7 @@ function buildWarnings(metrics, scores) {
   if (!metrics.meta.snapshotOverlayUsed) warnings.push("Price is history-only fallback");
   if (metrics.meta.snapshotFailed && metrics.meta.snapshotError) warnings.push(`Snapshot fallback: ${metrics.meta.snapshotError}`);
   if (metrics.meta.freshnessSec != null && metrics.meta.freshnessSec > 180) warnings.push("Snapshot is stale");
+  if (metrics.wyckoff?.confidence != null && metrics.wyckoff.confidence < 55) warnings.push("Wyckoff read is low-confidence");
   warnings.push(...(metrics.meta.overviewWarnings || []));
   return warnings;
 }
@@ -226,6 +227,12 @@ function driverText(metrics, scores, warnings) {
     negatives.push(`Market regime ${metrics.marketContext.regime}`);
   }
 
+  if (metrics.wyckoff?.bias === "buy" || metrics.wyckoff?.bias === "buy_pullback" || metrics.wyckoff?.bias === "buy_pilot") {
+    positives.push(`Wyckoff ${metrics.wyckoff.label}`);
+  } else if (metrics.wyckoff?.phase === "Distribution" || metrics.wyckoff?.phase === "Markdown") {
+    negatives.push(`Wyckoff ${metrics.wyckoff.label}`);
+  }
+
   if (scores.coveragePct < 60) negatives.push(`Coverage only ${scores.coveragePct}%`);
   warnings.forEach((warning) => negatives.push(warning));
 
@@ -326,6 +333,9 @@ function tickerSnapshot(ticker, stockInfo, metrics, scores, prevScan, history = 
     coveragePct: scores.coveragePct,
     volumeSignal: scores.volumeSignal,
     wyckoffPhase: scores.wyckoffPhase,
+    wyckoffStage: scores.wyckoffStage,
+    wyckoffBias: scores.wyckoffBias,
+    wyckoff: metrics.wyckoff,
 
     relative: metrics.relative,
     market: metrics.marketContext,
@@ -357,6 +367,9 @@ function tickerSnapshot(ticker, stockInfo, metrics, scores, prevScan, history = 
       driversNegative: drivers.negatives,
       factorBreakdown: factorBreakdown(scores),
       normalizedCanSlim: scores.normalizedCanSlim,
+      wyckoffAction: metrics.wyckoff.action,
+      wyckoffEntry: metrics.wyckoff.entry,
+      wyckoffReasoning: metrics.wyckoff.reasoning,
     },
 
     entry: metrics.entry,
@@ -441,7 +454,7 @@ function fullSnapshot(results) {
     generated: new Date().toISOString(),
     engine: "Saigon Terminal v2.0",
     dataSource: "VPS + KBS",
-    note: "Board data is VPS-first. KBS now enriches fundamentals and ownership when available. Missing CAN SLIM factors still stay unknown instead of being faked as neutral.",
+    note: "Board data is VPS-first. KBS now enriches fundamentals and ownership when available. Missing CAN SLIM factors still stay unknown instead of being faked as neutral. Wyckoff output is a daily-bar structural heuristic with explicit action steps and entry conditions.",
     count: results.length,
     market: buildMarketSummary(results),
     providers: {
@@ -465,6 +478,8 @@ function claudePrompt(snapshot) {
       `  Price: ${stock.price.toLocaleString("vi-VN")} (${stock.changePct >= 0 ? "+" : ""}${stock.changePct}%) | Value: ${fmtK(stock.tradedValue)} | Vol: ${fmtK(stock.volume)} (${stock.volRatio}x avg)`,
       `  Relative: 1W ${fmtPct(stock.relative.ret1w)} | 1M ${fmtPct(stock.relative.ret1m)} | 3M ${fmtPct(stock.relative.ret3m)} | vs VNINDEX ${fmtPct(stock.relative.vsVNINDEX3m)} | vs VN30 ${fmtPct(stock.relative.vsVN303m)}`,
       `  Technical: SMA20 ${fmtK(stock.sma20)} | SMA50 ${fmtK(stock.sma50)} | RSI ${stock.rsi14 ?? "—"} | MACD ${fmtK(stock.macd)}`,
+      `  Wyckoff: ${stock.wyckoff?.label || stock.wyckoffPhase} | Bias ${stock.wyckoff?.bias || "n/a"} | Confidence ${stock.wyckoff?.confidence || "n/a"} | Action ${stock.wyckoff?.action?.label || "n/a"}`,
+      `  Wyckoff plan: ${stock.wyckoff?.entry?.summary || "No active plan"}${stock.wyckoff?.entry?.plans?.[0]?.price ? ` | Primary entry ${stock.wyckoff.entry.plans[0].price.toLocaleString("vi-VN")}` : ""}${stock.wyckoff?.entry?.plans?.[0]?.stop ? ` | Stop ${stock.wyckoff.entry.plans[0].stop.toLocaleString("vi-VN")}` : ""}`,
       `  Observed CAN SLIM: ${stock.observedCanSlimTotal}/${stock.observedCanSlimMax || 0} | Coverage ${stock.coveragePct}% [${factorPromptLine(stock)}]`,
       `  Rule Read: ${stock.explain.ruleRead} | Rule Strength: ${stock.confidence}/10 (${confidenceLabel(stock.confidence)})`,
       `  Positives: ${stock.explain.driversPositive.join("; ") || "—"}`,

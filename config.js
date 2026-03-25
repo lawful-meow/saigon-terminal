@@ -68,30 +68,20 @@ module.exports = {
     M: { metric: "marketTrend",    thresholds: [0.3, 0.5, 0.6, 0.8] },
   },
 
-  // ── Basic Wyckoff phase rules ──
-  // Conditions evaluated in order; first match wins.
-  wyckoff: [
-    {
-      phase: "Markup",
-      conditions: { aboveSMA50: true, sma20AboveSMA50: true, volTrend: "rising" },
-    },
-    {
-      phase: "Distribution",
-      conditions: { nearHigh: true, volSpike: true, priceStalling: true },
-    },
-    {
-      phase: "Markdown",
-      conditions: { belowSMA50: true, sma20BelowSMA50: true },
-    },
-    {
-      phase: "Accumulation",
-      conditions: { rangeCompression: true, volTrend: "declining" },
-    },
-    {
-      phase: "Accumulation",  // fallback
-      conditions: {},
-    },
-  ],
+  // ── Wyckoff structure heuristics ──
+  // Daily-bar approximation only. Used to map phase, action, and entry logic.
+  wyckoff: {
+    structureLookback: 30,
+    contextLookback: 40,
+    recentEventWindow: 8,
+    breakoutPct: 0.005,
+    fakeoutPct: 0.003,
+    dryVolumeRatio: 0.85,
+    expansionVolumeRatio: 1.25,
+    climaxVolumeRatio: 1.8,
+    markupExtensionAtr: 2.2,
+    stopBufferAtr: 0.6,
+  },
 
   // ── Persistence ──
   store: {

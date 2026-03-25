@@ -72,17 +72,7 @@ function classifyVolume(metrics) {
 }
 
 function classifyWyckoff(metrics) {
-  for (const rule of config.wyckoff) {
-    let match = true;
-    for (const [key, expected] of Object.entries(rule.conditions)) {
-      if (metrics[key] !== expected) {
-        match = false;
-        break;
-      }
-    }
-    if (match) return rule.phase;
-  }
-  return "Accumulation";
+  return metrics.wyckoff?.phase || "Unknown";
 }
 
 function normalizedCanSlimTotal(canslim) {
@@ -111,6 +101,12 @@ function computeSignal(canslim, metrics) {
   else if (volSig === "NORMAL") score += 6;
   else if (volSig === "CLIMAX") score += 4;
   else score += 2;
+
+  const wyckoffBias = metrics.wyckoff?.bias || "wait";
+  if (wyckoffBias === "buy" || wyckoffBias === "buy_pullback") score += 8;
+  else if (wyckoffBias === "buy_pilot") score += 5;
+  else if (wyckoffBias === "wait_pullback") score += 2;
+  else if (wyckoffBias === "avoid") score -= 7;
 
   if (canslim.coveragePct < 40) score -= 4;
   else if (canslim.coveragePct < 70) score -= 2;
@@ -161,6 +157,9 @@ function applyRules(metrics) {
     normalizedCanSlim: signalState.normalizedCanSlim,
     volumeSignal,
     wyckoffPhase,
+    wyckoffStage: metrics.wyckoff?.stage || null,
+    wyckoffBias: metrics.wyckoff?.bias || null,
+    wyckoffConfidence: metrics.wyckoff?.confidence || null,
     signal: signalState.signal,
     confidence: signalState.confidence,
     rawScore: signalState.rawScore,

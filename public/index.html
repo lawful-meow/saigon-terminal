@@ -997,6 +997,8 @@ function buildPrompt(snapshot) {
       `▸ ${stock.ticker} (${stock.name}, ${stock.sector})`,
       `  Price: ${fNum(stock.price)} (${stock.changePct >= 0 ? "+" : ""}${stock.changePct}%) | Value: ${fK(stock.tradedValue)} | Vol ${fK(stock.volume)} (${stock.volRatio}x avg)`,
       `  Relative: 1W ${fPct(stock.relative.ret1w, 100)} | 1M ${fPct(stock.relative.ret1m, 100)} | 3M ${fPct(stock.relative.ret3m, 100)} | vs VNINDEX ${fPct(stock.relative.vsVNINDEX3m, 100)} | vs VN30 ${fPct(stock.relative.vsVN303m, 100)}`,
+      `  Wyckoff: ${stock.wyckoff?.label || stock.wyckoffPhase || "n/a"} | Bias ${stock.wyckoff?.bias || "n/a"} | Confidence ${stock.wyckoff?.confidence || "n/a"} | Action ${stock.wyckoff?.action?.label || "n/a"}`,
+      `  Wyckoff plan: ${stock.wyckoff?.entry?.summary || "No active plan"}${stock.wyckoff?.entry?.plans?.[0]?.price ? ` | Primary entry ${fNum(stock.wyckoff.entry.plans[0].price)}` : ""}${stock.wyckoff?.entry?.plans?.[0]?.stop ? ` | Stop ${fNum(stock.wyckoff.entry.plans[0].stop)}` : ""}`,
       `  Observed CAN SLIM: ${stock.observedCanSlimTotal}/${stock.observedCanSlimMax || 0} | Coverage ${stock.coveragePct}% [${factors}]`,
       `  Rule Read: ${stock.explain.ruleRead} | Rule Strength: ${stock.confidence}/10 (${stock.explain.ruleStrength.label})`,
       `  Positive drivers: ${stock.explain.driversPositive.join("; ") || "—"}`,
@@ -1210,6 +1212,70 @@ function warningSummary(stock) {
     !missing || !warning.includes("Missing CAN SLIM factors")
   ) || null;
   return [missing, firstWarning].filter(Boolean).join(" · ") || "Clean";
+}
+
+function fRR(value) {
+  if (value == null) return "—";
+  return `${Number(value).toFixed(2)}R`;
+}
+
+function activeWyckoffEvents(wyckoff) {
+  return Object.values(wyckoff?.events || {}).filter((event) => event && event.active);
+}
+
+function renderWyckoffPlans(wyckoff) {
+  const plans = wyckoff?.entry?.plans || [];
+  if (!plans.length) {
+    return `<div class="driver">${wyckoff?.entry?.summary || "No active long entry."}</div>`;
+  }
+
+  return plans.map((plan) => `
+    <div class="factor-card">
+      <div class="factor-head">
+        <div>
+          <div class="factor-name">${plan.label}</div>
+          <div class="factor-metric">${plan.why || "No rationale provided."}</div>
+        </div>
+        <div class="factor-score" data-tone="${plan.kind === "buy" ? "strong" : "unknown"}">${plan.kind === "buy" ? "BUY" : "WAIT"}</div>
+      </div>
+      <div class="factor-meta">
+        <span class="mini-chip">Entry ${fNum(plan.price)}</span>
+        <span class="mini-chip">Stop ${fNum(plan.stop)}</span>
+        <span class="mini-chip">T1 ${fNum(plan.target1)}</span>
+        <span class="mini-chip">T2 ${fNum(plan.target2)}</span>
+      </div>
+      <div class="factor-reason">Risk / reward: ${fRR(plan.riskReward1)} to T1, ${fRR(plan.riskReward2)} to T2.</div>
+    </div>
+  `).join("");
+}
+
+function renderWyckoffWatch(wyckoff) {
+  const watch = wyckoff?.entry?.watch || [];
+  if (!watch.length) {
+    return `<div class="driver">${wyckoff?.entry?.invalidation || "No watch trigger defined."}</div>`;
+  }
+
+  return watch.map((item) => `
+    <div class="driver">
+      <strong>${item.label}</strong><br>
+      ${item.price != null ? `Trigger ${fNum(item.price)}. ` : ""}${item.why || ""}
+    </div>
+  `).join("");
+}
+
+function renderWyckoffReasoning(wyckoff) {
+  const reasoning = wyckoff?.reasoning || [];
+  return reasoning.map((item) => `
+    <div class="driver">
+      <strong>Step ${item.step}. ${item.title}</strong><br>
+      ${item.detail}
+    </div>
+  `).join("") || `<div class="driver">No reasoning available.</div>`;
+}
+
+function renderActionItems(items, emptyCopy) {
+  if (!items?.length) return `<div class="driver">${emptyCopy}</div>`;
+  return items.map((item) => `<div class="driver">${item}</div>`).join("");
 }
 
 function sectorOptions(snapshot) {
@@ -1435,6 +1501,22 @@ function renderDetail() {
     </div>
   `).join("");
 
+  const wyckoff = stock.wyckoff || {};
+  const activeEvents = activeWyckoffEvents(wyckoff);
+  const eventChips = activeEvents.length
+    ? activeEvents.map((event) => `<span class="mini-chip">${event.name} ${event.volumeRatio != null ? `${event.volumeRatio}x` : ""}</span>`).join("")
+    : `<span class="mini-chip">No fresh Wyckoff trigger</span>`;
+  const primaryPlan = wyckoff.entry?.plans?.[0] || null;
+  const primaryPlanText = primaryPlan
+    ? `Entry ${fNum(primaryPlan.price)} · Stop ${fNum(primaryPlan.stop)}`
+    : (wyckoff.entry?.summary || "No active long entry.");
+  const invalidationText = wyckoff.entry?.invalidation || "No invalidation level recorded.";
+  const reasoning = renderWyckoffReasoning(wyckoff);
+  const planCards = renderWyckoffPlans(wyckoff);
+  const watchItems = renderWyckoffWatch(wyckoff);
+  const actionSteps = renderActionItems(wyckoff.action?.steps, "No action steps recorded.");
+  const avoidSteps = renderActionItems(wyckoff.action?.shouldAvoid, "No avoid list recorded.");
+
   root.innerHTML = `
     <div class="sheet-nav-wrap">
       <div class="sheet-nav-label">Quick Ticker Nav</div>
@@ -1459,6 +1541,8 @@ function renderDetail() {
             <span class="quality-chip" data-tone="${qualityTone(stock.quality.label)}">${stock.quality.label} · ${stock.coveragePct}%</span>
             <span class="mini-chip">RS vs VNINDEX ${fPct(stock.relative.vsVNINDEX3m, 100)}</span>
             <span class="mini-chip">RSI ${stock.rsi14 ?? "—"}</span>
+            <span class="mini-chip">${wyckoff.stage || stock.wyckoffStage || stock.wyckoffPhase || "Wyckoff n/a"}</span>
+            <span class="mini-chip">Wyckoff ${wyckoff.confidence || "—"}/100</span>
           </div>
         </div>
         <div class="hero-stack">
@@ -1468,9 +1552,14 @@ function renderDetail() {
             <div>${stock.explain.ruleStrength.label}</div>
           </div>
           <div class="stat-card">
-            <div class="stat-k">Heuristic Levels</div>
-            <div class="v mono">Entry ${stock.entry.map(fNum).join(" / ")}</div>
-            <div class="v mono">TP ${stock.tp.map(fNum).join(" / ")} · SL ${fNum(stock.sl)}</div>
+            <div class="stat-k">Wyckoff Action</div>
+            <div class="stat-v">${wyckoff.action?.label || "No action"}</div>
+            <div>${wyckoff.action?.summary || wyckoff.entry?.summary || "No Wyckoff action summary."}</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-k">Primary Entry</div>
+            <div class="v mono">${primaryPlanText}</div>
+            <div>${primaryPlan ? `T1 ${fNum(primaryPlan.target1)} · T2 ${fNum(primaryPlan.target2)}` : invalidationText}</div>
           </div>
           <div class="stat-card">
             <div class="stat-k">Delta</div>
@@ -1491,6 +1580,48 @@ function renderDetail() {
         <div class="kv"><div class="k">RS vs VN30 3M</div><div class="v mono">${fPct(stock.relative.vsVN303m, 100)}</div></div>
         ${indexes}
       </div>
+    </div>
+
+    <div class="section">
+      <h3>Wyckoff Phase Map</h3>
+      <div class="kv-grid">
+        <div class="kv"><div class="k">Phase</div><div class="v">${wyckoff.label || stock.wyckoffPhase || "N/A"}</div></div>
+        <div class="kv"><div class="k">Bias</div><div class="v">${wyckoff.bias || stock.wyckoffBias || "N/A"}</div></div>
+        <div class="kv"><div class="k">Confidence</div><div class="v">${wyckoff.confidence == null ? "N/A" : `${wyckoff.confidence}/100 · ${wyckoff.confidenceLabel}`}</div></div>
+        <div class="kv"><div class="k">Action</div><div class="v">${wyckoff.action?.label || "N/A"}</div></div>
+        <div class="kv"><div class="k">Support / Resistance</div><div class="v mono">${fNum(wyckoff.levels?.support)} / ${fNum(wyckoff.levels?.resistance)}</div></div>
+        <div class="kv"><div class="k">Range Position</div><div class="v">${wyckoff.levels?.pricePositionPct == null ? "N/A" : `${wyckoff.levels.pricePositionPct}% · ${wyckoff.context?.rangeLocation || ""}`}</div></div>
+        <div class="kv"><div class="k">Trend Bias</div><div class="v">${wyckoff.context?.trendBias || "N/A"}</div></div>
+        <div class="kv"><div class="k">Invalidation</div><div class="v">${invalidationText}</div></div>
+      </div>
+      <div style="height:12px"></div>
+      <div class="hero-meta">${eventChips}</div>
+    </div>
+
+    <div class="section">
+      <h3>Wyckoff Step By Step</h3>
+      <div class="driver-list">${reasoning}</div>
+    </div>
+
+    <div class="detail-grid">
+      <div class="section">
+        <h3>Action Plan</h3>
+        <div class="driver-list">${actionSteps}</div>
+      </div>
+      <div class="section">
+        <h3>Avoid</h3>
+        <div class="driver-list">${avoidSteps}</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3>Wyckoff Entry Plans</h3>
+      <div class="factor-grid">${planCards}</div>
+    </div>
+
+    <div class="section">
+      <h3>Watch Triggers</h3>
+      <div class="driver-list">${watchItems}</div>
     </div>
 
     <div class="section">

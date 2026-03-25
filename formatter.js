@@ -162,6 +162,89 @@ function bandLabel(metric, lower, upper) {
   return `${metricFormat(metric, lower, { threshold: true })} to ${metricFormat(metric, upper, { threshold: true })}`;
 }
 
+function breakoutVolumeSupport(volRatio) {
+  if (!Number.isFinite(volRatio)) return "unknown";
+  if (volRatio >= 1.3) return "above_avg";
+  if (volRatio >= 1) return "building";
+  if (volRatio >= 0.7) return "neutral";
+  return "dry";
+}
+
+function breakoutReason(parts) {
+  return parts.filter(Boolean).join("; ");
+}
+
+function buildBreakout(metrics) {
+  const entry = metrics.wyckoff?.entry || {};
+  const primaryPlan = (entry.plans || []).find((plan) =>
+    Number.isFinite(plan.price) && (plan.kind === "buy" || plan.kind === "wait")
+  ) || null;
+  const watchTrigger = (entry.watch || []).find((item) => Number.isFinite(item.price)) || null;
+  const triggerPrice = primaryPlan?.price ?? watchTrigger?.price ?? null;
+  const distancePct = Number.isFinite(triggerPrice)
+    ? +((metrics.price / triggerPrice - 1) * 100).toFixed(2)
+    : null;
+  const invalidation = primaryPlan?.stop ?? entry.invalidation ?? null;
+  const volSupport = breakoutVolumeSupport(metrics.volRatio);
+  const relVsIndex = metrics.relative?.vsVNINDEX3m ?? null;
+  const priceVsSma20 = metrics.relative?.priceVsSma20Pct ?? null;
+  const priceVsSma50 = metrics.relative?.priceVsSma50Pct ?? null;
+  const weakContext = metrics.wyckoff?.bias === "avoid" ||
+    triggerPrice == null ||
+    (relVsIndex != null && relVsIndex < -0.05 && !metrics.nearHigh);
+
+  let state = "not_ready";
+  if (!weakContext) {
+    if (distancePct > 3) state = "extended";
+    else if (distancePct >= 0) state = "triggered";
+    else if (distancePct >= -2) state = "near_trigger";
+    else state = "arming";
+  }
+
+  let score = 35;
+  if (state === "arming") score += 12;
+  else if (state === "near_trigger") score += 25;
+  else if (state === "triggered") score += 30;
+  else if (state === "extended") score += 20;
+  else score -= 15;
+
+  if (relVsIndex != null) {
+    if (relVsIndex >= 0.05) score += 15;
+    else if (relVsIndex >= 0) score += 8;
+    else if (relVsIndex < -0.05) score -= 10;
+  }
+
+  if (metrics.nearHigh) score += 10;
+  else if (metrics.nearHighPct >= 0.85) score += 5;
+
+  if (metrics.rangeCompression) score += 10;
+  if (priceVsSma20 != null && priceVsSma20 >= 0) score += 6;
+  if (priceVsSma50 != null && priceVsSma50 >= 0) score += 8;
+  else if (priceVsSma50 != null && priceVsSma50 < -5) score -= 8;
+
+  if (metrics.volRatio >= 1.3) score += 10;
+  else if (metrics.volRatio >= 1) score += 6;
+  else if (metrics.volRatio < 0.7) score -= 8;
+
+  score = Math.max(0, Math.min(100, Math.round(score)));
+
+  return {
+    state,
+    score,
+    triggerPrice,
+    distancePct,
+    invalidation,
+    volumeSupport: volSupport,
+    reason: breakoutReason([
+      primaryPlan ? primaryPlan.label : watchTrigger?.label || "No active trigger",
+      relVsIndex == null ? null : `RS vs VNINDEX ${fmtPct(relVsIndex, 100, 1)}`,
+      metrics.nearHigh ? "near 52W highs" : null,
+      metrics.rangeCompression ? "range compressed" : null,
+      `volume ${volSupport}`,
+    ]),
+  };
+}
+
 function factorReason(factor, detail) {
   const factorLabel = FACTOR_META[factor]?.label || factor;
   const metricLabel = METRIC_META[detail.metric]?.label || detail.metric;
@@ -305,6 +388,7 @@ function tickerSnapshot(ticker, stockInfo, metrics, scores, prevScan, history = 
   const warnings = buildWarnings(metrics, scores);
   const drivers = driverText(metrics, scores, warnings);
   const qScore = qualityScore(metrics, scores);
+  const breakout = buildBreakout(metrics);
 
   const snapshot = {
     ticker,
@@ -395,6 +479,7 @@ function tickerSnapshot(ticker, stockInfo, metrics, scores, prevScan, history = 
     signal: scores.signal,
     confidence: scores.confidence,
     rawScore: scores.rawScore,
+    breakout,
 
     delta: prevScan ? describeDelta(metrics, scores, prevScan) : "FIRST_SCAN",
   };
@@ -560,4 +645,11 @@ Return JSON array:
 [{"ticker":"XXX","rule_read_review":"agree_or_disagree","best_driver":"one line","main_risk":"one line","data_gap":"one line or null","signal_override":null_or_"NEW_SIGNAL","confidence_override":null_or_N,"cross_notes":"optional"}]`;
 }
 
-module.exports = { tickerSnapshot, fullSnapshot, claudePrompt, signalLabel, confidenceLabel };
+module.exports = {
+  tickerSnapshot,
+  fullSnapshot,
+  claudePrompt,
+  signalLabel,
+  confidenceLabel,
+  buildBreakout,
+};

@@ -386,7 +386,8 @@ td{
 .tone-neutral{color:var(--muted)}
 .score-chip,
 .signal-chip,
-.quality-chip{
+.quality-chip,
+.breakout-chip{
   display:inline-flex;
   align-items:center;
   min-height:28px;
@@ -405,6 +406,11 @@ td{
 .signal-chip[data-signal="STRONG_BUY"],.signal-chip[data-signal="BUY"]{background:rgba(92,225,184,.10);color:#ddfff3}
 .signal-chip[data-signal="HOLD"]{background:rgba(127,208,255,.10);color:#e3f6ff}
 .signal-chip[data-signal="SELL"],.signal-chip[data-signal="STRONG_SELL"]{background:rgba(255,133,115,.12);color:#ffd4ce}
+.breakout-chip[data-state="triggered"]{background:rgba(92,225,184,.12);color:#ddfff3}
+.breakout-chip[data-state="near_trigger"]{background:rgba(127,208,255,.12);color:#e3f6ff}
+.breakout-chip[data-state="arming"]{background:rgba(255,200,105,.12);color:#ffecc7}
+.breakout-chip[data-state="extended"]{background:rgba(255,133,115,.12);color:#ffd4ce}
+.breakout-chip[data-state="not_ready"]{background:rgba(143,167,181,.12);color:#dbe6ec}
 .warning-stack{
   display:grid;
   gap:4px;
@@ -842,6 +848,14 @@ td{
         <div class="toolbar-row">
           <input class="search" id="searchInput" type="search" placeholder="Filter by ticker, name, or warning">
           <select class="control" id="sectorFilter"></select>
+          <select class="control" id="breakoutFilter">
+            <option value="ALL">All breakout states</option>
+            <option value="triggered">Triggered</option>
+            <option value="near_trigger">Near Trigger</option>
+            <option value="arming">Arming</option>
+            <option value="extended">Extended</option>
+            <option value="not_ready">Not Ready</option>
+          </select>
           <select class="control" id="groupBy">
             <option value="none">Ungrouped</option>
             <option value="sector">Group by Sector</option>
@@ -851,6 +865,7 @@ td{
         <div class="toolbar-row">
           <div class="sort-pills">
             <button class="btn" data-quick-sort="strengthScore">Strength</button>
+            <button class="btn" data-quick-sort="breakoutScore">Breakout</button>
             <button class="btn" data-quick-sort="observedScore">Observed Score</button>
             <button class="btn" data-quick-sort="rs">RS</button>
             <button class="btn" data-quick-sort="volume">Volume</button>
@@ -970,6 +985,7 @@ const state = {
   sortKey: "strengthScore",
   sortDir: "desc",
   sector: "ALL",
+  breakoutFilter: "ALL",
   query: "",
   pinnedOnly: false,
   groupBy: "none",
@@ -1014,6 +1030,13 @@ function signalLabel(signal) {
 
 function qualityTone(label) {
   return label === "high" ? "high" : (label === "medium" ? "medium" : "low");
+}
+
+function breakoutLabel(stateName) {
+  return String(stateName || "not_ready")
+    .split("_")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
 }
 
 function factorScoreTone(detail) {
@@ -1226,6 +1249,7 @@ function filteredStocks() {
   const stocks = state.snapshot?.stocks || [];
   return stocks.filter((stock) => {
     if (state.sector !== "ALL" && stock.sector !== state.sector) return false;
+    if (state.breakoutFilter !== "ALL" && stock.breakout?.state !== state.breakoutFilter) return false;
     if (state.pinnedOnly && !state.pins.has(stock.ticker)) return false;
     if (!state.query) return true;
     const haystack = [
@@ -1244,6 +1268,7 @@ function sortValue(stock, key) {
     case "sector": return stock.sector;
     case "last": return stock.price;
     case "strengthScore": return stock.strength?.score;
+    case "breakoutScore": return stock.breakout?.score;
     case "strengthRank": return stock.strength?.rank == null ? null : -stock.strength.rank;
     case "changePct": return stock.changePct;
     case "tradedValue":
@@ -1524,7 +1549,7 @@ function boardRows(stocks) {
     : [["", stocks]];
 
   return groups.map(([label, rows]) => {
-    const groupHeader = label ? `<tr class="group-row"><td colspan="15">${label}</td></tr>` : "";
+    const groupHeader = label ? `<tr class="group-row"><td colspan="16">${label}</td></tr>` : "";
     const stockRows = rows.map((stock) => {
       const selected = state.selectedTicker === stock.ticker ? "active" : "";
       const changeClass = (stock.changePct || 0) >= 0 ? "tone-good" : "tone-bad";
@@ -1557,6 +1582,12 @@ function boardRows(stocks) {
           <td class="mono ${stock.relative?.vsVN303m >= 0 ? "tone-good" : "tone-bad"}">${fPct(stock.relative?.vsVN303m, 100)}</td>
           <td class="mono ${stock.relative?.priceVsSma20Pct >= 0 ? "tone-good" : "tone-bad"}">${fPct(stock.relative?.priceVsSma20Pct, 1)}</td>
           <td class="mono ${stock.relative?.priceVsSma50Pct >= 0 ? "tone-good" : "tone-bad"}">${fPct(stock.relative?.priceVsSma50Pct, 1)}</td>
+          <td>
+            <div class="warning-stack">
+              <span class="breakout-chip" data-state="${stock.breakout?.state || "not_ready"}">${breakoutLabel(stock.breakout?.state)}</span>
+              <span class="warning-line">${stock.breakout?.distancePct == null ? "No trigger" : `${stock.breakout.distancePct >= 0 ? "+" : ""}${stock.breakout.distancePct}% vs trigger`}</span>
+            </div>
+          </td>
           <td><span class="score-chip">${strengthText}</span><div class="warning-line">${stock.strength?.label || "n/a"}</div></td>
           <td><span class="score-chip">${observedPct}</span></td>
           <td>
@@ -1614,6 +1645,7 @@ function renderBoard() {
           <th><button data-sort="vsVN303m">RS vs VN30</button></th>
           <th><button data-sort="priceVsSma20Pct">Vs SMA20</button></th>
           <th><button data-sort="priceVsSma50Pct">Vs SMA50</button></th>
+          <th><button data-sort="breakoutScore">Breakout</button></th>
           <th><button data-sort="strengthScore">Strength</button></th>
           <th><button data-sort="observedScore">Observed CAN SLIM</button></th>
           <th><button data-sort="ruleStrength">Rule Read</button></th>
@@ -1774,6 +1806,7 @@ function renderDetail() {
             <span class="mini-chip">${stock.strength?.label || "n/a"}${stock.strength?.rank ? ` · #${stock.strength.rank}` : ""}</span>
             <span class="score-chip">Observed ${stock.observedCanSlimTotal}/${stock.observedCanSlimMax || 0}</span>
             <span class="quality-chip" data-tone="${qualityTone(stock.quality.label)}">${stock.quality.label} · ${stock.coveragePct}%</span>
+            <span class="breakout-chip" data-state="${stock.breakout?.state || "not_ready"}">${breakoutLabel(stock.breakout?.state)}</span>
             <span class="mini-chip">RS vs VNINDEX ${fPct(stock.relative.vsVNINDEX3m, 100)}</span>
             <span class="mini-chip">RSI ${stock.rsi14 ?? "—"}</span>
             <span class="mini-chip">${wyckoff.stage || stock.wyckoffStage || stock.wyckoffPhase || "Wyckoff n/a"}</span>
@@ -1800,6 +1833,11 @@ function renderDetail() {
             <div class="stat-k">Primary Entry</div>
             <div class="v mono">${primaryPlanText}</div>
             <div>${primaryPlan ? `T1 ${fNum(primaryPlan.target1)} · T2 ${fNum(primaryPlan.target2)}` : invalidationText}</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-k">Breakout Readiness</div>
+            <div class="stat-v">${breakoutLabel(stock.breakout?.state)}</div>
+            <div>${stock.breakout?.distancePct == null ? stock.breakout?.reason || "No trigger available." : `${stock.breakout.distancePct >= 0 ? "+" : ""}${stock.breakout.distancePct}% vs ${fNum(stock.breakout.triggerPrice)} · ${stock.breakout.reason}`}</div>
           </div>
           <div class="stat-card">
             <div class="stat-k">Delta</div>
@@ -2055,6 +2093,10 @@ document.getElementById("searchInput").addEventListener("input", (event) => {
 document.getElementById("watchlistSelect").addEventListener("change", syncWatchFormFromSelection);
 document.getElementById("sectorFilter").addEventListener("change", (event) => {
   state.sector = event.target.value;
+  renderBoard();
+});
+document.getElementById("breakoutFilter").addEventListener("change", (event) => {
+  state.breakoutFilter = event.target.value;
   renderBoard();
 });
 document.getElementById("groupBy").addEventListener("change", (event) => {

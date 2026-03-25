@@ -110,7 +110,7 @@ a{color:#d9fff1;text-decoration:none}
 .hero-price{font-size:42px;font-weight:900;line-height:1;letter-spacing:-.03em;margin:8px 0 10px}
 .mono{font-family:"IBM Plex Mono","SFMono-Regular","Menlo",monospace;font-variant-numeric:tabular-nums}
 .chip-row,.market-grid,.kv-grid,.history-strip{display:flex;gap:8px;flex-wrap:wrap}
-.chip,.signal-chip,.quality-chip{
+.chip,.signal-chip,.quality-chip,.breakout-chip{
   display:inline-flex;align-items:center;min-height:30px;padding:0 10px;border-radius:999px;
   border:1px solid rgba(40,69,81,.8);font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
 }
@@ -121,6 +121,11 @@ a{color:#d9fff1;text-decoration:none}
 .quality-chip[data-tone="high"]{background:rgba(92,225,184,.10);color:#ddfff3}
 .quality-chip[data-tone="medium"]{background:rgba(255,200,105,.10);color:#ffecc7}
 .quality-chip[data-tone="low"]{background:rgba(255,133,115,.12);color:#ffd4ce}
+.breakout-chip[data-state="triggered"]{background:rgba(92,225,184,.12);color:#ddfff3}
+.breakout-chip[data-state="near_trigger"]{background:rgba(127,208,255,.12);color:#e3f6ff}
+.breakout-chip[data-state="arming"]{background:rgba(255,200,105,.12);color:#ffecc7}
+.breakout-chip[data-state="extended"]{background:rgba(255,133,115,.12);color:#ffd4ce}
+.breakout-chip[data-state="not_ready"]{background:rgba(143,167,181,.12);color:#dbe6ec}
 .tone-good{color:var(--good)}
 .tone-bad{color:var(--bad)}
 .detail-grid,.kv-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}
@@ -271,6 +276,13 @@ function signalLabel(signal) {
 
 function qualityTone(label) {
   return label === "high" ? "high" : (label === "medium" ? "medium" : "low");
+}
+
+function breakoutLabel(state) {
+  return String(state || "not_ready")
+    .split("_")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
 }
 
 function factorScoreTone(detail) {
@@ -429,6 +441,7 @@ function renderBoard() {
           <th>Value</th>
           <th>Vol x Avg</th>
           <th>RS vs VNINDEX</th>
+          <th>Breakout</th>
           <th>Strength</th>
           <th>Observed CAN SLIM</th>
           <th>Rule Read</th>
@@ -453,6 +466,7 @@ function renderBoard() {
               <td class="mono">\${fK(stock.tradedValue)}</td>
               <td class="mono">\${stock.volRatio}x</td>
               <td class="\${stock.relative?.vsVNINDEX3m >= 0 ? "tone-good" : "tone-bad"}">\${fPct(stock.relative?.vsVNINDEX3m, 100)}</td>
+              <td><span class="breakout-chip" data-state="\${stock.breakout?.state || "not_ready"}">\${breakoutLabel(stock.breakout?.state)}</span><div style="color:var(--muted);font-size:12px;margin-top:5px">\${stock.breakout?.distancePct == null ? "No trigger" : \`\${stock.breakout.distancePct >= 0 ? "+" : ""}\${stock.breakout.distancePct}%\`}</div></td>
               <td><span class="chip">\${strengthText}</span><div style="color:var(--muted);font-size:12px;margin-top:5px">\${stock.strength?.label || "n/a"}</div></td>
               <td><span class="chip">\${observedPct}</span></td>
               <td><span class="signal-chip" data-signal="\${stock.signal}">\${signalLabel(stock.signal)}</span></td>
@@ -559,6 +573,7 @@ function renderFocus() {
           <span class="chip">\${stock.strength?.label || "n/a"}\${stock.strength?.rank ? \` · #\${stock.strength.rank}\` : ""}</span>
           <span class="quality-chip" data-tone="\${qualityTone(stock.quality.label)}">\${stock.quality.label} · \${stock.coveragePct}%</span>
           <span class="chip">Observed \${stock.observedCanSlimTotal}/\${stock.observedCanSlimMax || 0}</span>
+          <span class="breakout-chip" data-state="\${stock.breakout?.state || "not_ready"}">\${breakoutLabel(stock.breakout?.state)}</span>
           <span class="chip">RS vs VNINDEX \${fPct(stock.relative.vsVNINDEX3m, 100)}</span>
           <span class="chip">\${wyckoff.stage || stock.wyckoffStage || stock.wyckoffPhase || "Wyckoff n/a"}</span>
           <span class="chip">Wyckoff \${wyckoff.confidence || "—"}/100</span>
@@ -569,6 +584,7 @@ function renderFocus() {
         <div class="stat-card"><div class="stat-k">CAN SLIM Strength</div><div class="stat-v mono">\${stock.strength?.score == null ? "—" : \`\${stock.strength.score}/100\`}</div><div>\${stock.strength?.label || "No strength label"}\${stock.strength?.rank ? \` · Rank #\${stock.strength.rank}\` : ""}</div></div>
         <div class="stat-card"><div class="stat-k">Wyckoff Action</div><div class="stat-v">\${wyckoff.action?.label || "No action"}</div><div>\${wyckoff.action?.summary || wyckoff.entry?.summary || "No Wyckoff action summary."}</div></div>
         <div class="stat-card"><div class="stat-k">Primary Entry</div><div>\${primaryPlanText}</div><div>\${primaryPlan ? \`T1 \${fNum(primaryPlan.target1)} · T2 \${fNum(primaryPlan.target2)}\` : invalidationText}</div></div>
+        <div class="stat-card"><div class="stat-k">Breakout Readiness</div><div class="stat-v">\${breakoutLabel(stock.breakout?.state)}</div><div>\${stock.breakout?.distancePct == null ? stock.breakout?.reason || "No trigger available." : \`\${stock.breakout.distancePct >= 0 ? "+" : ""}\${stock.breakout.distancePct}% vs \${fNum(stock.breakout.triggerPrice)} · \${stock.breakout.reason}\`}</div></div>
         <div class="stat-card"><div class="stat-k">Delta</div><div>\${stock.delta}</div></div>
       </div>
     </div>

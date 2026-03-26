@@ -102,6 +102,14 @@ module.exports = {
     testWindow: 12,
     minTestRiskReward: 3,
   },
+  risk: {
+    accountSizeVnd: 1_000_000_000,
+    fullRiskPct: 0.005,
+    pilotRiskPct: 0.0025,
+    maxPositionPct: 0.10,
+    minAvgValue20Vnd: 50_000_000_000,
+    lotSize: 100,
+  },
 
   // ── Persistence ──
   store: {

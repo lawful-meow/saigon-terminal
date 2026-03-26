@@ -170,6 +170,165 @@ function bandLabel(metric, lower, upper) {
   return `${metricFormat(metric, lower, { threshold: true })} to ${metricFormat(metric, upper, { threshold: true })}`;
 }
 
+function breakoutVolumeSupport(volRatio) {
+  if (!Number.isFinite(volRatio)) return "unknown";
+  if (volRatio >= 1.3) return "above_avg";
+  if (volRatio >= 1) return "building";
+  if (volRatio >= 0.7) return "neutral";
+  return "dry";
+}
+
+function breakoutReason(parts) {
+  return parts.filter(Boolean).join("; ");
+}
+
+function buildBreakout(metrics) {
+  const entry = metrics.wyckoff?.entry || {};
+  const primaryPlan = (entry.plans || []).find((plan) =>
+    Number.isFinite(plan.price) && (plan.kind === "buy" || plan.kind === "wait")
+  ) || null;
+  const watchTrigger = (entry.watch || []).find((item) => Number.isFinite(item.price)) || null;
+  const triggerPrice = primaryPlan?.price ?? watchTrigger?.price ?? null;
+  const distancePct = Number.isFinite(triggerPrice)
+    ? +((metrics.price / triggerPrice - 1) * 100).toFixed(2)
+    : null;
+  const invalidation = primaryPlan?.stop ?? entry.invalidation ?? null;
+  const volSupport = breakoutVolumeSupport(metrics.volRatio);
+  const relVsIndex = metrics.relative?.vsVNINDEX3m ?? null;
+  const priceVsSma20 = metrics.relative?.priceVsSma20Pct ?? null;
+  const priceVsSma50 = metrics.relative?.priceVsSma50Pct ?? null;
+  const weakContext = metrics.wyckoff?.bias === "avoid" ||
+    triggerPrice == null ||
+    (relVsIndex != null && relVsIndex < -0.05 && !metrics.nearHigh);
+
+  let state = "not_ready";
+  if (!weakContext) {
+    if (distancePct > 3) state = "extended";
+    else if (distancePct >= 0) state = "triggered";
+    else if (distancePct >= -2) state = "near_trigger";
+    else state = "arming";
+  }
+
+  let score = 35;
+  if (state === "arming") score += 12;
+  else if (state === "near_trigger") score += 25;
+  else if (state === "triggered") score += 30;
+  else if (state === "extended") score += 20;
+  else score -= 15;
+
+  if (relVsIndex != null) {
+    if (relVsIndex >= 0.05) score += 15;
+    else if (relVsIndex >= 0) score += 8;
+    else if (relVsIndex < -0.05) score -= 10;
+  }
+
+  if (metrics.nearHigh) score += 10;
+  else if (metrics.nearHighPct >= 0.85) score += 5;
+
+  if (metrics.rangeCompression) score += 10;
+  if (priceVsSma20 != null && priceVsSma20 >= 0) score += 6;
+  if (priceVsSma50 != null && priceVsSma50 >= 0) score += 8;
+  else if (priceVsSma50 != null && priceVsSma50 < -5) score -= 8;
+
+  if (metrics.volRatio >= 1.3) score += 10;
+  else if (metrics.volRatio >= 1) score += 6;
+  else if (metrics.volRatio < 0.7) score -= 8;
+
+  score = Math.max(0, Math.min(100, Math.round(score)));
+
+  return {
+    state,
+    score,
+    triggerPrice,
+    distancePct,
+    invalidation,
+    volumeSupport: volSupport,
+    reason: breakoutReason([
+      primaryPlan ? primaryPlan.label : watchTrigger?.label || "No active trigger",
+      relVsIndex == null ? null : `RS vs VNINDEX ${fmtPct(relVsIndex, 100, 1)}`,
+      metrics.nearHigh ? "near 52W highs" : null,
+      metrics.rangeCompression ? "range compressed" : null,
+      `volume ${volSupport}`,
+    ]),
+  };
+}
+
+function roundLot(shares, lotSize) {
+  if (!Number.isFinite(shares) || shares <= 0) return 0;
+  return Math.floor(shares / lotSize) * lotSize;
+}
+
+function buildExecutionRisk(metrics) {
+  const riskConfig = config.risk || {};
+  const lotSize = riskConfig.lotSize || 100;
+  const accountSize = riskConfig.accountSizeVnd || 1_000_000_000;
+  const fullRiskBudget = accountSize * (riskConfig.fullRiskPct || 0.005);
+  const pilotRiskBudget = accountSize * (riskConfig.pilotRiskPct || 0.0025);
+  const maxPositionBudget = accountSize * (riskConfig.maxPositionPct || 0.10);
+  const minAvgValue20 = riskConfig.minAvgValue20Vnd || 50_000_000_000;
+  const activePlan = (metrics.wyckoff?.entry?.plans || []).find((plan) =>
+    plan.kind === "buy" && Number.isFinite(plan.price) && Number.isFinite(plan.stop)
+  ) || null;
+  const entryPrice = activePlan?.price ?? null;
+  const stopPrice = activePlan?.stop ?? null;
+  const perShareRisk = Number.isFinite(entryPrice) && Number.isFinite(stopPrice)
+    ? Math.abs(entryPrice - stopPrice)
+    : null;
+  const stopDistancePct = Number.isFinite(perShareRisk) && Number.isFinite(entryPrice) && entryPrice > 0
+    ? +((perShareRisk / entryPrice) * 100).toFixed(2)
+    : null;
+  const stopDistanceAtr = Number.isFinite(perShareRisk) && Number.isFinite(metrics.atr14) && metrics.atr14 > 0
+    ? +(perShareRisk / metrics.atr14).toFixed(2)
+    : null;
+  const fullShares = Number.isFinite(perShareRisk) && perShareRisk > 0
+    ? roundLot(Math.min(fullRiskBudget / perShareRisk, maxPositionBudget / entryPrice), lotSize)
+    : 0;
+  const pilotShares = Number.isFinite(perShareRisk) && perShareRisk > 0
+    ? roundLot(Math.min(pilotRiskBudget / perShareRisk, maxPositionBudget / entryPrice), lotSize)
+    : 0;
+  const tradedValue = metrics.tradedValue || 0;
+  const avgValue20 = metrics.avgValue20 || 0;
+  const weakTurnover = tradedValue > 0 && avgValue20 > 0 && tradedValue < avgValue20 * 0.75;
+
+  let status = "ready";
+  let liquidityLabel = "tradeable";
+  let reason = "Sizing available from active buy plan.";
+
+  if (!activePlan || !Number.isFinite(perShareRisk) || perShareRisk <= 0) {
+    status = "unavailable";
+    liquidityLabel = "trap_risk";
+    reason = "No valid active buy plan with entry and stop exists yet.";
+  } else if (avgValue20 < minAvgValue20 || stopDistancePct > 12) {
+    liquidityLabel = "trap_risk";
+    reason = avgValue20 < minAvgValue20
+      ? "Average value traded is below the minimum liquidity threshold."
+      : "Stop distance is too wide for a controlled execution plan.";
+  } else if (stopDistancePct >= 8 || avgValue20 < minAvgValue20 * 1.5 || weakTurnover) {
+    liquidityLabel = "caution";
+    reason = stopDistancePct >= 8
+      ? "Stop distance is wide enough to require caution."
+      : (avgValue20 < minAvgValue20 * 1.5
+        ? "Liquidity clears the floor but still sits near the minimum threshold."
+        : "Current turnover is lagging the recent average.");
+  }
+
+  return {
+    status,
+    liquidityLabel,
+    avgValue20,
+    tradedValue,
+    stopDistancePct,
+    stopDistanceAtr,
+    riskReward1: activePlan?.riskReward1 ?? null,
+    riskReward2: activePlan?.riskReward2 ?? null,
+    pilotShares,
+    fullShares,
+    pilotNotional: pilotShares > 0 && entryPrice ? Math.round(pilotShares * entryPrice) : 0,
+    fullNotional: fullShares > 0 && entryPrice ? Math.round(fullShares * entryPrice) : 0,
+    reason,
+  };
+}
+
 function factorReason(factor, detail) {
   const factorLabel = FACTOR_META[factor]?.label || factor;
   const metricLabel = METRIC_META[detail.metric]?.label || detail.metric;
@@ -313,12 +472,15 @@ function tickerSnapshot(ticker, stockInfo, metrics, scores, prevScan, history = 
   const warnings = buildWarnings(metrics, scores);
   const drivers = driverText(metrics, scores, warnings);
   const qScore = qualityScore(metrics, scores);
+  const breakout = buildBreakout(metrics);
+  const executionRisk = buildExecutionRisk(metrics);
 
   const snapshot = {
     ticker,
     name: stockInfo.name,
     sector: stockInfo.sector,
     scanTime: new Date().toISOString(),
+    scanRunId: null,
 
     price: metrics.price,
     open: metrics.open,
@@ -406,6 +568,8 @@ function tickerSnapshot(ticker, stockInfo, metrics, scores, prevScan, history = 
     signal: scores.signal,
     confidence: scores.confidence,
     rawScore: scores.rawScore,
+    breakout,
+    executionRisk,
 
     delta: prevScan ? describeDelta(metrics, scores, prevScan) : "FIRST_SCAN",
   };
@@ -421,26 +585,110 @@ function breadthSummary(results) {
   return { advancers, decliners, unchanged };
 }
 
-function sectorSummary(results) {
+function normalizeScore(values, value) {
+  if (value == null) return 0;
+  const valid = values.filter((item) => item != null);
+  if (!valid.length) return 0;
+  const min = Math.min(...valid);
+  const max = Math.max(...valid);
+  if (max === min) return 50;
+  return ((value - min) / (max - min)) * 100;
+}
+
+function aggregateSectorRows(results) {
   const map = new Map();
   for (const stock of results) {
     if (!map.has(stock.sector)) {
-      map.set(stock.sector, { sector: stock.sector, count: 0, turnover: 0, changeValues: [], scoreValues: [] });
+      map.set(stock.sector, {
+        sector: stock.sector,
+        count: 0,
+        turnover: 0,
+        changeValues: [],
+        scoreValues: [],
+        rsValues: [],
+        ret1wValues: [],
+        ret1mValues: [],
+        ret3mValues: [],
+        strengthValues: [],
+        advancers: 0,
+        decliners: 0,
+      });
     }
     const row = map.get(stock.sector);
     row.count += 1;
     row.turnover += stock.tradedValue || 0;
     if (stock.sessionChangePct != null) row.changeValues.push(stock.sessionChangePct);
     if (stock.observedCanSlimMax > 0) row.scoreValues.push(stock.observedCanSlimTotal / stock.observedCanSlimMax);
+    if (stock.relative?.vsVNINDEX3m != null) row.rsValues.push(stock.relative.vsVNINDEX3m);
+    if (stock.relative?.ret1w != null) row.ret1wValues.push(stock.relative.ret1w);
+    if (stock.relative?.ret1m != null) row.ret1mValues.push(stock.relative.ret1m);
+    if (stock.relative?.ret3m != null) row.ret3mValues.push(stock.relative.ret3m);
+    if (stock.strength?.score != null) row.strengthValues.push(stock.strength.score);
+    if ((stock.changePct || 0) > 0) row.advancers += 1;
+    else if ((stock.changePct || 0) < 0) row.decliners += 1;
   }
 
-  const sectors = Array.from(map.values()).map((row) => ({
+  return Array.from(map.values()).map((row) => ({
     sector: row.sector,
     count: row.count,
     turnover: row.turnover,
+    advancers: row.advancers,
+    decliners: row.decliners,
     avgChangePct: row.changeValues.length ? +(average(row.changeValues)).toFixed(2) : null,
     avgObservedScorePct: row.scoreValues.length ? +(average(row.scoreValues) * 100).toFixed(1) : null,
-  })).sort((a, b) => (b.avgChangePct || -999) - (a.avgChangePct || -999));
+    avgRsVsVNINDEX3m: row.rsValues.length ? +(average(row.rsValues)).toFixed(4) : null,
+    avgRet1w: row.ret1wValues.length ? +(average(row.ret1wValues)).toFixed(4) : null,
+    avgRet1m: row.ret1mValues.length ? +(average(row.ret1mValues)).toFixed(4) : null,
+    avgRet3m: row.ret3mValues.length ? +(average(row.ret3mValues)).toFixed(4) : null,
+    avgStrengthScore: row.strengthValues.length ? +(average(row.strengthValues)).toFixed(1) : null,
+  }));
+}
+
+function rankSectorRows(rows) {
+  const rsValues = rows.map((row) => row.avgRsVsVNINDEX3m);
+  const strengthValues = rows.map((row) => row.avgStrengthScore);
+  const ret1mValues = rows.map((row) => row.avgRet1m);
+
+  return rows
+    .map((row) => {
+      const breadthRatio = row.count ? row.advancers / row.count : 0;
+      const rotationScore = (
+        normalizeScore(rsValues, row.avgRsVsVNINDEX3m) * 0.4 +
+        normalizeScore(strengthValues, row.avgStrengthScore) * 0.3 +
+        (breadthRatio * 100) * 0.2 +
+        normalizeScore(ret1mValues, row.avgRet1m) * 0.1
+      );
+
+      return {
+        ...row,
+        rotationScore: +rotationScore.toFixed(1),
+      };
+    })
+    .sort((a, b) => {
+      if ((b.rotationScore || -1) !== (a.rotationScore || -1)) return (b.rotationScore || -1) - (a.rotationScore || -1);
+      if ((b.avgRsVsVNINDEX3m || -999) !== (a.avgRsVsVNINDEX3m || -999)) return (b.avgRsVsVNINDEX3m || -999) - (a.avgRsVsVNINDEX3m || -999);
+      if ((b.avgChangePct || -999) !== (a.avgChangePct || -999)) return (b.avgChangePct || -999) - (a.avgChangePct || -999);
+      return String(a.sector || "").localeCompare(String(b.sector || ""));
+    })
+    .map((row, index) => ({
+      ...row,
+      rank: index + 1,
+    }));
+}
+
+function sectorSummary(results, previousResults = null, options = {}) {
+  const driftEligible = options.scanMode === "watchlist" && Array.isArray(previousResults) && previousResults.length > 0;
+  const currentRows = rankSectorRows(aggregateSectorRows(results));
+  const previousRows = driftEligible ? rankSectorRows(aggregateSectorRows(previousResults)) : [];
+  const previousRanks = new Map(previousRows.map((row) => [row.sector, row.rank]));
+  const sectors = currentRows.map((row) => {
+    const prevRank = driftEligible ? (previousRanks.get(row.sector) ?? null) : null;
+    return {
+      ...row,
+      prevRank,
+      rankDelta: prevRank == null ? null : prevRank - row.rank,
+    };
+  });
 
   return {
     leaders: sectors.slice(0, 3),
@@ -454,13 +702,15 @@ function average(values) {
   return values.reduce((sum, value) => sum + value, 0) / values.length;
 }
 
-function buildMarketSummary(results) {
-  const first = results[0] || null;
+function buildMarketSummary(displayResults, summaryResults = displayResults, options = {}) {
+  const first = summaryResults[0] || displayResults[0] || null;
   const indexes = first?.market?.indexes || {};
   const pulse = first?.market?.pulse || null;
-  const turnover = results.reduce((sum, stock) => sum + (stock.tradedValue || 0), 0);
-  const breadth = breadthSummary(results);
-  const sectors = sectorSummary(results);
+  const turnover = summaryResults.reduce((sum, stock) => sum + (stock.tradedValue || 0), 0);
+  const breadth = breadthSummary(summaryResults);
+  const sectors = sectorSummary(summaryResults, options.previousSummaryStocks, {
+    scanMode: options.scanMode,
+  });
 
   return {
     asOf: first?.scanTime || new Date().toISOString(),
@@ -478,6 +728,7 @@ function fullSnapshot(results, meta = {}) {
   const activeProviders = Object.entries(config.sources.roadmap || {})
     .filter(([, detail]) => detail?.status === "active")
     .map(([provider]) => provider);
+  const summaryStocks = meta.summaryStocks || results;
 
   const snapshot = {
     generated: new Date().toISOString(),
@@ -492,7 +743,10 @@ function fullSnapshot(results, meta = {}) {
     scanMode: meta.scanMode || "watchlist",
     topN: meta.topN || null,
     throttleMs: meta.delayMs || 0,
-    market: buildMarketSummary(results),
+    market: buildMarketSummary(results, summaryStocks, {
+      scanMode: meta.scanMode || "watchlist",
+      previousSummaryStocks: meta.previousSummaryStocks || null,
+    }),
     providers: {
       active: ["vps", ...activeProviders],
       roadmap: config.sources.roadmap,
@@ -582,4 +836,12 @@ Return JSON array:
 [{"ticker":"XXX","rule_read_review":"agree_or_disagree","best_driver":"one line","main_risk":"one line","data_gap":"one line or null","signal_override":null_or_"NEW_SIGNAL","confidence_override":null_or_N,"cross_notes":"optional"}]`;
 }
 
-module.exports = { tickerSnapshot, fullSnapshot, claudePrompt, signalLabel, confidenceLabel };
+module.exports = {
+  tickerSnapshot,
+  fullSnapshot,
+  claudePrompt,
+  signalLabel,
+  confidenceLabel,
+  buildBreakout,
+  buildExecutionRisk,
+};

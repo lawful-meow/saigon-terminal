@@ -414,7 +414,9 @@ td{
 .tone-neutral{color:var(--muted)}
 .score-chip,
 .signal-chip,
-.quality-chip{
+.quality-chip,
+.breakout-chip,
+.execution-chip{
   display:inline-flex;
   align-items:center;
   min-height:28px;
@@ -433,6 +435,14 @@ td{
 .signal-chip[data-signal="STRONG_BUY"],.signal-chip[data-signal="BUY"]{background:rgba(92,225,184,.10);color:#ddfff3}
 .signal-chip[data-signal="HOLD"]{background:rgba(127,208,255,.10);color:#e3f6ff}
 .signal-chip[data-signal="SELL"],.signal-chip[data-signal="STRONG_SELL"]{background:rgba(255,133,115,.12);color:#ffd4ce}
+.breakout-chip[data-state="triggered"]{background:rgba(92,225,184,.12);color:#ddfff3}
+.breakout-chip[data-state="near_trigger"]{background:rgba(127,208,255,.12);color:#e3f6ff}
+.breakout-chip[data-state="arming"]{background:rgba(255,200,105,.12);color:#ffecc7}
+.breakout-chip[data-state="extended"]{background:rgba(255,133,115,.12);color:#ffd4ce}
+.breakout-chip[data-state="not_ready"]{background:rgba(143,167,181,.12);color:#dbe6ec}
+.execution-chip[data-risk="tradeable"]{background:rgba(92,225,184,.12);color:#ddfff3}
+.execution-chip[data-risk="caution"]{background:rgba(255,200,105,.12);color:#ffecc7}
+.execution-chip[data-risk="trap_risk"]{background:rgba(255,133,115,.12);color:#ffd4ce}
 .warning-stack{
   display:grid;
   gap:4px;
@@ -828,6 +838,15 @@ td{
   display:grid;
   gap:10px;
 }
+.sector-card{
+  text-align:left;
+  border:1px solid rgba(40,69,81,.8);
+  background:rgba(11,20,26,.88);
+}
+.sector-card.active{
+  border-color:rgba(92,225,184,.34);
+  box-shadow:inset 0 0 0 1px rgba(92,225,184,.12);
+}
 .utility-note{
   color:var(--muted);
   font-size:12px;
@@ -931,6 +950,14 @@ td{
         <div class="toolbar-row">
           <input class="search" id="searchInput" type="search" placeholder="Filter by ticker, name, or warning">
           <select class="control" id="sectorFilter"></select>
+          <select class="control" id="breakoutFilter">
+            <option value="ALL">All breakout states</option>
+            <option value="triggered">Triggered</option>
+            <option value="near_trigger">Near Trigger</option>
+            <option value="arming">Arming</option>
+            <option value="extended">Extended</option>
+            <option value="not_ready">Not Ready</option>
+          </select>
           <select class="control" id="groupBy">
             <option value="none">Ungrouped</option>
             <option value="sector">Group by Sector</option>
@@ -940,6 +967,8 @@ td{
         <div class="toolbar-row">
           <div class="sort-pills">
             <button class="btn" data-quick-sort="strengthScore">Strength</button>
+            <button class="btn" data-quick-sort="sectorRotationScore">Sector Rotation</button>
+            <button class="btn" data-quick-sort="breakoutScore">Breakout</button>
             <button class="btn" data-quick-sort="observedScore">Observed Score</button>
             <button class="btn" data-quick-sort="rs">RS</button>
             <button class="btn" data-quick-sort="volume">Volume</button>
@@ -1009,6 +1038,17 @@ td{
           <div class="panel-copy" id="alertMeta">No active alerts yet.</div>
         </div>
         <div class="driver-list" id="alertList"></div>
+      </section>
+
+      <section class="panel utility-panel">
+        <div class="panel-head">
+          <div>
+            <div class="eyebrow">Sector Rotation</div>
+            <div class="panel-title">Ranked sector matrix</div>
+          </div>
+          <div class="panel-copy" id="sectorMeta">Run a scan to load sector rotation.</div>
+        </div>
+        <div class="utility-grid" id="sectorPanel"></div>
       </section>
 
       <section class="panel utility-panel">
@@ -1126,6 +1166,7 @@ const state = {
   sortKey: "strengthScore",
   sortDir: "desc",
   sector: "ALL",
+  breakoutFilter: "ALL",
   query: "",
   pinnedOnly: false,
   groupBy: "none",
@@ -1205,6 +1246,35 @@ function signalLabel(signal) {
 
 function qualityTone(label) {
   return label === "high" ? "high" : (label === "medium" ? "medium" : "low");
+}
+
+function breakoutLabel(stateName) {
+  return String(stateName || "not_ready")
+    .split("_")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
+function executionLabel(label) {
+  return String(label || "trap_risk")
+    .split("_")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
+function rankDeltaLabel(rankDelta) {
+  if (rankDelta == null) return "Drift unavailable";
+  if (rankDelta > 0) return `Up ${rankDelta}`;
+  if (rankDelta < 0) return `Down ${Math.abs(rankDelta)}`;
+  return "Flat";
+}
+
+function sectorState(sectorName) {
+  return state.snapshot?.market?.sectors?.all?.find((sector) => sector.sector === sectorName) || null;
+}
+
+function stockSectorState(stock) {
+  return sectorState(stock?.sector);
 }
 
 function factorScoreTone(detail) {
@@ -1446,6 +1516,65 @@ function renderUtility() {
   ].join("");
 }
 
+function bankBasketSummary(snapshot) {
+  const banks = (snapshot?.stocks || []).filter((stock) => stock.sector === "BANK");
+  if (!banks.length) return null;
+
+  const avgChangePct = banks.reduce((sum, stock) => sum + (stock.changePct || 0), 0) / banks.length;
+  const avgRsVsVNINDEX3m = banks.reduce((sum, stock) => sum + (stock.relative?.vsVNINDEX3m || 0), 0) / banks.length;
+  const advancers = banks.filter((stock) => (stock.changePct || 0) > 0).length;
+  const decliners = banks.filter((stock) => (stock.changePct || 0) < 0).length;
+  const leader = banks.slice().sort((a, b) => (b.relative?.vsVNINDEX3m || -999) - (a.relative?.vsVNINDEX3m || -999))[0] || null;
+  const laggard = banks.slice().sort((a, b) => (a.relative?.vsVNINDEX3m || 999) - (b.relative?.vsVNINDEX3m || 999))[0] || null;
+
+  return {
+    advancers,
+    decliners,
+    avgChangePct: +avgChangePct.toFixed(2),
+    avgRsVsVNINDEX3m: +avgRsVsVNINDEX3m.toFixed(4),
+    leader,
+    laggard,
+  };
+}
+
+function renderSectorPanel(snapshot) {
+  const root = document.getElementById("sectorPanel");
+  const meta = document.getElementById("sectorMeta");
+  const sectors = snapshot?.market?.sectors?.all || [];
+
+  if (!sectors.length) {
+    root.innerHTML = `
+      <div class="stat-card">
+        <div class="stat-k">Sector Rotation</div>
+        <div>Sector rank, breadth, and drift load here after a comparable watchlist scan.</div>
+      </div>
+    `;
+    meta.textContent = "Run a scan to load sector rotation.";
+    return;
+  }
+
+  meta.textContent = `${sectors.length} sectors in current snapshot${state.sector !== "ALL" ? ` · focus ${state.sector}` : ""}`;
+  root.innerHTML = sectors.map((sector) => `
+    <button class="stat-card sector-card ${state.sector === sector.sector ? "active" : ""}" data-sector-focus="${sector.sector}">
+      <div class="stat-k">#${sector.rank} | ${sector.sector}</div>
+      <div class="stat-v mono">${sector.rotationScore}/100</div>
+      <div>${sector.advancers}/${sector.decliners} adv/dec · ${sector.avgChangePct >= 0 ? "+" : ""}${sector.avgChangePct}%</div>
+      <div class="tool-note">Observed ${sector.avgObservedScorePct ?? "n/a"}% · RS ${fPct(sector.avgRsVsVNINDEX3m, 100)}</div>
+    </button>
+  `).join("");
+
+  root.querySelectorAll("[data-sector-focus]").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.sector = button.dataset.sectorFocus;
+      const select = document.getElementById("sectorFilter");
+      if (select) select.value = state.sector;
+      renderSectorPanel(state.snapshot);
+      renderBoard();
+      renderDetail();
+    });
+  });
+}
+
 function renderMarket(snapshot) {
   const market = snapshot?.market;
   const grid = document.getElementById("marketGrid");
@@ -1520,7 +1649,7 @@ function renderMarket(snapshot) {
   const sectorLaggard = market.sectors?.laggards?.[0];
   const sectorSummary = `
     <div class="market-card">
-      <div class="market-k">Sector Pulse</div>
+      <div class="market-k">Sector Rotation</div>
       <div class="market-v">${sectorLeader ? sectorLeader.sector : "N/A"}</div>
       <div class="market-s">Leader ${sectorLeader ? `${sectorLeader.avgChangePct}%` : "—"} · Laggard ${sectorLaggard ? `${sectorLaggard.sector} ${sectorLaggard.avgChangePct}%` : "—"}</div>
       <div class="market-mini">
@@ -1538,6 +1667,7 @@ function filteredStocks() {
   return stocks.filter((stock) => {
     if (presetTickers && !presetTickers.has(stock.ticker)) return false;
     if (state.sector !== "ALL" && stock.sector !== state.sector) return false;
+    if (state.breakoutFilter !== "ALL" && stock.breakout?.state !== state.breakoutFilter) return false;
     if (state.pinnedOnly && !state.pins.has(stock.ticker)) return false;
     if (!state.query) return true;
     const haystack = [
@@ -1551,11 +1681,15 @@ function filteredStocks() {
 }
 
 function sortValue(stock, key) {
+  const sector = stockSectorState(stock);
   switch (key) {
     case "ticker": return stock.ticker;
     case "sector": return stock.sector;
+    case "sectorRotationScore": return sector?.rotationScore;
+    case "sectorRank": return sector?.rank == null ? null : -sector.rank;
     case "last": return stock.price;
     case "strengthScore": return stock.strength?.score;
+    case "breakoutScore": return stock.breakout?.score;
     case "strengthRank": return stock.strength?.rank == null ? null : -stock.strength.rank;
     case "changePct": return stockSessionChange(stock);
     case "tradedValue":
@@ -1674,7 +1808,7 @@ function renderWyckoffTests(wyckoff) {
 function sectorOptions(snapshot) {
   const select = document.getElementById("sectorFilter");
   const sectors = Array.from(new Set((snapshot?.stocks || []).map((stock) => stock.sector))).sort();
-  select.innerHTML = [`<option value="ALL">All sectors</option>`]
+  select.innerHTML = [`<option value="ALL">Focus: All sectors</option>`]
     .concat(sectors.map((sector) => `<option value="${sector}">${sector}</option>`))
     .join("");
   select.value = state.sector;
@@ -1985,12 +2119,13 @@ function boardRows(stocks) {
     : [["", stocks]];
 
   return groups.map(([label, rows]) => {
-    const groupHeader = label ? `<tr class="group-row"><td colspan="15">${label}</td></tr>` : "";
+    const groupHeader = label ? `<tr class="group-row"><td colspan="16">${label}</td></tr>` : "";
     const stockRows = rows.map((stock) => {
       const selected = state.selectedTicker === stock.ticker ? "active" : "";
       const sessionPct = stockSessionChange(stock);
       const changeClass = toneByChange(sessionPct);
       const pinned = state.pins.has(stock.ticker);
+      const sector = stockSectorState(stock);
       const observedPct = stock.observedCanSlimMax > 0
         ? `${stock.observedCanSlimTotal}/${stock.observedCanSlimMax} · ${stock.coveragePct}%`
         : `N/A · ${stock.coveragePct}%`;
@@ -2009,7 +2144,7 @@ function boardRows(stocks) {
               </div>
             </div>
           </td>
-          <td>${stock.sector}</td>
+          <td><div>${stock.sector}</div><div class="warning-line">${sector ? `#${sector.rank} | Rot ${sector.rotationScore}/100` : "Rotation n/a"}</div></td>
           <td class="mono">${fNum(stock.price)}</td>
           <td class="mono ${changeClass}">${fSignedPct(sessionPct)}</td>
           <td class="mono">${fK(stock.tradedValue)}</td>
@@ -2019,6 +2154,12 @@ function boardRows(stocks) {
           <td class="mono ${stock.relative?.vsVN303m >= 0 ? "tone-good" : "tone-bad"}">${fPct(stock.relative?.vsVN303m, 100)}</td>
           <td class="mono ${stock.relative?.priceVsSma20Pct >= 0 ? "tone-good" : "tone-bad"}">${fPct(stock.relative?.priceVsSma20Pct, 1)}</td>
           <td class="mono ${stock.relative?.priceVsSma50Pct >= 0 ? "tone-good" : "tone-bad"}">${fPct(stock.relative?.priceVsSma50Pct, 1)}</td>
+          <td>
+            <div class="warning-stack">
+              <span class="breakout-chip" data-state="${stock.breakout?.state || "not_ready"}">${breakoutLabel(stock.breakout?.state)}</span>
+              <span class="warning-line">${stock.breakout?.distancePct == null ? "No trigger" : `${stock.breakout.distancePct >= 0 ? "+" : ""}${stock.breakout.distancePct}% vs trigger`}</span>
+            </div>
+          </td>
           <td><span class="score-chip">${strengthText}</span><div class="warning-line">${stock.strength?.label || "n/a"}</div></td>
           <td><span class="score-chip">${observedPct}</span></td>
           <td>
@@ -2030,6 +2171,7 @@ function boardRows(stocks) {
           <td>
             <div class="warning-stack">
               <span class="quality-chip" data-tone="${qualityTone(stock.quality.label)}">${stock.quality.label} · ${stock.quality.coveragePct}%</span>
+              <span class="execution-chip" data-risk="${stock.executionRisk?.liquidityLabel || "trap_risk"}">Exec ${executionLabel(stock.executionRisk?.liquidityLabel)}</span>
               <span class="warning-line">${warningSummary(stock)}</span>
             </div>
           </td>
@@ -2078,6 +2220,7 @@ function renderBoard() {
           <th><button data-sort="vsVN303m">RS vs VN30</button></th>
           <th><button data-sort="priceVsSma20Pct">Vs SMA20</button></th>
           <th><button data-sort="priceVsSma50Pct">Vs SMA50</button></th>
+          <th><button data-sort="breakoutScore">Breakout</button></th>
           <th><button data-sort="strengthScore">Strength</button></th>
           <th><button data-sort="observedScore">Observed CAN SLIM</button></th>
           <th><button data-sort="ruleStrength">Rule Read</button></th>
@@ -2215,6 +2358,8 @@ function renderDetail() {
   const actionSteps = renderActionItems(wyckoff.action?.steps, "No action steps recorded.");
   const avoidSteps = renderActionItems(wyckoff.action?.shouldAvoid, "No avoid list recorded.");
   const testItems = renderWyckoffTests(wyckoff);
+  const bankBasket = stock.sector === "BANK" ? bankBasketSummary(state.snapshot) : null;
+  const sectorRankState = stockSectorState(stock);
 
   root.innerHTML = `
     <div class="sheet-nav-wrap">
@@ -2230,6 +2375,29 @@ function renderDetail() {
         </div>
         <span class="signal-chip" data-signal="${stock.signal}">${signalLabel(stock.signal)}</span>
       </div>
+      ${bankBasket ? `
+      <div class="detail-grid">
+        <div class="stat-card">
+          <div class="stat-k">BANK Basket</div>
+          <div class="stat-v mono">${bankBasket.advancers} / ${bankBasket.decliners}</div>
+          <div>Advancers / decliners in current bank basket</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-k">BANK Avg Change</div>
+          <div class="stat-v mono">${bankBasket.avgChangePct >= 0 ? "+" : ""}${bankBasket.avgChangePct}%</div>
+          <div>Average change across bank names</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-k">BANK Avg RS</div>
+          <div class="stat-v mono">${fPct(bankBasket.avgRsVsVNINDEX3m, 100)}</div>
+          <div>Average RS vs VNINDEX</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-k">Leader / Laggard</div>
+          <div>${bankBasket.leader?.ticker || "n/a"} / ${bankBasket.laggard?.ticker || "n/a"}</div>
+          <div>${bankBasket.leader ? `${fPct(bankBasket.leader.relative?.vsVNINDEX3m, 100)} vs ${fPct(bankBasket.laggard?.relative?.vsVNINDEX3m, 100)}` : "Current bank basket leadership"}</div>
+        </div>
+      </div>` : ""}
       <div class="detail-hero">
         <div class="hero-slab">
           <div class="eyebrow">Main Sheet</div>
@@ -2240,7 +2408,9 @@ function renderDetail() {
             <span class="mini-chip">${stock.strength?.label || "n/a"}${stock.strength?.rank ? ` · #${stock.strength.rank}` : ""}</span>
             <span class="score-chip">Observed ${stock.observedCanSlimTotal}/${stock.observedCanSlimMax || 0}</span>
             <span class="quality-chip" data-tone="${qualityTone(stock.quality.label)}">${stock.quality.label} · ${stock.coveragePct}%</span>
+            <span class="breakout-chip" data-state="${stock.breakout?.state || "not_ready"}">${breakoutLabel(stock.breakout?.state)}</span>
             <span class="mini-chip">RS vs VNINDEX ${fPct(stock.relative.vsVNINDEX3m, 100)}</span>
+            <span class="mini-chip">${sectorRankState ? `Sector #${sectorRankState.rank} | ${rankDeltaLabel(sectorRankState.rankDelta)}` : "Sector drift unavailable"}</span>
             <span class="mini-chip">RSI ${stock.rsi14 ?? "—"}</span>
             <span class="mini-chip">${wyckoff.stage || stock.wyckoffStage || stock.wyckoffPhase || "Wyckoff n/a"}</span>
             <span class="mini-chip">Wyckoff ${wyckoff.confidence || "—"}/100</span>
@@ -2266,6 +2436,25 @@ function renderDetail() {
             <div class="stat-k">Primary Entry</div>
             <div class="v mono">${primaryPlanText}</div>
             <div>${primaryPlan ? `T1 ${fNum(primaryPlan.target1)} · T2 ${fNum(primaryPlan.target2)}` : invalidationText}</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-k">Breakout Readiness</div>
+            <div class="stat-v">${breakoutLabel(stock.breakout?.state)}</div>
+            <div>${stock.breakout?.distancePct == null ? stock.breakout?.reason || "No trigger available." : `${stock.breakout.distancePct >= 0 ? "+" : ""}${stock.breakout.distancePct}% vs ${fNum(stock.breakout.triggerPrice)} · ${stock.breakout.reason}`}</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-k">Sector Rotation</div>
+            <div class="stat-v">${sectorRankState ? `#${sectorRankState.rank}` : "n/a"}</div>
+            <div>${sectorRankState
+              ? `${sectorRankState.rotationScore}/100 | ${sectorRankState.prevRank == null ? "Drift unavailable" : `Prev #${sectorRankState.prevRank} | ${rankDeltaLabel(sectorRankState.rankDelta)}`}`
+              : "No sector rotation read available."}</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-k">Execution Risk</div>
+            <div class="stat-v">${executionLabel(stock.executionRisk?.liquidityLabel)}</div>
+            <div>${stock.executionRisk?.status === "ready"
+              ? `Pilot ${fNum(stock.executionRisk.pilotShares)} · Full ${fNum(stock.executionRisk.fullShares)} · Stop ${stock.executionRisk.stopDistancePct}%`
+              : stock.executionRisk?.reason || "No safe sizing available."}</div>
           </div>
           <div class="stat-card">
             <div class="stat-k">Delta</div>
@@ -2338,6 +2527,20 @@ function renderDetail() {
     </div>
 
     <div class="section">
+      <h3>Execution Risk</h3>
+      <div class="kv-grid">
+        <div class="kv"><div class="k">Status</div><div class="v">${stock.executionRisk?.status || "unavailable"}</div></div>
+        <div class="kv"><div class="k">Liquidity</div><div class="v">${executionLabel(stock.executionRisk?.liquidityLabel)}</div></div>
+        <div class="kv"><div class="k">Traded / Avg Value20</div><div class="v mono">${fK(stock.executionRisk?.tradedValue)} / ${fK(stock.executionRisk?.avgValue20)}</div></div>
+        <div class="kv"><div class="k">Stop Distance</div><div class="v mono">${stock.executionRisk?.stopDistancePct == null ? "N/A" : `${stock.executionRisk.stopDistancePct}% · ${stock.executionRisk.stopDistanceAtr ?? "N/A"} ATR`}</div></div>
+        <div class="kv"><div class="k">Risk / Reward</div><div class="v mono">${stock.executionRisk?.riskReward1 == null ? "N/A" : `${stock.executionRisk.riskReward1}R / ${stock.executionRisk.riskReward2 ?? "N/A"}R`}</div></div>
+        <div class="kv"><div class="k">Pilot / Full Size</div><div class="v mono">${fNum(stock.executionRisk?.pilotShares)} / ${fNum(stock.executionRisk?.fullShares)} shares</div></div>
+        <div class="kv"><div class="k">Pilot / Full Notional</div><div class="v mono">${fK(stock.executionRisk?.pilotNotional)} / ${fK(stock.executionRisk?.fullNotional)}</div></div>
+        <div class="kv"><div class="k">Read</div><div class="v">${stock.executionRisk?.reason || "No execution read available."}</div></div>
+      </div>
+    </div>
+
+    <div class="section">
       <h3>Rule Drivers</h3>
       <div class="driver-list">${positives}</div>
       <div style="height:10px"></div>
@@ -2402,6 +2605,7 @@ function renderAll() {
   renderMarket(state.snapshot);
   renderAlerts(state.snapshot);
   renderUtility();
+  renderSectorPanel(state.snapshot);
   sectorOptions(state.snapshot);
   renderPresetPills(state.snapshot);
   renderWatchlistManager();
@@ -2529,19 +2733,29 @@ document.getElementById("btnBatchScan").addEventListener("click", batchScanTopSt
 document.getElementById("searchInput").addEventListener("input", (event) => {
   state.query = event.target.value || "";
   renderBoard();
+  renderDetail();
 });
 document.getElementById("watchlistSelect").addEventListener("change", syncWatchFormFromSelection);
 document.getElementById("sectorFilter").addEventListener("change", (event) => {
   state.sector = event.target.value;
+  renderSectorPanel(state.snapshot);
   renderBoard();
+  renderDetail();
+});
+document.getElementById("breakoutFilter").addEventListener("change", (event) => {
+  state.breakoutFilter = event.target.value;
+  renderBoard();
+  renderDetail();
 });
 document.getElementById("groupBy").addEventListener("change", (event) => {
   state.groupBy = event.target.value;
   renderBoard();
+  renderDetail();
 });
 document.getElementById("pinnedOnly").addEventListener("change", (event) => {
   state.pinnedOnly = event.target.checked;
   renderBoard();
+  renderDetail();
 });
 document.querySelectorAll("[data-quick-sort]").forEach((button) => {
   button.addEventListener("click", () => {
@@ -2549,6 +2763,7 @@ document.querySelectorAll("[data-quick-sort]").forEach((button) => {
     state.sortKey = key;
     state.sortDir = key === "coverage" ? "asc" : "desc";
     renderBoard();
+    renderDetail();
   });
 });
 document.addEventListener("keydown", (event) => {
@@ -2576,6 +2791,8 @@ document.addEventListener("keydown", (event) => {
 renderMarket(null);
 renderAlerts(null);
 renderUtility();
+renderPresetPills(null);
+renderSectorPanel(null);
 renderPresetPills(null);
 renderWatchlistManager();
 loadWatchlist().catch((error) => {

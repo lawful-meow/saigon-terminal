@@ -8,19 +8,24 @@ const fs = require("fs");
 const path = require("path");
 const config = require("./config");
 
-const STORE_PATH = path.resolve(__dirname, config.store.path);
 const MAX = config.store.maxScansPerTicker;
 
+function storePath() {
+  const override = process.env.SAIGON_STORE_PATH;
+  return path.resolve(__dirname, override || config.store.path);
+}
+
 function ensureDir() {
-  const dir = path.dirname(STORE_PATH);
+  const dir = path.dirname(storePath());
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 }
 
 function load() {
   ensureDir();
-  if (!fs.existsSync(STORE_PATH)) return {};
+  const target = storePath();
+  if (!fs.existsSync(target)) return {};
   try {
-    return JSON.parse(fs.readFileSync(STORE_PATH, "utf8"));
+    return JSON.parse(fs.readFileSync(target, "utf8"));
   } catch (e) {
     console.error("[store] corrupt file, resetting:", e.message);
     return {};
@@ -29,7 +34,7 @@ function load() {
 
 function save(data) {
   ensureDir();
-  fs.writeFileSync(STORE_PATH, JSON.stringify(data, null, 2), "utf8");
+  fs.writeFileSync(storePath(), JSON.stringify(data, null, 2), "utf8");
 }
 
 // ── Public interface ──
@@ -79,4 +84,57 @@ function clear() {
   save({});
 }
 
-module.exports = { getAll, getTicker, getLatest, addScan, clear };
+function expectedRunCount(universeKey) {
+  if (!universeKey) return null;
+  return universeKey
+    .split("|")
+    .map((ticker) => ticker.trim())
+    .filter(Boolean)
+    .length || null;
+}
+
+function getPreviousRunStocks({ currentRunId, scanMode, universeKey } = {}) {
+  const db = load();
+  const runs = new Map();
+  const expectedCount = expectedRunCount(universeKey);
+
+  for (const entry of Object.values(db)) {
+    for (const scan of entry.scans || []) {
+      const runId = scan.scanRunId;
+      if (!runId || runId === currentRunId) continue;
+      if (scanMode && scan._scanMode !== scanMode) continue;
+      if (universeKey && scan._scanUniverseKey !== universeKey) continue;
+
+      if (!runs.has(runId)) {
+        runs.set(runId, {
+          runId,
+          timestamp: scan.scanTime || scan.timestamp || "",
+          stocks: [],
+        });
+      }
+
+      const run = runs.get(runId);
+      run.stocks.push(scan);
+      const stamp = scan.scanTime || scan.timestamp || "";
+      if (stamp > run.timestamp) run.timestamp = stamp;
+    }
+  }
+
+  return Array.from(runs.values())
+    .filter((run) => {
+      if (!expectedCount) return run.stocks.length > 0;
+      const uniqueTickers = new Set(run.stocks.map((stock) => stock.ticker));
+      return uniqueTickers.size === expectedCount;
+    })
+    .sort((a, b) => String(b.timestamp).localeCompare(String(a.timestamp)))[0]
+    ?.stocks || null;
+}
+
+module.exports = {
+  getAll,
+  getTicker,
+  getLatest,
+  addScan,
+  clear,
+  getPreviousRunStocks,
+};

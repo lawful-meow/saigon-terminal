@@ -1,15 +1,17 @@
-// ─── publisher.js ──────────────────────────────────────────────────────────────
+// publisher.js
 // Export a static snapshot page that can be hosted on GitHub Pages.
 // Output is self-contained: one HTML file with embedded snapshot data.
-// ────────────────────────────────────────────────────────────────────────────────
+//
 
 const fs = require("fs");
 const path = require("path");
 
-const DOCS_DIR = path.resolve(__dirname, "docs");
+function docsDir() {
+  return path.resolve(__dirname, process.env.SAIGON_DOCS_DIR || "docs");
+}
 
 function ensureDocsDir() {
-  fs.mkdirSync(DOCS_DIR, { recursive: true });
+  fs.mkdirSync(docsDir(), { recursive: true });
 }
 
 function safeJson(value) {
@@ -108,7 +110,7 @@ a{color:#d9fff1;text-decoration:none}
 .hero-price{font-size:42px;font-weight:900;line-height:1;letter-spacing:-.03em;margin:8px 0 10px}
 .mono{font-family:"IBM Plex Mono","SFMono-Regular","Menlo",monospace;font-variant-numeric:tabular-nums}
 .chip-row,.market-grid,.kv-grid,.history-strip{display:flex;gap:8px;flex-wrap:wrap}
-.chip,.signal-chip,.quality-chip{
+.chip,.signal-chip,.quality-chip,.breakout-chip,.execution-chip{
   display:inline-flex;align-items:center;min-height:30px;padding:0 10px;border-radius:999px;
   border:1px solid rgba(40,69,81,.8);font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
 }
@@ -119,6 +121,14 @@ a{color:#d9fff1;text-decoration:none}
 .quality-chip[data-tone="high"]{background:rgba(92,225,184,.10);color:#ddfff3}
 .quality-chip[data-tone="medium"]{background:rgba(255,200,105,.10);color:#ffecc7}
 .quality-chip[data-tone="low"]{background:rgba(255,133,115,.12);color:#ffd4ce}
+.breakout-chip[data-state="triggered"]{background:rgba(92,225,184,.12);color:#ddfff3}
+.breakout-chip[data-state="near_trigger"]{background:rgba(127,208,255,.12);color:#e3f6ff}
+.breakout-chip[data-state="arming"]{background:rgba(255,200,105,.12);color:#ffecc7}
+.breakout-chip[data-state="extended"]{background:rgba(255,133,115,.12);color:#ffd4ce}
+.breakout-chip[data-state="not_ready"]{background:rgba(143,167,181,.12);color:#dbe6ec}
+.execution-chip[data-risk="tradeable"]{background:rgba(92,225,184,.12);color:#ddfff3}
+.execution-chip[data-risk="caution"]{background:rgba(255,200,105,.12);color:#ffecc7}
+.execution-chip[data-risk="trap_risk"]{background:rgba(255,133,115,.12);color:#ffd4ce}
 .tone-good{color:var(--good)}
 .tone-bad{color:var(--bad)}
 .detail-grid,.kv-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}
@@ -166,6 +176,13 @@ a{color:#d9fff1;text-decoration:none}
 .market-k{font-size:11px;color:var(--subtle);text-transform:uppercase;letter-spacing:.12em;margin-bottom:8px}
 .market-v{font-size:24px;font-weight:800;line-height:1.05}
 .market-s{margin-top:8px;color:var(--muted);font-size:13px;line-height:1.5}
+.sector-card{
+  padding:12px;border-radius:16px;border:1px solid rgba(40,69,81,.78);background:rgba(11,20,26,.88);
+  color:var(--text);text-align:left;width:100%;appearance:none;cursor:pointer;
+}
+.sector-card.active{
+  border-color:rgba(92,225,184,.38);background:rgba(92,225,184,.10);box-shadow:inset 0 0 0 1px rgba(92,225,184,.14);
+}
 .history-chip{min-width:88px;padding:8px 10px;border-radius:14px;background:rgba(20,37,47,.9);border:1px solid rgba(40,69,81,.7)}
 .history-chip .ts{color:var(--subtle);font-size:10px;margin-bottom:5px;text-transform:uppercase;letter-spacing:.1em}
 .history-chip .sv{font-size:12px;line-height:1.5}
@@ -219,6 +236,12 @@ pre{
       </section>
 
       <section class="panel">
+        <div class="eyebrow">Sector Rotation</div>
+        <div class="panel-title">Ranked sector matrix</div>
+        <div class="detail-grid" id="sectorPanel"></div>
+      </section>
+
+      <section class="panel">
         <div class="eyebrow">Snapshot</div>
         <div class="panel-title">Publish details</div>
         <div class="detail-grid" id="publishStats"></div>
@@ -241,15 +264,16 @@ const state = {
   snapshot: DATA.snapshot,
   prompt: DATA.prompt || "",
   selectedTicker: DATA.selectedTicker || DATA.snapshot?.stocks?.[0]?.ticker || null,
+  sector: "ALL",
 };
 
 function fNum(n) {
-  if (n == null) return "—";
+  if (n == null) return "n/a";
   return Number(n).toLocaleString("vi-VN");
 }
 
 function fK(n) {
-  if (n == null) return "—";
+  if (n == null) return "n/a";
   if (Math.abs(n) >= 1e12) return (n / 1e12).toFixed(1) + "T";
   if (Math.abs(n) >= 1e9) return (n / 1e9).toFixed(1) + "B";
   if (Math.abs(n) >= 1e6) return (n / 1e6).toFixed(1) + "M";
@@ -258,7 +282,7 @@ function fK(n) {
 }
 
 function fPct(n, scale = 1, digits = 1) {
-  if (n == null) return "—";
+  if (n == null) return "n/a";
   const value = Number(n) * scale;
   return \`\${value >= 0 ? "+" : ""}\${value.toFixed(digits)}%\`;
 }
@@ -304,6 +328,58 @@ function qualityTone(label) {
   return label === "high" ? "high" : (label === "medium" ? "medium" : "low");
 }
 
+function breakoutLabel(state) {
+  return String(state || "not_ready")
+    .split("_")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
+function executionLabel(label) {
+  return String(label || "trap_risk")
+    .split("_")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
+function rankDeltaLabel(rankDelta) {
+  if (rankDelta == null) return "Drift unavailable";
+  if (rankDelta > 0) return \`Up \${rankDelta}\`;
+  if (rankDelta < 0) return \`Down \${Math.abs(rankDelta)}\`;
+  return "Flat";
+}
+
+function sectorState(sectorName) {
+  return state.snapshot?.market?.sectors?.all?.find((sector) => sector.sector === sectorName) || null;
+}
+
+function filteredStocks() {
+  const stocks = state.snapshot?.stocks || [];
+  if (state.sector === "ALL") return stocks;
+  return stocks.filter((stock) => stock.sector === state.sector);
+}
+
+function bankBasketSummary(snapshot) {
+  const banks = (snapshot?.stocks || []).filter((stock) => stock.sector === "BANK");
+  if (!banks.length) return null;
+
+  const avgChangePct = banks.reduce((sum, stock) => sum + (stock.changePct || 0), 0) / banks.length;
+  const avgRsVsVNINDEX3m = banks.reduce((sum, stock) => sum + (stock.relative?.vsVNINDEX3m || 0), 0) / banks.length;
+  const advancers = banks.filter((stock) => (stock.changePct || 0) > 0).length;
+  const decliners = banks.filter((stock) => (stock.changePct || 0) < 0).length;
+  const leader = banks.slice().sort((a, b) => (b.relative?.vsVNINDEX3m || -999) - (a.relative?.vsVNINDEX3m || -999))[0] || null;
+  const laggard = banks.slice().sort((a, b) => (a.relative?.vsVNINDEX3m || 999) - (b.relative?.vsVNINDEX3m || 999))[0] || null;
+
+  return {
+    advancers,
+    decliners,
+    avgChangePct: +avgChangePct.toFixed(2),
+    avgRsVsVNINDEX3m: +avgRsVsVNINDEX3m.toFixed(4),
+    leader,
+    laggard,
+  };
+}
+
 function factorScoreTone(detail) {
   if (detail.score == null) return "unknown";
   return detail.score >= 8 ? "strong" : "weak";
@@ -314,11 +390,11 @@ function warningSummary(stock) {
   const firstWarning = (stock.quality?.warnings || []).find((warning) =>
     !missing || !warning.includes("Missing CAN SLIM factors")
   ) || null;
-  return [missing, firstWarning].filter(Boolean).join(" · ") || "Clean";
+  return [missing, firstWarning].filter(Boolean).join(" | ") || "Clean";
 }
 
 function fRR(value) {
-  if (value == null) return "—";
+  if (value == null) return "n/a";
   return \`\${Number(value).toFixed(2)}R\`;
 }
 
@@ -389,7 +465,7 @@ function renderWyckoffTests(wyckoff) {
 
 function renderHeader() {
   const meta = document.getElementById("headerMeta");
-  meta.textContent = \`\${new Date(state.snapshot.generated).toLocaleString("vi-VN")} · \${state.snapshot.count} tickers\`;
+  meta.textContent = \`\${new Date(state.snapshot.generated).toLocaleString("vi-VN")} | \${state.snapshot.count} tickers\`;
 }
 
 function renderMarket() {
@@ -428,7 +504,7 @@ function renderMarket() {
     <div class="market-card">
       <div class="market-k">Breadth</div>
       <div class="market-v mono">\${market.breadth.advancers} / \${market.breadth.decliners}</div>
-      <div class="market-s">\${market.breadth.unchanged} unchanged · session \${market.session.replace(/_/g, " ")}</div>
+      <div class="market-s">\${market.breadth.unchanged} unchanged | session \${market.session.replace(/_/g, " ")}</div>
     </div>
     <div class="market-card">
       <div class="market-k">Turnover</div>
@@ -438,19 +514,60 @@ function renderMarket() {
   \`;
 }
 
+function renderSectorPanel() {
+  const root = document.getElementById("sectorPanel");
+  const sectors = state.snapshot?.market?.sectors?.all || [];
+
+  if (!sectors.length) {
+    root.innerHTML = \`<div class="sector-card">Sector rotation unavailable for this snapshot.</div>\`;
+    return;
+  }
+
+  root.innerHTML = sectors.map((sector) => \`
+    <button class="sector-card \${state.sector === sector.sector ? "active" : ""}" data-sector-focus="\${sector.sector}">
+      <div class="stat-k">#\${sector.rank} | \${sector.sector}</div>
+      <div class="stat-v mono">\${sector.rotationScore}/100</div>
+      <div>\${sector.advancers}/\${sector.decliners} adv/dec | 1M \${fPct(sector.avgRet1m, 100)}</div>
+      <div class="meta-copy">RS \${fPct(sector.avgRsVsVNINDEX3m, 100)} | Strength \${sector.avgStrengthScore ?? "n/a"} | \${sector.prevRank == null ? "Drift unavailable" : \`Prev #\${sector.prevRank} | \${rankDeltaLabel(sector.rankDelta)}\`}</div>
+    </button>
+  \`).join("");
+
+  root.querySelectorAll("[data-sector-focus]").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.sector = state.sector === button.dataset.sectorFocus ? "ALL" : button.dataset.sectorFocus;
+      renderSectorPanel();
+      renderBoard();
+      renderFocus();
+      renderPublishStats();
+    });
+  });
+}
+
 function renderPublishStats() {
   const root = document.getElementById("publishStats");
-  const selected = state.snapshot.stocks.find((stock) => stock.ticker === state.selectedTicker) || state.snapshot.stocks[0];
+  const visibleStocks = filteredStocks();
+  const selected = visibleStocks.find((stock) => stock.ticker === state.selectedTicker) || visibleStocks[0] || state.snapshot.stocks[0];
   root.innerHTML = [
-    \`<div class="stat-card"><div class="stat-k">Focus</div><div class="stat-v">\${selected?.ticker || "—"}</div><div>\${selected ? selected.explain.ruleRead : "—"}</div></div>\`,
-    \`<div class="stat-card"><div class="stat-k">Universe</div><div class="stat-v mono">\${state.snapshot.count}</div><div>Tickers in this published snapshot</div></div>\`,
+    \`<div class="stat-card"><div class="stat-k">Focus</div><div class="stat-v">\${selected?.ticker || "n/a"}</div><div>\${selected ? selected.explain.ruleRead : "n/a"}</div></div>\`,
+    \`<div class="stat-card"><div class="stat-k">Universe</div><div class="stat-v mono">\${visibleStocks.length}</div><div>\${state.sector === "ALL" ? "Tickers in this published snapshot" : \`Focused on \${state.sector}\`}</div></div>\`,
     \`<div class="stat-card"><div class="stat-k">Published</div><div class="stat-v mono">\${new Date(state.snapshot.generated).toLocaleString("vi-VN")}</div><div>Snapshot timestamp</div></div>\`,
-    \`<div class="stat-card"><div class="stat-k">Strength</div><div class="stat-v mono">\${selected?.strength?.score == null ? "—" : \`\${selected.strength.score}/100\`}</div><div>\${selected?.strength?.label || "No strength label"}\${selected?.strength?.rank ? \` · Rank #\${selected.strength.rank}\` : ""}</div></div>\`,
+    \`<div class="stat-card"><div class="stat-k">Strength</div><div class="stat-v mono">\${selected?.strength?.score == null ? "n/a" : \`\${selected.strength.score}/100\`}</div><div>\${selected?.strength?.label || "No strength label"}\${selected?.strength?.rank ? \` | Rank #\${selected.strength.rank}\` : ""}</div></div>\`,
   ].join("");
 }
 
 function renderBoard() {
   const root = document.getElementById("boardWrap");
+  const visibleStocks = filteredStocks();
+
+  if (!visibleStocks.length) {
+    root.innerHTML = \`<div class="sector-card">No rows match the current sector focus.</div>\`;
+    return;
+  }
+
+  if (!visibleStocks.some((stock) => stock.ticker === state.selectedTicker)) {
+    state.selectedTicker = visibleStocks[0]?.ticker || null;
+  }
+
   root.innerHTML = \`
     <table class="board-table">
       <thead>
@@ -462,6 +579,7 @@ function renderBoard() {
           <th>Value</th>
           <th>Vol x Avg</th>
           <th>RS vs VNINDEX</th>
+          <th>Breakout</th>
           <th>Strength</th>
           <th>Observed CAN SLIM</th>
           <th>Rule Read</th>
@@ -469,27 +587,29 @@ function renderBoard() {
         </tr>
       </thead>
       <tbody>
-        \${state.snapshot.stocks.map((stock) => {
+        \${visibleStocks.map((stock) => {
           const selected = stock.ticker === state.selectedTicker ? "active" : "";
+          const sector = sectorState(stock.sector);
           const observedPct = stock.observedCanSlimMax > 0
-            ? \`\${stock.observedCanSlimTotal}/\${stock.observedCanSlimMax} · \${stock.coveragePct}%\`
-            : \`N/A · \${stock.coveragePct}%\`;
+            ? \`\${stock.observedCanSlimTotal}/\${stock.observedCanSlimMax} | \${stock.coveragePct}%\`
+            : \`N/A | \${stock.coveragePct}%\`;
           const strengthText = stock.strength?.score == null
             ? "N/A"
-            : \`\${stock.strength.score}/100 · #\${stock.strength?.rank || "—"}\`;
+            : \`\${stock.strength.score}/100 ? #\${stock.strength?.rank || "n/a"}\`;
           return \`
             <tr class="\${selected}" data-ticker="\${stock.ticker}">
               <td><strong>\${stock.ticker}</strong><div style="color:var(--muted);font-size:12px;margin-top:4px">\${stock.name}</div></td>
-              <td>\${stock.sector}</td>
+              <td>\${stock.sector}<div style="color:var(--muted);font-size:12px;margin-top:4px">\${sector ? \`#\${sector.rank} | \${sector.rotationScore}/100\` : "Rotation n/a"}</div></td>
               <td class="mono">\${fNum(stock.price)}</td>
               <td class="\${toneByChange(stockSessionChange(stock))}">\${fSignedPct(stockSessionChange(stock))}</td>
               <td class="mono">\${fK(stock.tradedValue)}</td>
               <td class="mono">\${stock.volRatio}x</td>
               <td class="\${stock.relative?.vsVNINDEX3m >= 0 ? "tone-good" : "tone-bad"}">\${fPct(stock.relative?.vsVNINDEX3m, 100)}</td>
+              <td><span class="breakout-chip" data-state="\${stock.breakout?.state || "not_ready"}">\${breakoutLabel(stock.breakout?.state)}</span><div style="color:var(--muted);font-size:12px;margin-top:5px">\${stock.breakout?.distancePct == null ? "No trigger" : \`\${stock.breakout.distancePct >= 0 ? "+" : ""}\${stock.breakout.distancePct}%\`}</div></td>
               <td><span class="chip">\${strengthText}</span><div style="color:var(--muted);font-size:12px;margin-top:5px">\${stock.strength?.label || "n/a"}</div></td>
               <td><span class="chip">\${observedPct}</span></td>
               <td><span class="signal-chip" data-signal="\${stock.signal}">\${signalLabel(stock.signal)}</span></td>
-              <td><span class="quality-chip" data-tone="\${qualityTone(stock.quality.label)}">\${stock.quality.label}</span><div style="color:var(--muted);font-size:12px;margin-top:5px">\${warningSummary(stock)}</div></td>
+              <td><span class="quality-chip" data-tone="\${qualityTone(stock.quality.label)}">\${stock.quality.label}</span><div style="margin-top:5px"><span class="execution-chip" data-risk="\${stock.executionRisk?.liquidityLabel || "trap_risk"}">Exec \${executionLabel(stock.executionRisk?.liquidityLabel)}</span></div><div style="color:var(--muted);font-size:12px;margin-top:5px">\${warningSummary(stock)}</div></td>
             </tr>
           \`;
         }).join("")}
@@ -508,8 +628,10 @@ function renderBoard() {
 }
 
 function renderFocus() {
-  const stock = state.snapshot.stocks.find((item) => item.ticker === state.selectedTicker) || state.snapshot.stocks[0];
-  const tickerNav = state.snapshot.stocks.map((item) => \`
+  const visibleStocks = filteredStocks();
+  const focusStocks = visibleStocks.length ? visibleStocks : state.snapshot.stocks;
+  const stock = focusStocks.find((item) => item.ticker === state.selectedTicker) || focusStocks[0];
+  const tickerNav = focusStocks.map((item) => \`
     <button class="sheet-tab \${item.ticker === stock.ticker ? "active" : ""}" data-sheet-nav="\${item.ticker}">
       <div class="sheet-tab-ticker">\${item.ticker}</div>
       <div class="sheet-tab-meta">\${fSignedPct(stockSessionChange(item))} · \${item.confidence}/10</div>
@@ -529,7 +651,7 @@ function renderFocus() {
       <div class="factor-card" data-status="\${detail.status}">
         <div class="factor-head">
           <div>
-            <div class="factor-name">\${factor} · \${detail.factorLabel}</div>
+            <div class="factor-name">\${factor} | \${detail.factorLabel}</div>
             <div class="factor-metric">\${detail.metricLabel}</div>
           </div>
           <div class="factor-score" data-tone="\${factorScoreTone(detail)}">\${detail.score == null ? "?" : \`\${detail.score}/10\`}</div>
@@ -541,7 +663,7 @@ function renderFocus() {
         </div>
         <div class="factor-reason">\${detail.reason}</div>
         <div class="factor-bands">
-          \${detail.bands.map((band) => \`<span class="factor-band \${band.active ? "active" : ""}">\${band.score} · \${band.label}</span>\`).join("")}
+          \${detail.bands.map((band) => \`<span class="factor-band \${band.active ? "active" : ""}">\${band.score} | \${band.label}</span>\`).join("")}
         </div>
       </div>
     \`
@@ -562,7 +684,7 @@ function renderFocus() {
     : \`<span class="chip">No fresh Wyckoff trigger</span>\`;
   const primaryPlan = wyckoff.entry?.plans?.[0] || null;
   const primaryPlanText = primaryPlan
-    ? \`Entry \${fNum(primaryPlan.price)} · Stop \${fNum(primaryPlan.stop)}\`
+    ? \`Entry \${fNum(primaryPlan.price)} | Stop \${fNum(primaryPlan.stop)}\`
     : (wyckoff.entry?.summary || "No active long entry.");
   const invalidationText = wyckoff.entry?.invalidation || "No invalidation level recorded.";
   const reasoning = renderWyckoffReasoning(wyckoff);
@@ -571,6 +693,8 @@ function renderFocus() {
   const actionSteps = renderActionItems(wyckoff.action?.steps, "No action steps recorded.");
   const avoidSteps = renderActionItems(wyckoff.action?.shouldAvoid, "No avoid list recorded.");
   const testItems = renderWyckoffTests(wyckoff);
+  const bankBasket = stock.sector === "BANK" ? bankBasketSummary(state.snapshot) : null;
+  const sectorRankState = sectorState(stock.sector);
 
   document.getElementById("focusPanel").innerHTML = \`
     <div class="sheet-nav-wrap">
@@ -579,8 +703,16 @@ function renderFocus() {
     </div>
 
     <div class="eyebrow">Main Sheet</div>
-    <div class="panel-title">\${stock.ticker} · \${stock.name}</div>
-    <div class="meta-copy">\${stock.sector} · \${new Date(stock.scanTime).toLocaleString("vi-VN")} · \${stock.market.session.replace(/_/g, " ")} market</div>
+    <div class="panel-title">\${stock.ticker} | \${stock.name}</div>
+    <div class="meta-copy">\${stock.sector} | \${new Date(stock.scanTime).toLocaleString("vi-VN")} | \${stock.market.session.replace(/_/g, " ")} market</div>
+
+    \${bankBasket ? \`
+    <div class="detail-grid" style="margin-top:14px">
+      <div class="stat-card"><div class="stat-k">BANK Basket</div><div class="stat-v mono">\${bankBasket.advancers} / \${bankBasket.decliners}</div><div>Advancers / decliners in current bank basket</div></div>
+      <div class="stat-card"><div class="stat-k">BANK Avg Change</div><div class="stat-v mono">\${bankBasket.avgChangePct >= 0 ? "+" : ""}\${bankBasket.avgChangePct}%</div><div>Average change across bank names</div></div>
+      <div class="stat-card"><div class="stat-k">BANK Avg RS</div><div class="stat-v mono">\${fPct(bankBasket.avgRsVsVNINDEX3m, 100)}</div><div>Average RS vs VNINDEX</div></div>
+      <div class="stat-card"><div class="stat-k">Leader / Laggard</div><div>\${bankBasket.leader?.ticker || "n/a"} / \${bankBasket.laggard?.ticker || "n/a"}</div><div>\${bankBasket.leader ? \`\${fPct(bankBasket.leader.relative?.vsVNINDEX3m, 100)} vs \${fPct(bankBasket.laggard?.relative?.vsVNINDEX3m, 100)}\` : "Current bank basket leadership"}</div></div>
+    </div>\` : ""}
 
     <div class="focus-hero">
       <div class="hero-slab">
@@ -589,19 +721,25 @@ function renderFocus() {
         <div class="chip-row" style="margin-top:12px">
           <span class="signal-chip" data-signal="\${stock.signal}">\${signalLabel(stock.signal)}</span>
           <span class="chip">Strength \${stock.strength?.score == null ? "N/A" : \`\${stock.strength.score}/100\`}</span>
-          <span class="chip">\${stock.strength?.label || "n/a"}\${stock.strength?.rank ? \` · #\${stock.strength.rank}\` : ""}</span>
-          <span class="quality-chip" data-tone="\${qualityTone(stock.quality.label)}">\${stock.quality.label} · \${stock.coveragePct}%</span>
+          <span class="chip">\${stock.strength?.label || "n/a"}\${stock.strength?.rank ? \` | #\${stock.strength.rank}\` : ""}</span>
+          <span class="quality-chip" data-tone="\${qualityTone(stock.quality.label)}">\${stock.quality.label} | \${stock.coveragePct}%</span>
           <span class="chip">Observed \${stock.observedCanSlimTotal}/\${stock.observedCanSlimMax || 0}</span>
+          <span class="breakout-chip" data-state="\${stock.breakout?.state || "not_ready"}">\${breakoutLabel(stock.breakout?.state)}</span>
+          <span class="execution-chip" data-risk="\${stock.executionRisk?.liquidityLabel || "trap_risk"}">Exec \${executionLabel(stock.executionRisk?.liquidityLabel)}</span>
           <span class="chip">RS vs VNINDEX \${fPct(stock.relative.vsVNINDEX3m, 100)}</span>
+          <span class="chip">\${sectorRankState ? \`Sector #\${sectorRankState.rank} | \${rankDeltaLabel(sectorRankState.rankDelta)}\` : "Sector drift unavailable"}</span>
           <span class="chip">\${wyckoff.stage || stock.wyckoffStage || stock.wyckoffPhase || "Wyckoff n/a"}</span>
-          <span class="chip">Wyckoff \${wyckoff.confidence || "—"}/100</span>
+          <span class="chip">Wyckoff \${wyckoff.confidence || "n/a"}/100</span>
         </div>
       </div>
       <div class="stack" style="gap:12px">
         <div class="stat-card"><div class="stat-k">Rule Strength</div><div class="stat-v mono">\${stock.confidence}/10</div><div>\${stock.explain.ruleStrength.label}</div></div>
-        <div class="stat-card"><div class="stat-k">CAN SLIM Strength</div><div class="stat-v mono">\${stock.strength?.score == null ? "—" : \`\${stock.strength.score}/100\`}</div><div>\${stock.strength?.label || "No strength label"}\${stock.strength?.rank ? \` · Rank #\${stock.strength.rank}\` : ""}</div></div>
+        <div class="stat-card"><div class="stat-k">CAN SLIM Strength</div><div class="stat-v mono">\${stock.strength?.score == null ? "n/a" : \`\${stock.strength.score}/100\`}</div><div>\${stock.strength?.label || "No strength label"}\${stock.strength?.rank ? \` | Rank #\${stock.strength.rank}\` : ""}</div></div>
         <div class="stat-card"><div class="stat-k">Wyckoff Action</div><div class="stat-v">\${wyckoff.action?.label || "No action"}</div><div>\${wyckoff.action?.summary || wyckoff.entry?.summary || "No Wyckoff action summary."}</div></div>
-        <div class="stat-card"><div class="stat-k">Primary Entry</div><div>\${primaryPlanText}</div><div>\${primaryPlan ? \`T1 \${fNum(primaryPlan.target1)} · T2 \${fNum(primaryPlan.target2)}\` : invalidationText}</div></div>
+        <div class="stat-card"><div class="stat-k">Primary Entry</div><div>\${primaryPlanText}</div><div>\${primaryPlan ? \`T1 \${fNum(primaryPlan.target1)} | T2 \${fNum(primaryPlan.target2)}\` : invalidationText}</div></div>
+        <div class="stat-card"><div class="stat-k">Breakout Readiness</div><div class="stat-v">\${breakoutLabel(stock.breakout?.state)}</div><div>\${stock.breakout?.distancePct == null ? stock.breakout?.reason || "No trigger available." : \`\${stock.breakout.distancePct >= 0 ? "+" : ""}\${stock.breakout.distancePct}% vs \${fNum(stock.breakout.triggerPrice)} | \${stock.breakout.reason}\`}</div></div>
+        <div class="stat-card"><div class="stat-k">Sector Rotation</div><div class="stat-v">\${sectorRankState ? \`#\${sectorRankState.rank}\` : "n/a"}</div><div>\${sectorRankState ? \`\${sectorRankState.rotationScore}/100 | \${sectorRankState.prevRank == null ? "Drift unavailable" : \`Prev #\${sectorRankState.prevRank} | \${rankDeltaLabel(sectorRankState.rankDelta)}\`}\` : "No sector rotation read available."}</div></div>
+        <div class="stat-card"><div class="stat-k">Execution Risk</div><div class="stat-v">\${executionLabel(stock.executionRisk?.liquidityLabel)}</div><div>\${stock.executionRisk?.status === "ready" ? \`Pilot \${fNum(stock.executionRisk.pilotShares)} | Full \${fNum(stock.executionRisk.fullShares)} | Stop \${stock.executionRisk.stopDistancePct}%\` : stock.executionRisk?.reason || "No safe sizing available."}</div></div>
         <div class="stat-card"><div class="stat-k">Delta</div><div>\${stock.delta}</div></div>
       </div>
     </div>
@@ -615,9 +753,9 @@ function renderFocus() {
           <div class="kv"><div class="k">RS vs VNINDEX</div><div class="v mono">\${fPct(stock.relative.vsVNINDEX3m, 100)}</div></div>
           <div class="kv"><div class="k">RS vs VN30</div><div class="v mono">\${fPct(stock.relative.vsVN303m, 100)}</div></div>
           <div class="kv"><div class="k">Vol x Avg20</div><div class="v mono">\${stock.volRatio}x</div></div>
-          <div class="kv"><div class="k">RSI14</div><div class="v mono">\${stock.rsi14 ?? "—"}</div></div>
-          <div class="kv"><div class="k">PE / PB</div><div class="v mono">\${stock.pe ?? "—"} / \${stock.pb ?? "—"}</div></div>
-          <div class="kv"><div class="k">ROE</div><div class="v mono">\${stock.roe ?? "—"}</div></div>
+          <div class="kv"><div class="k">RSI14</div><div class="v mono">\${stock.rsi14 ?? "n/a"}</div></div>
+          <div class="kv"><div class="k">PE / PB</div><div class="v mono">\${stock.pe ?? "n/a"} / \${stock.pb ?? "n/a"}</div></div>
+          <div class="kv"><div class="k">ROE</div><div class="v mono">\${stock.roe ?? "n/a"}</div></div>
         </div>
       </div>
 
@@ -627,7 +765,7 @@ function renderFocus() {
           <div class="kv"><div class="k">Phase</div><div class="v">\${wyckoff.label || stock.wyckoffPhase || "N/A"}</div></div>
           <div class="kv"><div class="k">Bias</div><div class="v">\${wyckoff.bias || stock.wyckoffBias || "N/A"}</div></div>
           <div class="kv"><div class="k">Support / Resistance</div><div class="v mono">\${fNum(wyckoff.levels?.support)} / \${fNum(wyckoff.levels?.resistance)}</div></div>
-          <div class="kv"><div class="k">Range Position</div><div class="v">\${wyckoff.levels?.pricePositionPct == null ? "N/A" : \`\${wyckoff.levels.pricePositionPct}% · \${wyckoff.context?.rangeLocation || ""}\`}</div></div>
+          <div class="kv"><div class="k">Range Position</div><div class="v">\${wyckoff.levels?.pricePositionPct == null ? "N/A" : \`\${wyckoff.levels.pricePositionPct}% | \${wyckoff.context?.rangeLocation || ""}\`}</div></div>
           <div class="kv"><div class="k">Trend Bias</div><div class="v">\${wyckoff.context?.trendBias || "N/A"}</div></div>
           <div class="kv"><div class="k">Invalidation</div><div class="v">\${invalidationText}</div></div>
         </div>
@@ -664,6 +802,20 @@ function renderFocus() {
     <div class="section-card" style="margin-top:14px">
       <div class="eyebrow">Watch Triggers</div>
       <div class="list" style="margin-top:12px">\${watchItems}</div>
+    </div>
+
+    <div class="section-card" style="margin-top:14px">
+      <div class="eyebrow">Execution Risk</div>
+      <div class="kv-grid" style="margin-top:12px">
+        <div class="kv"><div class="k">Status</div><div class="v">\${stock.executionRisk?.status || "unavailable"}</div></div>
+        <div class="kv"><div class="k">Liquidity</div><div class="v">\${executionLabel(stock.executionRisk?.liquidityLabel)}</div></div>
+        <div class="kv"><div class="k">Traded / Avg Value20</div><div class="v mono">\${fK(stock.executionRisk?.tradedValue)} / \${fK(stock.executionRisk?.avgValue20)}</div></div>
+        <div class="kv"><div class="k">Stop Distance</div><div class="v mono">\${stock.executionRisk?.stopDistancePct == null ? "N/A" : \`\${stock.executionRisk.stopDistancePct}% | \${stock.executionRisk.stopDistanceAtr ?? "N/A"} ATR\`}</div></div>
+        <div class="kv"><div class="k">Risk / Reward</div><div class="v mono">\${stock.executionRisk?.riskReward1 == null ? "N/A" : \`\${stock.executionRisk.riskReward1}R / \${stock.executionRisk.riskReward2 ?? "N/A"}R\`}</div></div>
+        <div class="kv"><div class="k">Pilot / Full Size</div><div class="v mono">\${fNum(stock.executionRisk?.pilotShares)} / \${fNum(stock.executionRisk?.fullShares)} shares</div></div>
+        <div class="kv"><div class="k">Pilot / Full Notional</div><div class="v mono">\${fK(stock.executionRisk?.pilotNotional)} / \${fK(stock.executionRisk?.fullNotional)}</div></div>
+        <div class="kv"><div class="k">Read</div><div class="v">\${stock.executionRisk?.reason || "No execution read available."}</div></div>
+      </div>
     </div>
 
     <div class="detail-grid" style="margin-top:14px">
@@ -715,6 +867,7 @@ function renderFocus() {
 
 renderHeader();
 renderMarket();
+renderSectorPanel();
 renderPublishStats();
 renderBoard();
 renderFocus();
@@ -726,9 +879,9 @@ renderFocus();
 function publishSnapshot(snapshot, options = {}) {
   ensureDocsDir();
   const html = buildPage(snapshot, options);
-  const outputPath = path.join(DOCS_DIR, "index.html");
-  const jsonPath = path.join(DOCS_DIR, "snapshot.json");
-  const noJekyllPath = path.join(DOCS_DIR, ".nojekyll");
+  const outputPath = path.join(docsDir(), "index.html");
+  const jsonPath = path.join(docsDir(), "snapshot.json");
+  const noJekyllPath = path.join(docsDir(), ".nojekyll");
   const publishedAt = new Date().toISOString();
 
   fs.writeFileSync(outputPath, html, "utf8");
@@ -750,3 +903,5 @@ function publishSnapshot(snapshot, options = {}) {
 }
 
 module.exports = { publishSnapshot };
+
+

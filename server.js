@@ -11,6 +11,7 @@ const { claudePrompt } = require("./formatter");
 const publisher = require("./publisher");
 const store = require("./store");
 const watchlist = require("./watchlist");
+const fetcher = require("./fetcher");
 const { parseCommand, PRESETS, buildHelpText } = require("./commands");
 
 function json(res, status, data) {
@@ -70,6 +71,15 @@ function parseTickerList(input) {
   return tickers;
 }
 
+function buildStocksFromTickers(tickers, defaultSector = "BATCH") {
+  const existingMap = new Map(watchlist.getAll().map((stock) => [stock.ticker, stock]));
+  return tickers.map((ticker) => existingMap.get(ticker) || {
+    ticker,
+    name: ticker,
+    sector: defaultSector,
+  });
+}
+
 function createServer(port = config.server.port) {
   return http.createServer(async (req, res) => {
     const url = new URL(req.url, `http://localhost:${port}`);
@@ -111,12 +121,7 @@ function createServer(port = config.server.port) {
 
         const topN = Math.max(1, Math.min(20, Number(payload.topN) || 10));
         const delayMs = Math.max(250, Math.min(3000, Number(payload.delayMs) || 450));
-        const existingMap = new Map(watchlist.getAll().map((stock) => [stock.ticker, stock]));
-        const stocks = tickers.map((ticker) => existingMap.get(ticker) || {
-          ticker,
-          name: ticker,
-          sector: "BATCH",
-        });
+        const stocks = buildStocksFromTickers(tickers, "BATCH");
 
         console.log(`[batch] Scanning ${stocks.length} tickers with ${delayMs}ms spacing, top ${topN}`);
         const { snapshot, errors } = await engine.scanAll({
@@ -134,6 +139,56 @@ function createServer(port = config.server.port) {
           snapshot,
           errors,
           inputCount: tickers.length,
+          topN,
+          delayMs,
+        });
+      }
+
+      if (pathname === "/api/universe/vn30" && req.method === "GET") {
+        const tickers = await fetcher.indexComponents("VN30");
+        return json(res, 200, {
+          index: "VN30",
+          tickers,
+          count: tickers.length,
+          source: "vps_getlistckindex",
+        });
+      }
+
+      if (pathname === "/api/scan/vn30" && req.method === "POST") {
+        const body = await readBody(req);
+        let payload = {};
+        if (body) {
+          try {
+            payload = JSON.parse(body);
+          } catch (error) {
+            return json(res, 400, { error: `Invalid JSON body: ${error.message}` });
+          }
+        }
+
+        const tickers = await fetcher.indexComponents("VN30");
+        const topN = Math.max(1, Math.min(20, Number(payload.topN) || 10));
+        const delayMs = Math.max(250, Math.min(3000, Number(payload.delayMs) || 450));
+        const stocks = buildStocksFromTickers(tickers, "VN30");
+
+        console.log(`[vn30] Scanning ${stocks.length} VN30 tickers with ${delayMs}ms spacing, top ${topN}`);
+        const { snapshot, errors } = await engine.scanAll({
+          stocks,
+          delayMs,
+          persist: false,
+          topN,
+          scanMode: "vn30_top_strength",
+          onProgress: ({ ticker, status, error }) => {
+            console.log(`  ${status === "ok" ? "OK" : "ERR"} ${ticker}${error ? `: ${error}` : ""}`);
+          },
+        });
+
+        return json(res, 200, {
+          index: "VN30",
+          source: "vps_getlistckindex",
+          universeTickers: tickers,
+          universeCount: tickers.length,
+          snapshot,
+          errors,
           topN,
           delayMs,
         });
@@ -276,7 +331,6 @@ function createServer(port = config.server.port) {
       if (pathname === "/api/test" && req.method === "GET") {
         console.log("[test] Testing VPS + KBS connectivity...");
         const results = {};
-        const fetcher = require("./fetcher");
 
         try {
           const bars = await fetcher.ohlcv("FPT");
@@ -363,6 +417,8 @@ function logStartup(port) {
   console.log("  Endpoints:");
   console.log("    POST /api/scan");
   console.log("    POST /api/scan/batch");
+  console.log("    POST /api/scan/vn30");
+  console.log("    GET  /api/universe/vn30");
   console.log("    GET  /api/prompt");
   console.log("    GET  /api/scan/FPT");
   console.log("    GET  /api/watchlist");

@@ -62,6 +62,13 @@ function num(value) {
   return Number.isFinite(parsed) ? parsed : null;
 }
 
+function normalizeTicker(value) {
+  return String(value || "")
+    .trim()
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, "");
+}
+
 function marketDate(date = new Date()) {
   const parts = new Intl.DateTimeFormat("en-US", {
     timeZone: MARKET_TZ,
@@ -239,6 +246,35 @@ async function fetchMarketBundle() {
   };
 }
 
+async function indexComponents(indexCode = "VN30") {
+  const symbol = normalizeTicker(indexCode);
+  if (!symbol) throw new Error("Index code is required");
+
+  const url = `${SNAPSHOT_BASE}/getlistckindex/${encodeURIComponent(symbol)}`;
+  const data = await get(url);
+
+  if (!Array.isArray(data)) {
+    throw new Error(`Invalid index component payload for ${symbol}`);
+  }
+
+  const seen = new Set();
+  const tickers = [];
+  for (const value of data) {
+    const ticker = normalizeTicker(value);
+    if (!ticker) continue;
+    if (ticker.length < 2 || ticker.length > 12) continue;
+    if (seen.has(ticker)) continue;
+    seen.add(ticker);
+    tickers.push(ticker);
+  }
+
+  if (!tickers.length) {
+    throw new Error(`No components returned for ${symbol}`);
+  }
+
+  return tickers;
+}
+
 async function ohlcv(ticker) {
   const bundle = await fetchOhlcvBundle(ticker);
   return bundle.bars;
@@ -329,4 +365,5 @@ module.exports = {
   fetchAll,
   fetchMarketBundle,
   fetchOhlcvBundle,
+  indexComponents,
 };

@@ -6,32 +6,33 @@
 <title>Saigon Terminal</title>
 <style>
 :root{
-  --bg:#071014;
-  --bg-2:#0d171d;
-  --panel:#101d24;
-  --panel-2:#14252f;
-  --panel-3:#182d38;
-  --line:#26404c;
-  --text:#f3f0e9;
-  --muted:#b9c7ce;
-  --subtle:#80939d;
-  --accent:#5ce1b8;
-  --accent-2:#7fd0ff;
-  --good:#57df94;
-  --bad:#ff8573;
-  --warn:#ffc869;
-  --neutral:#8fa7b5;
-  --shadow:0 24px 60px rgba(0,0,0,.28);
+  --bg:#0b1217;
+  --bg-2:#121b23;
+  --panel:#131d26;
+  --panel-2:#17232d;
+  --panel-3:#1d2b37;
+  --line:#2d3f4d;
+  --text:#edf3f7;
+  --muted:#b2c0cb;
+  --subtle:#8798a4;
+  --accent:#3bd6ac;
+  --accent-2:#6ebdf0;
+  --good:#4fd48b;
+  --bad:#ff7c6d;
+  --warn:#ffc266;
+  --neutral:#90a4b2;
+  --shadow:0 16px 36px rgba(0,0,0,.24);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{min-height:100%}
 body{
-  font-family:"IBM Plex Sans","Avenir Next","Segoe UI",sans-serif;
+  font-family:"Manrope","IBM Plex Sans","Avenir Next","Segoe UI",sans-serif;
   color:var(--text);
   background:
-    radial-gradient(circle at top left, rgba(92,225,184,.11), transparent 26%),
-    radial-gradient(circle at 85% 0%, rgba(127,208,255,.12), transparent 22%),
-    linear-gradient(180deg, #061014 0%, #081117 38%, #071014 100%);
+    radial-gradient(circle at 12% -10%, rgba(59,214,172,.12), transparent 34%),
+    radial-gradient(circle at 88% -6%, rgba(110,189,240,.12), transparent 28%),
+    linear-gradient(180deg, #0a1217 0%, #0c141b 42%, #0b1217 100%);
+  line-height:1.4;
 }
 button,input,select{font:inherit}
 button{cursor:pointer}
@@ -48,7 +49,7 @@ button{cursor:pointer}
   justify-content:space-between;
   align-items:center;
   gap:16px;
-  padding:18px 24px;
+  padding:16px 22px;
   border-bottom:1px solid var(--line);
   background:rgba(7,16,20,.92);
   backdrop-filter:blur(18px);
@@ -127,7 +128,7 @@ button{cursor:pointer}
 }
 .workspace{
   display:grid;
-  grid-template-columns:minmax(0,1fr) 390px;
+  grid-template-columns:minmax(0,1fr) 360px;
   gap:18px;
   padding:18px;
   align-items:start;
@@ -146,7 +147,7 @@ button{cursor:pointer}
 }
 .panel{
   border:1px solid var(--line);
-  border-radius:24px;
+  border-radius:18px;
   background:linear-gradient(180deg, rgba(16,29,36,.96), rgba(12,22,28,.96));
   box-shadow:var(--shadow);
 }
@@ -330,14 +331,14 @@ textarea.control{
 table{
   width:100%;
   border-collapse:collapse;
-  min-width:1260px;
+  min-width:920px;
 }
 thead th{
   position:sticky;
   top:0;
   z-index:5;
   background:rgba(12,22,28,.98);
-  padding:14px 12px;
+  padding:12px 10px;
   border-bottom:1px solid var(--line);
   color:#d9e8ee;
   font-size:11px;
@@ -363,7 +364,7 @@ tbody tr{
 tbody tr:hover{background:rgba(127,208,255,.05)}
 tbody tr.active{background:rgba(92,225,184,.08)}
 td{
-  padding:14px 12px;
+  padding:12px 10px;
   font-size:13px;
   color:var(--text);
   vertical-align:middle;
@@ -448,7 +449,7 @@ td{
   gap:4px;
 }
 .warning-line{
-  font-size:12px;
+  font-size:11px;
   color:var(--muted);
   line-height:1.45;
 }
@@ -997,12 +998,13 @@ td{
         <div class="toolbar-row">
           <textarea class="control batch-box" id="batchTickerInput" placeholder="Paste 30-50 tickers separated by comma, space, or newline"></textarea>
         </div>
-        <div class="toolbar-row">
-          <input class="control" id="batchTopN" type="number" min="1" max="20" value="10" placeholder="Top N">
-          <input class="control" id="batchDelayMs" type="number" min="250" max="3000" value="450" placeholder="Delay ms">
-          <button class="btn btn-primary" id="btnBatchScan">Batch Scan Top CAN SLIM</button>
-          <div class="tool-note" id="batchMeta">Batch scan is throttled between tickers to reduce VPS hit rate.</div>
-        </div>
+      <div class="toolbar-row">
+        <input class="control" id="batchTopN" type="number" min="1" max="20" value="10" placeholder="Top N">
+        <input class="control" id="batchDelayMs" type="number" min="250" max="3000" value="450" placeholder="Delay ms">
+        <button class="btn btn-primary" id="btnBatchScan">Batch Scan Top CAN SLIM</button>
+        <button class="btn" id="btnVN30Scan">VN30 Top Scan</button>
+        <div class="tool-note" id="batchMeta">Batch scan is throttled between tickers to reduce VPS hit rate.</div>
+      </div>
       </section>
 
       <section class="panel board-panel">
@@ -1107,7 +1109,7 @@ td{
   </div>
   <div class="drawer-body">
     <div class="command-stack">
-      <input class="search command-input" id="commandInput" type="text" placeholder='Try: help, preset leaders, batch FPT CTG MWG, add DGC "Duc Giang" CHEM'>
+      <input class="search command-input" id="commandInput" type="text" placeholder='Try: help, vn30, preset leaders, batch FPT CTG MWG, add DGC "Duc Giang" CHEM'>
       <div class="command-shortcuts">
         <span class="kbd">Cmd/Ctrl + K</span>
         <span class="kbd">/</span>
@@ -1435,7 +1437,7 @@ function buildPrompt(snapshot) {
     ].join("\n");
   }).join("\n\n");
 
-  return `I have ${snapshot.count} Vietnam stocks monitored by my local Saigon Terminal snapshot (${snapshot.generated})${snapshot.scanMode === "batch_top_strength" ? `, filtered from ${snapshot.requestedCount || snapshot.universeCount} requested batch tickers${snapshot.errorCount ? ` with ${snapshot.scannedCount} successful scans and ${snapshot.errorCount} failures` : ""}` : ""}.
+  return `I have ${snapshot.count} Vietnam stocks monitored by my local Saigon Terminal snapshot (${snapshot.generated})${snapshot.scanMode === "batch_top_strength" ? `, filtered from ${snapshot.requestedCount || snapshot.universeCount} requested batch tickers${snapshot.errorCount ? ` with ${snapshot.scannedCount} successful scans and ${snapshot.errorCount} failures` : ""}` : snapshot.scanMode === "vn30_top_strength" ? `, filtered from VN30 universe (${snapshot.requestedCount || snapshot.universeCount} tickers)${snapshot.errorCount ? ` with ${snapshot.scannedCount} successful scans and ${snapshot.errorCount} failures` : ""}` : ""}.
 
 Rules:
 - VPS is the live market source.
@@ -1493,6 +1495,8 @@ function renderUtility() {
         <div>${state.snapshot
           ? (state.snapshot.scanMode === "batch_top_strength"
             ? `top ${state.snapshot.count} of ${state.snapshot.requestedCount || state.snapshot.universeCount} requested tickers${state.snapshot.errorCount ? ` · ${state.snapshot.scannedCount} succeeded` : ""}`
+            : state.snapshot.scanMode === "vn30_top_strength"
+              ? `VN30 top ${state.snapshot.count} of ${state.snapshot.requestedCount || state.snapshot.universeCount}${state.snapshot.errorCount ? ` · ${state.snapshot.scannedCount} succeeded` : ""}`
             : "rows in current watchlist snapshot")
           : "No active snapshot yet"}</div>
       </div>
@@ -1960,6 +1964,35 @@ async function batchScanTopStrength() {
   }
 }
 
+async function scanVN30Top() {
+  const button = document.getElementById("btnVN30Scan");
+  const topN = Number(document.getElementById("batchTopN").value) || 10;
+  const delayMs = Number(document.getElementById("batchDelayMs").value) || 450;
+
+  button.disabled = true;
+  setStatus("Loading VN30 universe from VPS and scanning with throttle", "warn");
+  try {
+    const response = await fetch("/api/scan/vn30", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ topN, delayMs }),
+    });
+    const data = await response.json();
+    if (!response.ok || data.error) throw new Error(data.error || "VN30 scan failed");
+
+    state.snapshot = data.snapshot;
+    state.selectedTicker = data.snapshot.stocks[0]?.ticker || null;
+    document.getElementById("batchTickerInput").value = (data.universeTickers || []).join(" ");
+    document.getElementById("batchMeta").textContent = `VN30 ${data.universeCount} tickers · ${data.snapshot.scannedCount} succeeded · ${data.delayMs}ms spacing · showing top ${data.snapshot.count}${data.errors?.length ? ` · ${data.errors.length} errors` : ""}`;
+    renderAll();
+    setStatus(`VN30 ${data.universeCount} → top ${data.snapshot.count}${data.errors?.length ? ` · ${data.errors.length} errors` : ""}`, data.errors?.length ? "warn" : "ok");
+  } catch (error) {
+    setStatus(error.message, "danger");
+  } finally {
+    button.disabled = false;
+  }
+}
+
 function toggleCommandPalette(open) {
   state.paletteOpen = open;
   const drawer = document.getElementById("commandDrawer");
@@ -1995,6 +2028,13 @@ async function executeCommandAction(action) {
       document.getElementById("batchDelayMs").value = action.delayMs;
       toggleCommandPalette(false);
       await batchScanTopStrength();
+      return;
+
+    case "vn30.scan":
+      document.getElementById("batchTopN").value = action.topN;
+      document.getElementById("batchDelayMs").value = action.delayMs;
+      toggleCommandPalette(false);
+      await scanVN30Top();
       return;
 
     case "open.ticker": {
@@ -2119,16 +2159,13 @@ function boardRows(stocks) {
     : [["", stocks]];
 
   return groups.map(([label, rows]) => {
-    const groupHeader = label ? `<tr class="group-row"><td colspan="16">${label}</td></tr>` : "";
+    const groupHeader = label ? `<tr class="group-row"><td colspan="9">${label}</td></tr>` : "";
     const stockRows = rows.map((stock) => {
       const selected = state.selectedTicker === stock.ticker ? "active" : "";
       const sessionPct = stockSessionChange(stock);
       const changeClass = toneByChange(sessionPct);
       const pinned = state.pins.has(stock.ticker);
       const sector = stockSectorState(stock);
-      const observedPct = stock.observedCanSlimMax > 0
-        ? `${stock.observedCanSlimTotal}/${stock.observedCanSlimMax} · ${stock.coveragePct}%`
-        : `N/A · ${stock.coveragePct}%`;
       const strengthText = stock.strength?.score == null
         ? "N/A"
         : `${stock.strength.score}/100 · #${stock.strength?.rank || "—"}`;
@@ -2147,21 +2184,14 @@ function boardRows(stocks) {
           <td><div>${stock.sector}</div><div class="warning-line">${sector ? `#${sector.rank} | Rot ${sector.rotationScore}/100` : "Rotation n/a"}</div></td>
           <td class="mono">${fNum(stock.price)}</td>
           <td class="mono ${changeClass}">${fSignedPct(sessionPct)}</td>
-          <td class="mono">${fK(stock.tradedValue)}</td>
-          <td class="mono">${stock.volRatio}x</td>
-          <td class="mono">${stock.rsi14 ?? "—"}</td>
           <td class="mono ${stock.relative?.vsVNINDEX3m >= 0 ? "tone-good" : "tone-bad"}">${fPct(stock.relative?.vsVNINDEX3m, 100)}</td>
-          <td class="mono ${stock.relative?.vsVN303m >= 0 ? "tone-good" : "tone-bad"}">${fPct(stock.relative?.vsVN303m, 100)}</td>
-          <td class="mono ${stock.relative?.priceVsSma20Pct >= 0 ? "tone-good" : "tone-bad"}">${fPct(stock.relative?.priceVsSma20Pct, 1)}</td>
-          <td class="mono ${stock.relative?.priceVsSma50Pct >= 0 ? "tone-good" : "tone-bad"}">${fPct(stock.relative?.priceVsSma50Pct, 1)}</td>
           <td>
             <div class="warning-stack">
               <span class="breakout-chip" data-state="${stock.breakout?.state || "not_ready"}">${breakoutLabel(stock.breakout?.state)}</span>
               <span class="warning-line">${stock.breakout?.distancePct == null ? "No trigger" : `${stock.breakout.distancePct >= 0 ? "+" : ""}${stock.breakout.distancePct}% vs trigger`}</span>
             </div>
           </td>
-          <td><span class="score-chip">${strengthText}</span><div class="warning-line">${stock.strength?.label || "n/a"}</div></td>
-          <td><span class="score-chip">${observedPct}</span></td>
+          <td><span class="score-chip">${strengthText}</span><div class="warning-line">${stock.strength?.label || "n/a"} · Obs ${stock.observedCanSlimTotal}/${stock.observedCanSlimMax || 0}</div></td>
           <td>
             <div class="warning-stack">
               <span class="signal-chip" data-signal="${stock.signal}">${signalLabel(stock.signal)}</span>
@@ -2213,16 +2243,9 @@ function renderBoard() {
           <th><button data-sort="sector">Sector</button></th>
           <th><button data-sort="last">Last</button></th>
           <th><button data-sort="changePct">Session%</button></th>
-          <th><button data-sort="tradedValue">Value</button></th>
-          <th><button data-sort="volRatio">Vol x Avg</button></th>
-          <th><button data-sort="rsi14">RSI14</button></th>
           <th><button data-sort="vsVNINDEX3m">RS vs VNINDEX</button></th>
-          <th><button data-sort="vsVN303m">RS vs VN30</button></th>
-          <th><button data-sort="priceVsSma20Pct">Vs SMA20</button></th>
-          <th><button data-sort="priceVsSma50Pct">Vs SMA50</button></th>
           <th><button data-sort="breakoutScore">Breakout</button></th>
           <th><button data-sort="strengthScore">Strength</button></th>
-          <th><button data-sort="observedScore">Observed CAN SLIM</button></th>
           <th><button data-sort="ruleStrength">Rule Read</button></th>
           <th><button data-sort="coverage">Quality</button></th>
         </tr>
@@ -2615,7 +2638,7 @@ function renderAll() {
   const footer = document.getElementById("footerMeta");
   const activePreset = normalizePresetId(state.presetId);
   footer.textContent = state.snapshot
-    ? `Snapshot ${new Date(state.snapshot.generated).toLocaleString("vi-VN")} · ${state.snapshot.count} tickers${state.snapshot.scanMode === "batch_top_strength" ? ` · top ${state.snapshot.count} of ${state.snapshot.requestedCount || state.snapshot.universeCount}${state.snapshot.errorCount ? ` · ${state.snapshot.errorCount} errors` : ""}` : ""}${activePreset !== "all" ? ` · preset ${activePreset}` : ""}`
+    ? `Snapshot ${new Date(state.snapshot.generated).toLocaleString("vi-VN")} · ${state.snapshot.count} tickers${state.snapshot.scanMode === "batch_top_strength" ? ` · top ${state.snapshot.count} of ${state.snapshot.requestedCount || state.snapshot.universeCount}${state.snapshot.errorCount ? ` · ${state.snapshot.errorCount} errors` : ""}` : state.snapshot.scanMode === "vn30_top_strength" ? ` · VN30 top ${state.snapshot.count} of ${state.snapshot.requestedCount || state.snapshot.universeCount}${state.snapshot.errorCount ? ` · ${state.snapshot.errorCount} errors` : ""}` : ""}${activePreset !== "all" ? ` · preset ${activePreset}` : ""}`
     : "Local snapshot terminal";
 }
 
@@ -2730,6 +2753,7 @@ document.getElementById("btnWatchSave").addEventListener("click", saveWatchTicke
 document.getElementById("btnWatchDelete").addEventListener("click", deleteWatchTicker);
 document.getElementById("btnWatchClear").addEventListener("click", clearWatchForm);
 document.getElementById("btnBatchScan").addEventListener("click", batchScanTopStrength);
+document.getElementById("btnVN30Scan").addEventListener("click", scanVN30Top);
 document.getElementById("searchInput").addEventListener("input", (event) => {
   state.query = event.target.value || "";
   renderBoard();

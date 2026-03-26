@@ -25,6 +25,11 @@ const COMMANDS = Object.freeze([
     description: "Throttle-scan many tickers and keep the strongest names.",
   },
   {
+    name: "vn30",
+    usage: "vn30",
+    description: "Fetch VN30 constituents from VPS and scan top CAN SLIM names.",
+  },
+  {
     name: "open",
     usage: "open <ticker>",
     description: "Focus a ticker in the board and detail panel.",
@@ -343,6 +348,17 @@ function parseCommand(input, options = {}) {
       return result;
     }
 
+    case "vn30": {
+      const topN = Number(options.topN || 10);
+      const delayMs = Number(options.delayMs || 450);
+      result.action = {
+        type: "vn30.scan",
+        topN: Number.isFinite(topN) && topN > 0 ? Math.min(20, Math.floor(topN)) : 10,
+        delayMs: Number.isFinite(delayMs) && delayMs > 0 ? Math.max(250, Math.min(3000, Math.floor(delayMs))) : 450,
+      };
+      return result;
+    }
+
     case "open": {
       const ticker = normalizeTicker(tokens[1]);
       if (!ticker) {
@@ -463,6 +479,8 @@ function formatAction(action) {
       return `Scan ${action.ticker}`;
     case "batch.scan":
       return `Batch scan ${action.tickers.length} tickers`;
+    case "vn30.scan":
+      return `Scan VN30 top ${action.topN}`;
     case "open.ticker":
       return `Open ${action.ticker}`;
     case "watchlist.add":

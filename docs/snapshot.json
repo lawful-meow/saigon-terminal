@@ -1,8 +1,8 @@
 {
-  "publishedAt": "2026-03-26T06:41:14.317Z",
+  "publishedAt": "2026-03-26T06:58:08.343Z",
   "selectedTicker": "CTG",
   "snapshot": {
-    "generated": "2026-03-26T06:41:14.308Z",
+    "generated": "2026-03-26T06:57:59.362Z",
     "engine": "Saigon Terminal v2.0",
     "dataSource": "VPS + KBS",
     "note": "Board data is VPS-first. KBS enriches fundamentals and ownership when available. CAN SLIM is the ticker-strength layer, while Wyckoff handles timing and entry logic. Market direction now includes an IBD-style pulse proxy and Wyckoff output includes a test checklist.",
@@ -15,7 +15,7 @@
     "topN": null,
     "throttleMs": 0,
     "market": {
-      "asOf": "2026-03-26T06:41:14.287Z",
+      "asOf": "2026-03-26T06:57:59.326Z",
       "session": "open_pm",
       "regime": "bearish",
       "pulse": {
@@ -29,16 +29,16 @@
       },
       "indexes": {
         "VNINDEX": {
-          "price": 1637.12,
+          "price": 1644.51,
           "open": 1661.53,
           "prevClose": 1658.19,
-          "sessionChangePct": -1.47,
-          "prevCloseChangePct": -1.27,
-          "changePct": -1.47,
-          "ret1m": -0.1203,
-          "ret3m": -0.0671,
-          "sma20": 1718.17,
-          "sma50": 1791.24,
+          "sessionChangePct": -1.02,
+          "prevCloseChangePct": -0.82,
+          "changePct": -1.02,
+          "ret1m": -0.1163,
+          "ret3m": -0.0629,
+          "sma20": 1718.54,
+          "sma50": 1791.39,
           "regime": "bearish",
           "regimeScore": 0.25,
           "trendScore": 0.25,
@@ -63,16 +63,16 @@
           "date": "2026-03-26"
         },
         "VN30": {
-          "price": 1787.14,
+          "price": 1794.38,
           "open": 1813.98,
           "prevClose": 1814.73,
-          "sessionChangePct": -1.48,
-          "prevCloseChangePct": -1.52,
-          "changePct": -1.48,
-          "ret1m": -0.1281,
-          "ret3m": -0.1022,
-          "sma20": 1870.85,
-          "sma50": 1968.29,
+          "sessionChangePct": -1.08,
+          "prevCloseChangePct": -1.12,
+          "changePct": -1.08,
+          "ret1m": -0.1245,
+          "ret3m": -0.0986,
+          "sma20": 1871.22,
+          "sma50": 1968.44,
           "regime": "bearish",
           "regimeScore": 0.25,
           "trendScore": 0.25,
@@ -101,75 +101,174 @@
         "decliners": 5,
         "unchanged": 0
       },
-      "turnover": 1334481966000,
+      "turnover": 1478213905000,
       "sectors": {
         "leaders": [
           {
-            "sector": "RETAIL",
-            "count": 1,
-            "turnover": 347906016000,
-            "avgChangePct": -0.38,
-            "avgObservedScorePct": 57.1
-          },
-          {
             "sector": "BANK",
             "count": 3,
-            "turnover": 465064687000,
-            "avgChangePct": -1.53,
-            "avgObservedScorePct": 53.3
+            "turnover": 501125626000,
+            "advancers": 0,
+            "decliners": 3,
+            "avgChangePct": -1.19,
+            "avgObservedScorePct": 53.3,
+            "avgRsVsVNINDEX3m": -0.0247,
+            "avgRet1w": -0.0194,
+            "avgRet1m": -0.139,
+            "avgRet3m": -0.0876,
+            "avgStrengthScore": 35,
+            "rotationScore": 78.8,
+            "rank": 1,
+            "prevRank": null,
+            "rankDelta": null
+          },
+          {
+            "sector": "RETAIL",
+            "count": 1,
+            "turnover": 395868384000,
+            "advancers": 0,
+            "decliners": 1,
+            "avgChangePct": -0.13,
+            "avgObservedScorePct": 57.1,
+            "avgRsVsVNINDEX3m": -0.0427,
+            "avgRet1w": -0.0546,
+            "avgRet1m": -0.1624,
+            "avgRet3m": -0.1056,
+            "avgStrengthScore": 36,
+            "rotationScore": 65.2,
+            "rank": 2,
+            "prevRank": null,
+            "rankDelta": null
           },
           {
             "sector": "TECH",
             "count": 1,
-            "turnover": 521511263000,
-            "avgChangePct": -3.51,
-            "avgObservedScorePct": 42.9
+            "turnover": 581219895000,
+            "advancers": 0,
+            "decliners": 1,
+            "avgChangePct": -3.38,
+            "avgObservedScorePct": 42.9,
+            "avgRsVsVNINDEX3m": -0.1481,
+            "avgRet1w": -0.0313,
+            "avgRet1m": -0.165,
+            "avgRet3m": -0.211,
+            "avgStrengthScore": 10,
+            "rotationScore": 0,
+            "rank": 3,
+            "prevRank": null,
+            "rankDelta": null
           }
         ],
         "laggards": [
           {
             "sector": "TECH",
             "count": 1,
-            "turnover": 521511263000,
-            "avgChangePct": -3.51,
-            "avgObservedScorePct": 42.9
-          },
-          {
-            "sector": "BANK",
-            "count": 3,
-            "turnover": 465064687000,
-            "avgChangePct": -1.53,
-            "avgObservedScorePct": 53.3
+            "turnover": 581219895000,
+            "advancers": 0,
+            "decliners": 1,
+            "avgChangePct": -3.38,
+            "avgObservedScorePct": 42.9,
+            "avgRsVsVNINDEX3m": -0.1481,
+            "avgRet1w": -0.0313,
+            "avgRet1m": -0.165,
+            "avgRet3m": -0.211,
+            "avgStrengthScore": 10,
+            "rotationScore": 0,
+            "rank": 3,
+            "prevRank": null,
+            "rankDelta": null
           },
           {
             "sector": "RETAIL",
             "count": 1,
-            "turnover": 347906016000,
-            "avgChangePct": -0.38,
-            "avgObservedScorePct": 57.1
+            "turnover": 395868384000,
+            "advancers": 0,
+            "decliners": 1,
+            "avgChangePct": -0.13,
+            "avgObservedScorePct": 57.1,
+            "avgRsVsVNINDEX3m": -0.0427,
+            "avgRet1w": -0.0546,
+            "avgRet1m": -0.1624,
+            "avgRet3m": -0.1056,
+            "avgStrengthScore": 36,
+            "rotationScore": 65.2,
+            "rank": 2,
+            "prevRank": null,
+            "rankDelta": null
+          },
+          {
+            "sector": "BANK",
+            "count": 3,
+            "turnover": 501125626000,
+            "advancers": 0,
+            "decliners": 3,
+            "avgChangePct": -1.19,
+            "avgObservedScorePct": 53.3,
+            "avgRsVsVNINDEX3m": -0.0247,
+            "avgRet1w": -0.0194,
+            "avgRet1m": -0.139,
+            "avgRet3m": -0.0876,
+            "avgStrengthScore": 35,
+            "rotationScore": 78.8,
+            "rank": 1,
+            "prevRank": null,
+            "rankDelta": null
           }
         ],
         "all": [
           {
-            "sector": "RETAIL",
-            "count": 1,
-            "turnover": 347906016000,
-            "avgChangePct": -0.38,
-            "avgObservedScorePct": 57.1
-          },
-          {
             "sector": "BANK",
             "count": 3,
-            "turnover": 465064687000,
-            "avgChangePct": -1.53,
-            "avgObservedScorePct": 53.3
+            "turnover": 501125626000,
+            "advancers": 0,
+            "decliners": 3,
+            "avgChangePct": -1.19,
+            "avgObservedScorePct": 53.3,
+            "avgRsVsVNINDEX3m": -0.0247,
+            "avgRet1w": -0.0194,
+            "avgRet1m": -0.139,
+            "avgRet3m": -0.0876,
+            "avgStrengthScore": 35,
+            "rotationScore": 78.8,
+            "rank": 1,
+            "prevRank": null,
+            "rankDelta": null
+          },
+          {
+            "sector": "RETAIL",
+            "count": 1,
+            "turnover": 395868384000,
+            "advancers": 0,
+            "decliners": 1,
+            "avgChangePct": -0.13,
+            "avgObservedScorePct": 57.1,
+            "avgRsVsVNINDEX3m": -0.0427,
+            "avgRet1w": -0.0546,
+            "avgRet1m": -0.1624,
+            "avgRet3m": -0.1056,
+            "avgStrengthScore": 36,
+            "rotationScore": 65.2,
+            "rank": 2,
+            "prevRank": null,
+            "rankDelta": null
           },
           {
             "sector": "TECH",
             "count": 1,
-            "turnover": 521511263000,
-            "avgChangePct": -3.51,
-            "avgObservedScorePct": 42.9
+            "turnover": 581219895000,
+            "advancers": 0,
+            "decliners": 1,
+            "avgChangePct": -3.38,
+            "avgObservedScorePct": 42.9,
+            "avgRsVsVNINDEX3m": -0.1481,
+            "avgRet1w": -0.0313,
+            "avgRet1m": -0.165,
+            "avgRet3m": -0.211,
+            "avgStrengthScore": 10,
+            "rotationScore": 0,
+            "rank": 3,
+            "prevRank": null,
+            "rankDelta": null
           }
         ]
       }
@@ -211,31 +310,32 @@
         "ticker": "CTG",
         "name": "VietinBank",
         "sector": "BANK",
-        "scanTime": "2026-03-26T06:41:14.287Z",
-        "price": 33600,
+        "scanTime": "2026-03-26T06:57:59.326Z",
+        "scanRunId": "watchlist-mn74esaa-njk7qw",
+        "price": 33700,
         "open": 34050,
         "high": 34100,
         "low": 33450,
-        "sessionChangePct": -1.32,
-        "prevCloseChangePct": 1.32,
-        "changePct": -1.32,
+        "sessionChangePct": -1.03,
+        "prevCloseChangePct": 1.03,
+        "changePct": -1.03,
         "priceDate": "2026-03-26",
-        "volume": 3867700,
-        "avgVol20": 12086260,
-        "volRatio": 0.32,
-        "tradedValue": 130225459000,
-        "avgValue20": 423603339230,
-        "sma20": 34820,
-        "sma50": 37378,
-        "sma200": 37245,
-        "rsi14": 40.6,
-        "macd": -1056,
+        "volume": 4270300,
+        "avgVol20": 12106390,
+        "volRatio": 0.35,
+        "tradedValue": 143781001000,
+        "avgValue20": 424281116330,
+        "sma20": 34825,
+        "sma50": 37380,
+        "sma200": 37246,
+        "rsi14": 41,
+        "macd": -1048,
         "atr14": 1086,
         "pe": 5.5,
         "pb": 1.1,
         "eps": 6441,
         "roe": 21.1,
-        "marketCap": 260969339803200,
+        "marketCap": 261746034266900,
         "foreignNet5d": null,
         "canslim": {
           "C": 6,
@@ -283,8 +383,8 @@
             "support": 32000,
             "resistance": 39100,
             "midpoint": 35550,
-            "rangeWidthPct": 21.13,
-            "pricePositionPct": 22.5,
+            "rangeWidthPct": 21.07,
+            "pricePositionPct": 23.9,
             "atr": 1086
           },
           "events": {
@@ -316,19 +416,19 @@
               "active": false,
               "name": "backup",
               "date": "2026-03-26",
-              "price": 33600,
+              "price": 33700,
               "support": 32000,
               "resistance": 39100,
-              "volumeRatio": 0.32
+              "volumeRatio": 0.35
             },
             "lpsy": {
               "active": false,
               "name": "LPSY",
               "date": "2026-03-26",
-              "price": 33600,
+              "price": 33700,
               "support": 32000,
               "resistance": 39100,
-              "volumeRatio": 0.32
+              "volumeRatio": 0.35
             }
           },
           "tests": {
@@ -522,12 +622,12 @@
             {
               "step": 1,
               "title": "Trend Context",
-              "detail": "40-session backdrop is downtrend; price is -10.1% vs SMA50 with 1M return -12.7%."
+              "detail": "40-session backdrop is downtrend; price is -9.8% vs SMA50 with 1M return -12.5%."
             },
             {
               "step": 2,
               "title": "Trading Range Map",
-              "detail": "30-session support/resistance sit near 32.000 / 39.100; range width is 21.1% and the close sits at 23% of that box (lower third)."
+              "detail": "30-session support/resistance sit near 32.000 / 39.100; range width is 21.1% and the close sits at 24% of that box (lower third)."
             },
             {
               "step": 3,
@@ -548,10 +648,10 @@
           "context": {
             "trendBias": "downtrend",
             "volumeDry": true,
-            "priceVsSma50Pct": -10.11,
-            "ret20": -0.1273,
-            "ret40": -0.1579,
-            "distanceFromSma20Atr": -1.12,
+            "priceVsSma50Pct": -9.84,
+            "ret20": -0.1247,
+            "ret40": -0.1554,
+            "distanceFromSma20Atr": -1.04,
             "rangeLocation": "lower third"
           },
           "notes": [
@@ -560,14 +660,14 @@
           ]
         },
         "relative": {
-          "ret1d": -0.0132,
-          "ret1w": -0.0303,
-          "ret1m": -0.1273,
-          "ret3m": -0.0482,
-          "vsVNINDEX3m": 0.0189,
-          "vsVN303m": 0.054,
-          "priceVsSma20Pct": -3.5,
-          "priceVsSma50Pct": -10.11
+          "ret1d": -0.0103,
+          "ret1w": -0.0274,
+          "ret1m": -0.1247,
+          "ret3m": -0.0453,
+          "vsVNINDEX3m": 0.0176,
+          "vsVN303m": 0.0533,
+          "priceVsSma20Pct": -3.23,
+          "priceVsSma50Pct": -9.84
         },
         "market": {
           "session": "open_pm",
@@ -584,16 +684,16 @@
           },
           "indexes": {
             "VNINDEX": {
-              "price": 1637.12,
+              "price": 1644.51,
               "open": 1661.53,
               "prevClose": 1658.19,
-              "sessionChangePct": -1.47,
-              "prevCloseChangePct": -1.27,
-              "changePct": -1.47,
-              "ret1m": -0.1203,
-              "ret3m": -0.0671,
-              "sma20": 1718.17,
-              "sma50": 1791.24,
+              "sessionChangePct": -1.02,
+              "prevCloseChangePct": -0.82,
+              "changePct": -1.02,
+              "ret1m": -0.1163,
+              "ret3m": -0.0629,
+              "sma20": 1718.54,
+              "sma50": 1791.39,
               "regime": "bearish",
               "regimeScore": 0.25,
               "trendScore": 0.25,
@@ -618,16 +718,16 @@
               "date": "2026-03-26"
             },
             "VN30": {
-              "price": 1787.14,
+              "price": 1794.38,
               "open": 1813.98,
               "prevClose": 1814.73,
-              "sessionChangePct": -1.48,
-              "prevCloseChangePct": -1.52,
-              "changePct": -1.48,
-              "ret1m": -0.1281,
-              "ret3m": -0.1022,
-              "sma20": 1870.85,
-              "sma50": 1968.29,
+              "sessionChangePct": -1.08,
+              "prevCloseChangePct": -1.12,
+              "changePct": -1.08,
+              "ret1m": -0.1245,
+              "ret3m": -0.0986,
+              "sma20": 1871.22,
+              "sma50": 1968.44,
               "regime": "bearish",
               "regimeScore": 0.25,
               "trendScore": 0.25,
@@ -709,12 +809,12 @@
             "rawScore": 44
           },
           "driversPositive": [
-            "RS vs VNINDEX 3M +1.9%",
-            "RSI 40.6 in healthy range"
+            "RS vs VNINDEX 3M +1.8%",
+            "RSI 41 in healthy range"
           ],
           "driversNegative": [
-            "Price -10.1% vs SMA50",
-            "Volume only 0.32x avg20",
+            "Price -9.8% vs SMA50",
+            "Volume only 0.35x avg20",
             "Market regime bearish",
             "Foreign flow unavailable"
           ],
@@ -811,7 +911,7 @@
             },
             "N": {
               "metric": "nearHighPct",
-              "rawValue": 0.772,
+              "rawValue": 0.775,
               "thresholds": [
                 0.7,
                 0.8,
@@ -823,7 +923,7 @@
               "legacyScore": 4,
               "factorLabel": "New highs",
               "metricLabel": "Price vs 52W high",
-              "displayValue": "77.2% of 52W high",
+              "displayValue": "77.5% of 52W high",
               "bandLabel": "70.0% to 80.0%",
               "bands": [
                 {
@@ -852,11 +952,11 @@
                   "active": false
                 }
               ],
-              "reason": "Price vs 52W high is 77.2% of 52W high, between 70.0% and 80.0%, so N scores 4/10."
+              "reason": "Price vs 52W high is 77.5% of 52W high, between 70.0% and 80.0%, so N scores 4/10."
             },
             "S": {
               "metric": "volScore",
-              "rawValue": 0.32,
+              "rawValue": 0.35,
               "thresholds": [
                 0.4,
                 0.7,
@@ -868,7 +968,7 @@
               "legacyScore": 2,
               "factorLabel": "Supply / demand",
               "metricLabel": "Volume vs avg20",
-              "displayValue": "0.32x",
+              "displayValue": "0.35x",
               "bandLabel": "< 0.40x",
               "bands": [
                 {
@@ -897,11 +997,11 @@
                   "active": false
                 }
               ],
-              "reason": "Volume vs avg20 is 0.32x, below 0.40x, so S scores 2/10."
+              "reason": "Volume vs avg20 is 0.35x, below 0.40x, so S scores 2/10."
             },
             "L": {
               "metric": "rs3m",
-              "rawValue": 0.0365,
+              "rawValue": 0.0354,
               "thresholds": [
                 -0.05,
                 0,
@@ -913,7 +1013,7 @@
               "legacyScore": 6,
               "factorLabel": "Leader / laggard",
               "metricLabel": "3M relative strength",
-              "displayValue": "+3.6%",
+              "displayValue": "+3.5%",
               "bandLabel": "0.0% to 5.0%",
               "bands": [
                 {
@@ -942,7 +1042,7 @@
                   "active": false
                 }
               ],
-              "reason": "3M relative strength is +3.6%, between 0.0% and 5.0%, so L scores 6/10."
+              "reason": "3M relative strength is +3.5%, between 0.0% and 5.0%, so L scores 6/10."
             },
             "I": {
               "metric": "institutionScore",
@@ -1072,12 +1172,12 @@
             {
               "step": 1,
               "title": "Trend Context",
-              "detail": "40-session backdrop is downtrend; price is -10.1% vs SMA50 with 1M return -12.7%."
+              "detail": "40-session backdrop is downtrend; price is -9.8% vs SMA50 with 1M return -12.5%."
             },
             {
               "step": 2,
               "title": "Trading Range Map",
-              "detail": "30-session support/resistance sit near 32.000 / 39.100; range width is 21.1% and the close sits at 23% of that box (lower third)."
+              "detail": "30-session support/resistance sit near 32.000 / 39.100; range width is 21.1% and the close sits at 24% of that box (lower third)."
             },
             {
               "step": 3,
@@ -1102,22 +1202,32 @@
         "signal": "HOLD",
         "confidence": 4,
         "rawScore": 44,
-        "delta": "no change",
+        "breakout": {
+          "state": "arming",
+          "score": 39,
+          "triggerPrice": 34840,
+          "distancePct": -3.27,
+          "invalidation": "If price loses 32.000 again, the base attempt is not mature enough.",
+          "volumeSupport": "dry",
+          "reason": "Early repair trigger; RS vs VNINDEX +1.8%; volume dry"
+        },
+        "executionRisk": {
+          "status": "unavailable",
+          "liquidityLabel": "trap_risk",
+          "avgValue20": 424281116330,
+          "tradedValue": 143781001000,
+          "stopDistancePct": null,
+          "stopDistanceAtr": null,
+          "riskReward1": null,
+          "riskReward2": null,
+          "pilotShares": 0,
+          "fullShares": 0,
+          "pilotNotional": 0,
+          "fullNotional": 0,
+          "reason": "No valid active buy plan with entry and stop exists yet."
+        },
+        "delta": "price +0.1%",
         "historyMini": [
-          {
-            "timestamp": "2026-03-25T12:56:29.787Z",
-            "price": 34050,
-            "signal": "HOLD",
-            "confidence": 4,
-            "observedPct": 0.6
-          },
-          {
-            "timestamp": "2026-03-26T02:33:26.924Z",
-            "price": 33750,
-            "signal": "HOLD",
-            "confidence": 4,
-            "observedPct": 0.57
-          },
           {
             "timestamp": "2026-03-26T02:39:11.944Z",
             "price": 33750,
@@ -1138,6 +1248,20 @@
             "signal": "HOLD",
             "confidence": 4,
             "observedPct": 0.57
+          },
+          {
+            "timestamp": "2026-03-26T06:47:22.430Z",
+            "price": 33650,
+            "signal": "HOLD",
+            "confidence": 4,
+            "observedPct": 0.57
+          },
+          {
+            "timestamp": "2026-03-26T06:57:59.326Z",
+            "price": 33700,
+            "signal": "HOLD",
+            "confidence": 4,
+            "observedPct": 0.57
           }
         ]
       },
@@ -1145,31 +1269,32 @@
         "ticker": "MWG",
         "name": "Thế Giới Di Động",
         "sector": "RETAIL",
-        "scanTime": "2026-03-26T06:41:13.874Z",
-        "price": 77700,
+        "scanTime": "2026-03-26T06:57:58.844Z",
+        "scanRunId": "watchlist-mn74esaa-njk7qw",
+        "price": 77900,
         "open": 78000,
         "high": 78900,
         "low": 77400,
-        "sessionChangePct": -0.38,
-        "prevCloseChangePct": 1.89,
-        "changePct": -0.38,
+        "sessionChangePct": -0.13,
+        "prevCloseChangePct": 1.64,
+        "changePct": -0.13,
         "priceDate": "2026-03-26",
-        "volume": 4474100,
-        "avgVol20": 9619580,
-        "volRatio": 0.47,
-        "tradedValue": 347906016000,
-        "avgValue20": 798267573590,
-        "sma20": 82765,
-        "sma50": 86458,
-        "sma200": 86674,
-        "rsi14": 43.8,
-        "macd": -2850,
+        "volume": 5090900,
+        "avgVol20": 9650420,
+        "volRatio": 0.53,
+        "tradedValue": 395868384000,
+        "avgValue20": 800665691990,
+        "sma20": 82775,
+        "sma50": 86462,
+        "sma200": 86677,
+        "rsi14": 44,
+        "macd": -2834,
         "atr14": 3421,
         "pe": 18.5,
         "pb": 3.9,
         "eps": 4773,
         "roe": 23.1,
-        "marketCap": 114096508203300,
+        "marketCap": 114390192909100,
         "foreignNet5d": null,
         "canslim": {
           "C": 4,
@@ -1201,7 +1326,7 @@
           "rank": 2,
           "percentile": 75
         },
-        "volumeSignal": "DRY_UP",
+        "volumeSignal": "NORMAL",
         "wyckoffPhase": "Markdown",
         "wyckoffStage": "Phase E",
         "wyckoffBias": "avoid",
@@ -1210,15 +1335,15 @@
           "stage": "Phase E",
           "label": "Markdown Phase E - Active Downtrend",
           "code": "markdown",
-          "confidence": 85,
-          "confidenceLabel": "high",
+          "confidence": 77,
+          "confidenceLabel": "moderate",
           "bias": "avoid",
           "levels": {
             "support": 74200,
             "resistance": 94300,
             "midpoint": 84250,
-            "rangeWidthPct": 25.87,
-            "pricePositionPct": 17.4,
+            "rangeWidthPct": 25.8,
+            "pricePositionPct": 18.4,
             "atr": 3421
           },
           "events": {
@@ -1259,19 +1384,19 @@
               "active": false,
               "name": "backup",
               "date": "2026-03-26",
-              "price": 77700,
+              "price": 77900,
               "support": 74200,
               "resistance": 94300,
-              "volumeRatio": 0.47
+              "volumeRatio": 0.53
             },
             "lpsy": {
-              "active": true,
+              "active": false,
               "name": "LPSY",
               "date": "2026-03-26",
-              "price": 77700,
+              "price": 77900,
               "support": 77000,
               "resistance": 94300,
-              "volumeRatio": 0.47
+              "volumeRatio": 0.53
             }
           },
           "tests": {
@@ -1450,8 +1575,8 @@
             "watch": [
               {
                 "label": "Early repair / stop bleeding trigger",
-                "price": 82765,
-                "why": "A reclaim of 82.765 would only improve the tape from damaged to repair mode. It is not the same as a confirmed buy yet."
+                "price": 82775,
+                "why": "A reclaim of 82.775 would only improve the tape from damaged to repair mode. It is not the same as a confirmed buy yet."
               },
               {
                 "label": "Full demand confirmation",
@@ -1465,17 +1590,17 @@
             {
               "step": 1,
               "title": "Trend Context",
-              "detail": "40-session backdrop is downtrend; price is -10.1% vs SMA50 with 1M return -17.0%."
+              "detail": "40-session backdrop is downtrend; price is -9.9% vs SMA50 with 1M return -16.8%."
             },
             {
               "step": 2,
               "title": "Trading Range Map",
-              "detail": "30-session support/resistance sit near 74.200 / 94.300; range width is 25.9% and the close sits at 17% of that box (lower third)."
+              "detail": "30-session support/resistance sit near 74.200 / 94.300; range width is 25.8% and the close sits at 18% of that box (lower third)."
             },
             {
               "step": 3,
               "title": "Supply / Demand Event",
-              "detail": "Recent structural signals: SOW on 2026-03-23 (1.98x vol), LPSY on 2026-03-26 (0.47x vol)."
+              "detail": "Recent structural signals: SOW on 2026-03-23 (1.98x vol)."
             },
             {
               "step": 4,
@@ -1491,10 +1616,10 @@
           "context": {
             "trendBias": "downtrend",
             "volumeDry": false,
-            "priceVsSma50Pct": -10.13,
-            "ret20": -0.1699,
-            "ret40": -0.1017,
-            "distanceFromSma20Atr": -1.48,
+            "priceVsSma50Pct": -9.9,
+            "ret20": -0.1677,
+            "ret40": -0.0994,
+            "distanceFromSma20Atr": -1.43,
             "rangeLocation": "lower third"
           },
           "notes": [
@@ -1503,14 +1628,14 @@
           ]
         },
         "relative": {
-          "ret1d": -0.0189,
-          "ret1w": -0.057,
-          "ret1m": -0.1645,
-          "ret3m": -0.1079,
-          "vsVNINDEX3m": -0.0408,
-          "vsVN303m": -0.0057,
-          "priceVsSma20Pct": -6.12,
-          "priceVsSma50Pct": -10.13
+          "ret1d": -0.0164,
+          "ret1w": -0.0546,
+          "ret1m": -0.1624,
+          "ret3m": -0.1056,
+          "vsVNINDEX3m": -0.0427,
+          "vsVN303m": -0.007,
+          "priceVsSma20Pct": -5.89,
+          "priceVsSma50Pct": -9.9
         },
         "market": {
           "session": "open_pm",
@@ -1527,16 +1652,16 @@
           },
           "indexes": {
             "VNINDEX": {
-              "price": 1637.12,
+              "price": 1644.51,
               "open": 1661.53,
               "prevClose": 1658.19,
-              "sessionChangePct": -1.47,
-              "prevCloseChangePct": -1.27,
-              "changePct": -1.47,
-              "ret1m": -0.1203,
-              "ret3m": -0.0671,
-              "sma20": 1718.17,
-              "sma50": 1791.24,
+              "sessionChangePct": -1.02,
+              "prevCloseChangePct": -0.82,
+              "changePct": -1.02,
+              "ret1m": -0.1163,
+              "ret3m": -0.0629,
+              "sma20": 1718.54,
+              "sma50": 1791.39,
               "regime": "bearish",
               "regimeScore": 0.25,
               "trendScore": 0.25,
@@ -1561,16 +1686,16 @@
               "date": "2026-03-26"
             },
             "VN30": {
-              "price": 1787.14,
+              "price": 1794.38,
               "open": 1813.98,
               "prevClose": 1814.73,
-              "sessionChangePct": -1.48,
-              "prevCloseChangePct": -1.52,
-              "changePct": -1.48,
-              "ret1m": -0.1281,
-              "ret3m": -0.1022,
-              "sma20": 1870.85,
-              "sma50": 1968.29,
+              "sessionChangePct": -1.08,
+              "prevCloseChangePct": -1.12,
+              "changePct": -1.08,
+              "ret1m": -0.1245,
+              "ret3m": -0.0986,
+              "sma20": 1871.22,
+              "sma50": 1968.44,
               "regime": "bearish",
               "regimeScore": 0.25,
               "trendScore": 0.25,
@@ -1601,7 +1726,7 @@
           "coveragePct": 100,
           "coverageLabel": "strong",
           "historyBars": 57,
-          "freshnessSec": 0,
+          "freshnessSec": 1,
           "snapshotOverlayUsed": true,
           "missingFactors": [],
           "missingFields": [
@@ -1647,17 +1772,17 @@
         "explain": {
           "ruleRead": "Strong Bearish Bias",
           "ruleStrength": {
-            "score": 9,
+            "score": 8,
             "label": "high conviction",
             "rawScore": 18
           },
           "driversPositive": [
-            "RSI 43.8 in healthy range"
+            "RSI 44 in healthy range"
           ],
           "driversNegative": [
-            "RS vs VNINDEX 3M -4.1%",
-            "Price -10.1% vs SMA50",
-            "Volume only 0.47x avg20",
+            "RS vs VNINDEX 3M -4.3%",
+            "Price -9.9% vs SMA50",
+            "Volume only 0.53x avg20",
             "Market regime bearish",
             "CAN SLIM strength Weak (36/100)"
           ],
@@ -1754,7 +1879,7 @@
             },
             "N": {
               "metric": "nearHighPct",
-              "rawValue": 0.823,
+              "rawValue": 0.825,
               "thresholds": [
                 0.7,
                 0.8,
@@ -1766,7 +1891,7 @@
               "legacyScore": 6,
               "factorLabel": "New highs",
               "metricLabel": "Price vs 52W high",
-              "displayValue": "82.3% of 52W high",
+              "displayValue": "82.5% of 52W high",
               "bandLabel": "80.0% to 90.0%",
               "bands": [
                 {
@@ -1795,11 +1920,11 @@
                   "active": false
                 }
               ],
-              "reason": "Price vs 52W high is 82.3% of 52W high, between 80.0% and 90.0%, so N scores 6/10."
+              "reason": "Price vs 52W high is 82.5% of 52W high, between 80.0% and 90.0%, so N scores 6/10."
             },
             "S": {
               "metric": "volScore",
-              "rawValue": 0.47,
+              "rawValue": 0.53,
               "thresholds": [
                 0.4,
                 0.7,
@@ -1811,7 +1936,7 @@
               "legacyScore": 4,
               "factorLabel": "Supply / demand",
               "metricLabel": "Volume vs avg20",
-              "displayValue": "0.47x",
+              "displayValue": "0.53x",
               "bandLabel": "0.40x to 0.70x",
               "bands": [
                 {
@@ -1840,11 +1965,11 @@
                   "active": false
                 }
               ],
-              "reason": "Volume vs avg20 is 0.47x, between 0.40x and 0.70x, so S scores 4/10."
+              "reason": "Volume vs avg20 is 0.53x, between 0.40x and 0.70x, so S scores 4/10."
             },
             "L": {
               "metric": "rs3m",
-              "rawValue": -0.0232,
+              "rawValue": -0.0249,
               "thresholds": [
                 -0.05,
                 0,
@@ -1856,7 +1981,7 @@
               "legacyScore": 4,
               "factorLabel": "Leader / laggard",
               "metricLabel": "3M relative strength",
-              "displayValue": "-2.3%",
+              "displayValue": "-2.5%",
               "bandLabel": "-5.0% to 0.0%",
               "bands": [
                 {
@@ -1885,7 +2010,7 @@
                   "active": false
                 }
               ],
-              "reason": "3M relative strength is -2.3%, between -5.0% and 0.0%, so L scores 4/10."
+              "reason": "3M relative strength is -2.5%, between -5.0% and 0.0%, so L scores 4/10."
             },
             "I": {
               "metric": "institutionScore",
@@ -2000,8 +2125,8 @@
             "watch": [
               {
                 "label": "Early repair / stop bleeding trigger",
-                "price": 82765,
-                "why": "A reclaim of 82.765 would only improve the tape from damaged to repair mode. It is not the same as a confirmed buy yet."
+                "price": 82775,
+                "why": "A reclaim of 82.775 would only improve the tape from damaged to repair mode. It is not the same as a confirmed buy yet."
               },
               {
                 "label": "Full demand confirmation",
@@ -2015,17 +2140,17 @@
             {
               "step": 1,
               "title": "Trend Context",
-              "detail": "40-session backdrop is downtrend; price is -10.1% vs SMA50 with 1M return -17.0%."
+              "detail": "40-session backdrop is downtrend; price is -9.9% vs SMA50 with 1M return -16.8%."
             },
             {
               "step": 2,
               "title": "Trading Range Map",
-              "detail": "30-session support/resistance sit near 74.200 / 94.300; range width is 25.9% and the close sits at 17% of that box (lower third)."
+              "detail": "30-session support/resistance sit near 74.200 / 94.300; range width is 25.8% and the close sits at 18% of that box (lower third)."
             },
             {
               "step": 3,
               "title": "Supply / Demand Event",
-              "detail": "Recent structural signals: SOW on 2026-03-23 (1.98x vol), LPSY on 2026-03-26 (0.47x vol)."
+              "detail": "Recent structural signals: SOW on 2026-03-23 (1.98x vol)."
             },
             {
               "step": 4,
@@ -2043,24 +2168,34 @@
         "tp": [],
         "sl": null,
         "signal": "STRONG_SELL",
-        "confidence": 9,
+        "confidence": 8,
         "rawScore": 18,
-        "delta": "price -0.1%, observed CS 38→40",
+        "breakout": {
+          "state": "not_ready",
+          "score": 4,
+          "triggerPrice": 82775,
+          "distancePct": -5.89,
+          "invalidation": "A clean move below 73.829 keeps the structure defensive.",
+          "volumeSupport": "dry",
+          "reason": "Early repair / stop bleeding trigger; RS vs VNINDEX -4.3%; volume dry"
+        },
+        "executionRisk": {
+          "status": "unavailable",
+          "liquidityLabel": "trap_risk",
+          "avgValue20": 800665691990,
+          "tradedValue": 395868384000,
+          "stopDistancePct": null,
+          "stopDistanceAtr": null,
+          "riskReward1": null,
+          "riskReward2": null,
+          "pilotShares": 0,
+          "fullShares": 0,
+          "pilotNotional": 0,
+          "fullNotional": 0,
+          "reason": "No valid active buy plan with entry and stop exists yet."
+        },
+        "delta": "price +0.5%",
         "historyMini": [
-          {
-            "timestamp": "2026-03-25T12:56:29.446Z",
-            "price": 79200,
-            "signal": "STRONG_SELL",
-            "confidence": 8,
-            "observedPct": 0.6
-          },
-          {
-            "timestamp": "2026-03-26T02:33:26.386Z",
-            "price": 77800,
-            "signal": "STRONG_SELL",
-            "confidence": 8,
-            "observedPct": 0.54
-          },
           {
             "timestamp": "2026-03-26T02:39:09.963Z",
             "price": 77900,
@@ -2081,6 +2216,20 @@
             "signal": "STRONG_SELL",
             "confidence": 9,
             "observedPct": 0.57
+          },
+          {
+            "timestamp": "2026-03-26T06:47:22.110Z",
+            "price": 77500,
+            "signal": "STRONG_SELL",
+            "confidence": 9,
+            "observedPct": 0.57
+          },
+          {
+            "timestamp": "2026-03-26T06:57:58.844Z",
+            "price": 77900,
+            "signal": "STRONG_SELL",
+            "confidence": 8,
+            "observedPct": 0.57
           }
         ]
       },
@@ -2088,31 +2237,32 @@
         "ticker": "HDB",
         "name": "HDBank",
         "sector": "BANK",
-        "scanTime": "2026-03-26T06:41:13.439Z",
-        "price": 24500,
+        "scanTime": "2026-03-26T06:57:58.122Z",
+        "scanRunId": "watchlist-mn74esaa-njk7qw",
+        "price": 24600,
         "open": 24950,
         "high": 25000,
         "low": 24500,
-        "sessionChangePct": -1.8,
-        "prevCloseChangePct": 1.61,
-        "changePct": -1.8,
+        "sessionChangePct": -1.4,
+        "prevCloseChangePct": 1.2,
+        "changePct": -1.4,
         "priceDate": "2026-03-26",
-        "volume": 7138800,
-        "avgVol20": 15063879,
-        "volRatio": 0.47,
-        "tradedValue": 175971420000,
-        "avgValue20": 384856939828,
-        "sma20": 25578,
-        "sma50": 27145,
-        "sma200": 27340,
-        "rsi14": 38.5,
-        "macd": -758,
+        "volume": 7453200,
+        "avgVol20": 15079599,
+        "volRatio": 0.49,
+        "tradedValue": 183721380000,
+        "avgValue20": 385244437828,
+        "sma20": 25583,
+        "sma50": 27147,
+        "sma200": 27342,
+        "rsi14": 39.2,
+        "macd": -750,
         "atr14": 839,
         "pe": 6.4,
         "pb": 1.5,
         "eps": 4644,
         "roe": 24.5,
-        "marketCap": 122629269913500,
+        "marketCap": 123129797545800,
         "foreignNet5d": null,
         "canslim": {
           "C": 10,
@@ -2160,8 +2310,8 @@
             "support": 23800,
             "resistance": 28850,
             "midpoint": 26325,
-            "rangeWidthPct": 20.61,
-            "pricePositionPct": 13.9,
+            "rangeWidthPct": 20.53,
+            "pricePositionPct": 15.8,
             "atr": 839
           },
           "events": {
@@ -2193,19 +2343,19 @@
               "active": false,
               "name": "backup",
               "date": "2026-03-26",
-              "price": 24500,
+              "price": 24600,
               "support": 23800,
               "resistance": 28850,
-              "volumeRatio": 0.47
+              "volumeRatio": 0.49
             },
             "lpsy": {
               "active": false,
               "name": "LPSY",
               "date": "2026-03-26",
-              "price": 24500,
+              "price": 24600,
               "support": 23800,
               "resistance": 28850,
-              "volumeRatio": 0.47
+              "volumeRatio": 0.49
             }
           },
           "tests": {
@@ -2399,12 +2549,12 @@
             {
               "step": 1,
               "title": "Trend Context",
-              "detail": "40-session backdrop is downtrend; price is -9.7% vs SMA50 with 1M return -13.7%."
+              "detail": "40-session backdrop is downtrend; price is -9.4% vs SMA50 with 1M return -13.4%."
             },
             {
               "step": 2,
               "title": "Trading Range Map",
-              "detail": "30-session support/resistance sit near 23.800 / 28.850; range width is 20.6% and the close sits at 14% of that box (lower third)."
+              "detail": "30-session support/resistance sit near 23.800 / 28.850; range width is 20.5% and the close sits at 16% of that box (lower third)."
             },
             {
               "step": 3,
@@ -2425,10 +2575,10 @@
           "context": {
             "trendBias": "downtrend",
             "volumeDry": false,
-            "priceVsSma50Pct": -9.74,
-            "ret20": -0.1373,
-            "ret40": -0.161,
-            "distanceFromSma20Atr": -1.28,
+            "priceVsSma50Pct": -9.38,
+            "ret20": -0.1338,
+            "ret40": -0.1575,
+            "distanceFromSma20Atr": -1.17,
             "rangeLocation": "lower third"
           },
           "notes": [
@@ -2437,14 +2587,14 @@
           ]
         },
         "relative": {
-          "ret1d": -0.0161,
-          "ret1w": -0.0448,
-          "ret1m": -0.1388,
-          "ret3m": -0.1123,
-          "vsVNINDEX3m": -0.0452,
+          "ret1d": -0.012,
+          "ret1w": -0.0409,
+          "ret1m": -0.1353,
+          "ret3m": -0.1087,
+          "vsVNINDEX3m": -0.0458,
           "vsVN303m": -0.0101,
-          "priceVsSma20Pct": -4.21,
-          "priceVsSma50Pct": -9.74
+          "priceVsSma20Pct": -3.84,
+          "priceVsSma50Pct": -9.38
         },
         "market": {
           "session": "open_pm",
@@ -2461,16 +2611,16 @@
           },
           "indexes": {
             "VNINDEX": {
-              "price": 1637.12,
+              "price": 1644.51,
               "open": 1661.53,
               "prevClose": 1658.19,
-              "sessionChangePct": -1.47,
-              "prevCloseChangePct": -1.27,
-              "changePct": -1.47,
-              "ret1m": -0.1203,
-              "ret3m": -0.0671,
-              "sma20": 1718.17,
-              "sma50": 1791.24,
+              "sessionChangePct": -1.02,
+              "prevCloseChangePct": -0.82,
+              "changePct": -1.02,
+              "ret1m": -0.1163,
+              "ret3m": -0.0629,
+              "sma20": 1718.54,
+              "sma50": 1791.39,
               "regime": "bearish",
               "regimeScore": 0.25,
               "trendScore": 0.25,
@@ -2495,16 +2645,16 @@
               "date": "2026-03-26"
             },
             "VN30": {
-              "price": 1787.14,
+              "price": 1794.38,
               "open": 1813.98,
               "prevClose": 1814.73,
-              "sessionChangePct": -1.48,
-              "prevCloseChangePct": -1.52,
-              "changePct": -1.48,
-              "ret1m": -0.1281,
-              "ret3m": -0.1022,
-              "sma20": 1870.85,
-              "sma50": 1968.29,
+              "sessionChangePct": -1.08,
+              "prevCloseChangePct": -1.12,
+              "changePct": -1.08,
+              "ret1m": -0.1245,
+              "ret3m": -0.0986,
+              "sma20": 1871.22,
+              "sma50": 1968.44,
               "regime": "bearish",
               "regimeScore": 0.25,
               "trendScore": 0.25,
@@ -2535,7 +2685,7 @@
           "coveragePct": 100,
           "coverageLabel": "strong",
           "historyBars": 57,
-          "freshnessSec": 0,
+          "freshnessSec": 1,
           "snapshotOverlayUsed": true,
           "missingFactors": [],
           "missingFields": [
@@ -2587,9 +2737,9 @@
           },
           "driversPositive": [],
           "driversNegative": [
-            "RS vs VNINDEX 3M -4.5%",
-            "Price -9.7% vs SMA50",
-            "Volume only 0.47x avg20",
+            "RS vs VNINDEX 3M -4.6%",
+            "Price -9.4% vs SMA50",
+            "Volume only 0.49x avg20",
             "Market regime bearish",
             "CAN SLIM strength Weak (34/100)"
           ],
@@ -2686,7 +2836,7 @@
             },
             "N": {
               "metric": "nearHighPct",
-              "rawValue": 0.817,
+              "rawValue": 0.82,
               "thresholds": [
                 0.7,
                 0.8,
@@ -2698,7 +2848,7 @@
               "legacyScore": 6,
               "factorLabel": "New highs",
               "metricLabel": "Price vs 52W high",
-              "displayValue": "81.7% of 52W high",
+              "displayValue": "82.0% of 52W high",
               "bandLabel": "80.0% to 90.0%",
               "bands": [
                 {
@@ -2727,11 +2877,11 @@
                   "active": false
                 }
               ],
-              "reason": "Price vs 52W high is 81.7% of 52W high, between 80.0% and 90.0%, so N scores 6/10."
+              "reason": "Price vs 52W high is 82.0% of 52W high, between 80.0% and 90.0%, so N scores 6/10."
             },
             "S": {
               "metric": "volScore",
-              "rawValue": 0.47,
+              "rawValue": 0.49,
               "thresholds": [
                 0.4,
                 0.7,
@@ -2743,7 +2893,7 @@
               "legacyScore": 4,
               "factorLabel": "Supply / demand",
               "metricLabel": "Volume vs avg20",
-              "displayValue": "0.47x",
+              "displayValue": "0.49x",
               "bandLabel": "0.40x to 0.70x",
               "bands": [
                 {
@@ -2772,11 +2922,11 @@
                   "active": false
                 }
               ],
-              "reason": "Volume vs avg20 is 0.47x, between 0.40x and 0.70x, so S scores 4/10."
+              "reason": "Volume vs avg20 is 0.49x, between 0.40x and 0.70x, so S scores 4/10."
             },
             "L": {
               "metric": "rs3m",
-              "rawValue": -0.0276,
+              "rawValue": -0.028,
               "thresholds": [
                 -0.05,
                 0,
@@ -2947,12 +3097,12 @@
             {
               "step": 1,
               "title": "Trend Context",
-              "detail": "40-session backdrop is downtrend; price is -9.7% vs SMA50 with 1M return -13.7%."
+              "detail": "40-session backdrop is downtrend; price is -9.4% vs SMA50 with 1M return -13.4%."
             },
             {
               "step": 2,
               "title": "Trading Range Map",
-              "detail": "30-session support/resistance sit near 23.800 / 28.850; range width is 20.6% and the close sits at 14% of that box (lower third)."
+              "detail": "30-session support/resistance sit near 23.800 / 28.850; range width is 20.5% and the close sits at 16% of that box (lower third)."
             },
             {
               "step": 3,
@@ -2977,22 +3127,32 @@
         "signal": "STRONG_SELL",
         "confidence": 6,
         "rawScore": 18,
-        "delta": "price -0.6%, observed CS 36→38",
+        "breakout": {
+          "state": "not_ready",
+          "score": 4,
+          "triggerPrice": 25820,
+          "distancePct": -4.73,
+          "invalidation": "A clean move below 23.681 keeps the structure defensive.",
+          "volumeSupport": "dry",
+          "reason": "Early repair / stop bleeding trigger; RS vs VNINDEX -4.6%; volume dry"
+        },
+        "executionRisk": {
+          "status": "unavailable",
+          "liquidityLabel": "trap_risk",
+          "avgValue20": 385244437828,
+          "tradedValue": 183721380000,
+          "stopDistancePct": null,
+          "stopDistanceAtr": null,
+          "riskReward1": null,
+          "riskReward2": null,
+          "pilotShares": 0,
+          "fullShares": 0,
+          "pilotNotional": 0,
+          "fullNotional": 0,
+          "reason": "No valid active buy plan with entry and stop exists yet."
+        },
+        "delta": "price +0.2%",
         "historyMini": [
-          {
-            "timestamp": "2026-03-25T12:56:29.030Z",
-            "price": 24900,
-            "signal": "STRONG_SELL",
-            "confidence": 6,
-            "observedPct": 0.57
-          },
-          {
-            "timestamp": "2026-03-26T02:33:25.742Z",
-            "price": 24700,
-            "signal": "STRONG_SELL",
-            "confidence": 6,
-            "observedPct": 0.51
-          },
           {
             "timestamp": "2026-03-26T02:39:07.015Z",
             "price": 24600,
@@ -3013,6 +3173,20 @@
             "signal": "STRONG_SELL",
             "confidence": 6,
             "observedPct": 0.54
+          },
+          {
+            "timestamp": "2026-03-26T06:47:21.648Z",
+            "price": 24550,
+            "signal": "STRONG_SELL",
+            "confidence": 6,
+            "observedPct": 0.54
+          },
+          {
+            "timestamp": "2026-03-26T06:57:58.122Z",
+            "price": 24600,
+            "signal": "STRONG_SELL",
+            "confidence": 6,
+            "observedPct": 0.54
           }
         ]
       },
@@ -3020,31 +3194,32 @@
         "ticker": "TCB",
         "name": "Techcombank",
         "sector": "BANK",
-        "scanTime": "2026-03-26T06:41:13.057Z",
-        "price": 30250,
+        "scanTime": "2026-03-26T06:57:57.325Z",
+        "scanRunId": "watchlist-mn74esaa-njk7qw",
+        "price": 30350,
         "open": 30700,
         "high": 30700,
         "low": 30150,
-        "sessionChangePct": -1.47,
-        "prevCloseChangePct": 1.79,
-        "changePct": -1.47,
+        "sessionChangePct": -1.14,
+        "prevCloseChangePct": 1.46,
+        "changePct": -1.14,
         "priceDate": "2026-03-26",
-        "volume": 5232800,
-        "avgVol20": 14481093,
-        "volRatio": 0.36,
-        "tradedValue": 158867808000,
-        "avgValue20": 450466184298,
-        "sma20": 31090,
-        "sma50": 33830,
-        "sma200": 34003,
-        "rsi14": 43.5,
-        "macd": -1200,
+        "volume": 5720700,
+        "avgVol20": 14505488,
+        "volRatio": 0.39,
+        "tradedValue": 173623245000,
+        "avgValue20": 451203956148,
+        "sma20": 31095,
+        "sma50": 33832,
+        "sma200": 34004,
+        "rsi14": 44,
+        "macd": -1192,
         "atr14": 939,
         "pe": 9.8,
         "pb": 1.4,
         "eps": 3576,
         "roe": 15.4,
-        "marketCap": 214358772523500,
+        "marketCap": 215067396564900,
         "foreignNet5d": null,
         "canslim": {
           "C": 4,
@@ -3092,8 +3267,8 @@
             "support": 28900,
             "resistance": 36450,
             "midpoint": 32675,
-            "rangeWidthPct": 24.96,
-            "pricePositionPct": 17.9,
+            "rangeWidthPct": 24.88,
+            "pricePositionPct": 19.2,
             "atr": 939
           },
           "events": {
@@ -3125,19 +3300,19 @@
               "active": false,
               "name": "backup",
               "date": "2026-03-26",
-              "price": 30250,
+              "price": 30350,
               "support": 28900,
               "resistance": 36450,
-              "volumeRatio": 0.36
+              "volumeRatio": 0.39
             },
             "lpsy": {
               "active": false,
               "name": "LPSY",
               "date": "2026-03-26",
-              "price": 30250,
+              "price": 30350,
               "support": 28900,
               "resistance": 36450,
-              "volumeRatio": 0.36
+              "volumeRatio": 0.39
             }
           },
           "tests": {
@@ -3331,12 +3506,12 @@
             {
               "step": 1,
               "title": "Trend Context",
-              "detail": "40-session backdrop is downtrend; price is -10.6% vs SMA50 with 1M return -17.0%."
+              "detail": "40-session backdrop is downtrend; price is -10.3% vs SMA50 with 1M return -16.7%."
             },
             {
               "step": 2,
               "title": "Trading Range Map",
-              "detail": "30-session support/resistance sit near 28.900 / 36.450; range width is 25.0% and the close sits at 18% of that box (lower third)."
+              "detail": "30-session support/resistance sit near 28.900 / 36.450; range width is 24.9% and the close sits at 19% of that box (lower third)."
             },
             {
               "step": 3,
@@ -3357,10 +3532,10 @@
           "context": {
             "trendBias": "downtrend",
             "volumeDry": true,
-            "priceVsSma50Pct": -10.58,
-            "ret20": -0.1701,
-            "ret40": -0.1597,
-            "distanceFromSma20Atr": -0.89,
+            "priceVsSma50Pct": -10.29,
+            "ret20": -0.1674,
+            "ret40": -0.1569,
+            "distanceFromSma20Atr": -0.79,
             "rangeLocation": "lower third"
           },
           "notes": [
@@ -3369,14 +3544,14 @@
           ]
         },
         "relative": {
-          "ret1d": -0.0179,
-          "ret1w": 0.0067,
-          "ret1m": -0.1597,
-          "ret3m": -0.1116,
-          "vsVNINDEX3m": -0.0445,
-          "vsVN303m": -0.0094,
-          "priceVsSma20Pct": -2.7,
-          "priceVsSma50Pct": -10.58
+          "ret1d": -0.0146,
+          "ret1w": 0.01,
+          "ret1m": -0.1569,
+          "ret3m": -0.1087,
+          "vsVNINDEX3m": -0.0458,
+          "vsVN303m": -0.0101,
+          "priceVsSma20Pct": -2.4,
+          "priceVsSma50Pct": -10.29
         },
         "market": {
           "session": "open_pm",
@@ -3393,16 +3568,16 @@
           },
           "indexes": {
             "VNINDEX": {
-              "price": 1637.12,
+              "price": 1644.51,
               "open": 1661.53,
               "prevClose": 1658.19,
-              "sessionChangePct": -1.47,
-              "prevCloseChangePct": -1.27,
-              "changePct": -1.47,
-              "ret1m": -0.1203,
-              "ret3m": -0.0671,
-              "sma20": 1718.17,
-              "sma50": 1791.24,
+              "sessionChangePct": -1.02,
+              "prevCloseChangePct": -0.82,
+              "changePct": -1.02,
+              "ret1m": -0.1163,
+              "ret3m": -0.0629,
+              "sma20": 1718.54,
+              "sma50": 1791.39,
               "regime": "bearish",
               "regimeScore": 0.25,
               "trendScore": 0.25,
@@ -3427,16 +3602,16 @@
               "date": "2026-03-26"
             },
             "VN30": {
-              "price": 1787.14,
+              "price": 1794.38,
               "open": 1813.98,
               "prevClose": 1814.73,
-              "sessionChangePct": -1.48,
-              "prevCloseChangePct": -1.52,
-              "changePct": -1.48,
-              "ret1m": -0.1281,
-              "ret3m": -0.1022,
-              "sma20": 1870.85,
-              "sma50": 1968.29,
+              "sessionChangePct": -1.08,
+              "prevCloseChangePct": -1.12,
+              "changePct": -1.08,
+              "ret1m": -0.1245,
+              "ret3m": -0.0986,
+              "sma20": 1871.22,
+              "sma50": 1968.44,
               "regime": "bearish",
               "regimeScore": 0.25,
               "trendScore": 0.25,
@@ -3518,12 +3693,12 @@
             "rawScore": 18
           },
           "driversPositive": [
-            "RSI 43.5 in healthy range"
+            "RSI 44 in healthy range"
           ],
           "driversNegative": [
-            "RS vs VNINDEX 3M -4.5%",
-            "Price -10.6% vs SMA50",
-            "Volume only 0.36x avg20",
+            "RS vs VNINDEX 3M -4.6%",
+            "Price -10.3% vs SMA50",
+            "Volume only 0.39x avg20",
             "Market regime bearish",
             "CAN SLIM strength Weak (30/100)"
           ],
@@ -3620,7 +3795,7 @@
             },
             "N": {
               "metric": "nearHighPct",
-              "rawValue": 0.792,
+              "rawValue": 0.795,
               "thresholds": [
                 0.7,
                 0.8,
@@ -3632,7 +3807,7 @@
               "legacyScore": 4,
               "factorLabel": "New highs",
               "metricLabel": "Price vs 52W high",
-              "displayValue": "79.2% of 52W high",
+              "displayValue": "79.5% of 52W high",
               "bandLabel": "70.0% to 80.0%",
               "bands": [
                 {
@@ -3661,11 +3836,11 @@
                   "active": false
                 }
               ],
-              "reason": "Price vs 52W high is 79.2% of 52W high, between 70.0% and 80.0%, so N scores 4/10."
+              "reason": "Price vs 52W high is 79.5% of 52W high, between 70.0% and 80.0%, so N scores 4/10."
             },
             "S": {
               "metric": "volScore",
-              "rawValue": 0.36,
+              "rawValue": 0.39,
               "thresholds": [
                 0.4,
                 0.7,
@@ -3677,7 +3852,7 @@
               "legacyScore": 2,
               "factorLabel": "Supply / demand",
               "metricLabel": "Volume vs avg20",
-              "displayValue": "0.36x",
+              "displayValue": "0.39x",
               "bandLabel": "< 0.40x",
               "bands": [
                 {
@@ -3706,11 +3881,11 @@
                   "active": false
                 }
               ],
-              "reason": "Volume vs avg20 is 0.36x, below 0.40x, so S scores 2/10."
+              "reason": "Volume vs avg20 is 0.39x, below 0.40x, so S scores 2/10."
             },
             "L": {
               "metric": "rs3m",
-              "rawValue": -0.0269,
+              "rawValue": -0.028,
               "thresholds": [
                 -0.05,
                 0,
@@ -3722,7 +3897,7 @@
               "legacyScore": 4,
               "factorLabel": "Leader / laggard",
               "metricLabel": "3M relative strength",
-              "displayValue": "-2.7%",
+              "displayValue": "-2.8%",
               "bandLabel": "-5.0% to 0.0%",
               "bands": [
                 {
@@ -3751,7 +3926,7 @@
                   "active": false
                 }
               ],
-              "reason": "3M relative strength is -2.7%, between -5.0% and 0.0%, so L scores 4/10."
+              "reason": "3M relative strength is -2.8%, between -5.0% and 0.0%, so L scores 4/10."
             },
             "I": {
               "metric": "institutionScore",
@@ -3881,12 +4056,12 @@
             {
               "step": 1,
               "title": "Trend Context",
-              "detail": "40-session backdrop is downtrend; price is -10.6% vs SMA50 with 1M return -17.0%."
+              "detail": "40-session backdrop is downtrend; price is -10.3% vs SMA50 with 1M return -16.7%."
             },
             {
               "step": 2,
               "title": "Trading Range Map",
-              "detail": "30-session support/resistance sit near 28.900 / 36.450; range width is 25.0% and the close sits at 18% of that box (lower third)."
+              "detail": "30-session support/resistance sit near 28.900 / 36.450; range width is 24.9% and the close sits at 19% of that box (lower third)."
             },
             {
               "step": 3,
@@ -3911,22 +4086,32 @@
         "signal": "STRONG_SELL",
         "confidence": 6,
         "rawScore": 18,
-        "delta": "price -0.3%",
+        "breakout": {
+          "state": "not_ready",
+          "score": 4,
+          "triggerPrice": 31920,
+          "distancePct": -4.92,
+          "invalidation": "A clean move below 28.756 keeps the structure defensive.",
+          "volumeSupport": "dry",
+          "reason": "Early repair / stop bleeding trigger; RS vs VNINDEX -4.6%; volume dry"
+        },
+        "executionRisk": {
+          "status": "unavailable",
+          "liquidityLabel": "trap_risk",
+          "avgValue20": 451203956148,
+          "tradedValue": 173623245000,
+          "stopDistancePct": null,
+          "stopDistanceAtr": null,
+          "riskReward1": null,
+          "riskReward2": null,
+          "pilotShares": 0,
+          "fullShares": 0,
+          "pilotNotional": 0,
+          "fullNotional": 0,
+          "reason": "No valid active buy plan with entry and stop exists yet."
+        },
+        "delta": "price +0.5%",
         "historyMini": [
-          {
-            "timestamp": "2026-03-25T12:56:28.781Z",
-            "price": 30800,
-            "signal": "STRONG_SELL",
-            "confidence": 6,
-            "observedPct": 0.54
-          },
-          {
-            "timestamp": "2026-03-26T02:33:25.143Z",
-            "price": 30350,
-            "signal": "STRONG_SELL",
-            "confidence": 6,
-            "observedPct": 0.49
-          },
           {
             "timestamp": "2026-03-26T02:39:05.838Z",
             "price": 30300,
@@ -3947,6 +4132,20 @@
             "signal": "STRONG_SELL",
             "confidence": 6,
             "observedPct": 0.49
+          },
+          {
+            "timestamp": "2026-03-26T06:47:21.364Z",
+            "price": 30200,
+            "signal": "STRONG_SELL",
+            "confidence": 6,
+            "observedPct": 0.49
+          },
+          {
+            "timestamp": "2026-03-26T06:57:57.325Z",
+            "price": 30350,
+            "signal": "STRONG_SELL",
+            "confidence": 6,
+            "observedPct": 0.49
           }
         ]
       },
@@ -3954,31 +4153,32 @@
         "ticker": "FPT",
         "name": "FPT Corp",
         "sector": "TECH",
-        "scanTime": "2026-03-26T06:41:12.450Z",
-        "price": 74300,
+        "scanTime": "2026-03-26T06:57:56.700Z",
+        "scanRunId": "watchlist-mn74esaa-njk7qw",
+        "price": 74400,
         "open": 77000,
         "high": 77000,
         "low": 74200,
-        "sessionChangePct": -3.51,
-        "prevCloseChangePct": 3.51,
-        "changePct": -3.51,
+        "sessionChangePct": -3.38,
+        "prevCloseChangePct": 3.38,
+        "changePct": -3.38,
         "priceDate": "2026-03-26",
-        "volume": 6943300,
-        "avgVol20": 13873819,
-        "volRatio": 0.5,
-        "tradedValue": 521511263000,
-        "avgValue20": 1123103634730,
-        "sma20": 79915,
-        "sma50": 91932,
-        "sma200": 92389,
-        "rsi14": 37.2,
-        "macd": -4853,
+        "volume": 7746500,
+        "avgVol20": 13913979,
+        "volRatio": 0.56,
+        "tradedValue": 581219895000,
+        "avgValue20": 1126089066330,
+        "sma20": 79920,
+        "sma50": 91934,
+        "sma200": 92391,
+        "rsi14": 37.3,
+        "macd": -4845,
         "atr14": 2957,
         "pe": 15.9,
         "pb": 3.7,
         "eps": 6021,
         "roe": 23.6,
-        "marketCap": 126570579090300,
+        "marketCap": 126740929802400,
         "foreignNet5d": null,
         "canslim": {
           "C": 6,
@@ -4026,8 +4226,8 @@
             "support": 71600,
             "resistance": 100000,
             "midpoint": 85800,
-            "rangeWidthPct": 38.22,
-            "pricePositionPct": 9.5,
+            "rangeWidthPct": 38.17,
+            "pricePositionPct": 9.9,
             "atr": 2957
           },
           "events": {
@@ -4068,19 +4268,19 @@
               "active": false,
               "name": "backup",
               "date": "2026-03-26",
-              "price": 74300,
+              "price": 74400,
               "support": 71600,
               "resistance": 100000,
-              "volumeRatio": 0.5
+              "volumeRatio": 0.56
             },
             "lpsy": {
               "active": true,
               "name": "LPSY",
               "date": "2026-03-26",
-              "price": 74300,
+              "price": 74400,
               "support": 75900,
               "resistance": 100000,
-              "volumeRatio": 0.5
+              "volumeRatio": 0.56
             }
           },
           "tests": {
@@ -4274,7 +4474,7 @@
             {
               "step": 1,
               "title": "Trend Context",
-              "detail": "40-session backdrop is downtrend; price is -19.2% vs SMA50 with 1M return -17.9%."
+              "detail": "40-session backdrop is downtrend; price is -19.1% vs SMA50 with 1M return -17.8%."
             },
             {
               "step": 2,
@@ -4284,7 +4484,7 @@
             {
               "step": 3,
               "title": "Supply / Demand Event",
-              "detail": "Recent structural signals: SOW on 2026-03-20 (1.43x vol), LPSY on 2026-03-26 (0.5x vol)."
+              "detail": "Recent structural signals: SOW on 2026-03-20 (1.43x vol), LPSY on 2026-03-26 (0.56x vol)."
             },
             {
               "step": 4,
@@ -4300,10 +4500,10 @@
           "context": {
             "trendBias": "downtrend",
             "volumeDry": true,
-            "priceVsSma50Pct": -19.18,
-            "ret20": -0.179,
-            "ret40": -0.2821,
-            "distanceFromSma20Atr": -1.9,
+            "priceVsSma50Pct": -19.07,
+            "ret20": -0.1779,
+            "ret40": -0.2812,
+            "distanceFromSma20Atr": -1.87,
             "rangeLocation": "lower third"
           },
           "notes": [
@@ -4312,14 +4512,14 @@
           ]
         },
         "relative": {
-          "ret1d": -0.0351,
-          "ret1w": -0.0326,
-          "ret1m": -0.1661,
-          "ret3m": -0.2121,
-          "vsVNINDEX3m": -0.145,
-          "vsVN303m": -0.1099,
-          "priceVsSma20Pct": -7.03,
-          "priceVsSma50Pct": -19.18
+          "ret1d": -0.0338,
+          "ret1w": -0.0313,
+          "ret1m": -0.165,
+          "ret3m": -0.211,
+          "vsVNINDEX3m": -0.1481,
+          "vsVN303m": -0.1124,
+          "priceVsSma20Pct": -6.91,
+          "priceVsSma50Pct": -19.07
         },
         "market": {
           "session": "open_pm",
@@ -4336,16 +4536,16 @@
           },
           "indexes": {
             "VNINDEX": {
-              "price": 1637.12,
+              "price": 1644.51,
               "open": 1661.53,
               "prevClose": 1658.19,
-              "sessionChangePct": -1.47,
-              "prevCloseChangePct": -1.27,
-              "changePct": -1.47,
-              "ret1m": -0.1203,
-              "ret3m": -0.0671,
-              "sma20": 1718.17,
-              "sma50": 1791.24,
+              "sessionChangePct": -1.02,
+              "prevCloseChangePct": -0.82,
+              "changePct": -1.02,
+              "ret1m": -0.1163,
+              "ret3m": -0.0629,
+              "sma20": 1718.54,
+              "sma50": 1791.39,
               "regime": "bearish",
               "regimeScore": 0.25,
               "trendScore": 0.25,
@@ -4370,16 +4570,16 @@
               "date": "2026-03-26"
             },
             "VN30": {
-              "price": 1787.14,
+              "price": 1794.38,
               "open": 1813.98,
               "prevClose": 1814.73,
-              "sessionChangePct": -1.48,
-              "prevCloseChangePct": -1.52,
-              "changePct": -1.48,
-              "ret1m": -0.1281,
-              "ret3m": -0.1022,
-              "sma20": 1870.85,
-              "sma50": 1968.29,
+              "sessionChangePct": -1.08,
+              "prevCloseChangePct": -1.12,
+              "changePct": -1.08,
+              "ret1m": -0.1245,
+              "ret3m": -0.0986,
+              "sma20": 1871.22,
+              "sma50": 1968.44,
               "regime": "bearish",
               "regimeScore": 0.25,
               "trendScore": 0.25,
@@ -4462,9 +4662,9 @@
           },
           "driversPositive": [],
           "driversNegative": [
-            "RS vs VNINDEX 3M -14.5%",
-            "Price -19.2% vs SMA50",
-            "Volume only 0.5x avg20",
+            "RS vs VNINDEX 3M -14.8%",
+            "Price -19.1% vs SMA50",
+            "Volume only 0.56x avg20",
             "Market regime bearish",
             "CAN SLIM strength Weak (10/100)"
           ],
@@ -4606,7 +4806,7 @@
             },
             "S": {
               "metric": "volScore",
-              "rawValue": 0.5,
+              "rawValue": 0.56,
               "thresholds": [
                 0.4,
                 0.7,
@@ -4618,7 +4818,7 @@
               "legacyScore": 4,
               "factorLabel": "Supply / demand",
               "metricLabel": "Volume vs avg20",
-              "displayValue": "0.50x",
+              "displayValue": "0.56x",
               "bandLabel": "0.40x to 0.70x",
               "bands": [
                 {
@@ -4647,11 +4847,11 @@
                   "active": false
                 }
               ],
-              "reason": "Volume vs avg20 is 0.50x, between 0.40x and 0.70x, so S scores 4/10."
+              "reason": "Volume vs avg20 is 0.56x, between 0.40x and 0.70x, so S scores 4/10."
             },
             "L": {
               "metric": "rs3m",
-              "rawValue": -0.1274,
+              "rawValue": -0.1303,
               "thresholds": [
                 -0.05,
                 0,
@@ -4663,7 +4863,7 @@
               "legacyScore": 2,
               "factorLabel": "Leader / laggard",
               "metricLabel": "3M relative strength",
-              "displayValue": "-12.7%",
+              "displayValue": "-13.0%",
               "bandLabel": "< -5.0%",
               "bands": [
                 {
@@ -4692,7 +4892,7 @@
                   "active": false
                 }
               ],
-              "reason": "3M relative strength is -12.7%, below -5.0%, so L scores 2/10."
+              "reason": "3M relative strength is -13.0%, below -5.0%, so L scores 2/10."
             },
             "I": {
               "metric": "institutionScore",
@@ -4822,7 +5022,7 @@
             {
               "step": 1,
               "title": "Trend Context",
-              "detail": "40-session backdrop is downtrend; price is -19.2% vs SMA50 with 1M return -17.9%."
+              "detail": "40-session backdrop is downtrend; price is -19.1% vs SMA50 with 1M return -17.8%."
             },
             {
               "step": 2,
@@ -4832,7 +5032,7 @@
             {
               "step": 3,
               "title": "Supply / Demand Event",
-              "detail": "Recent structural signals: SOW on 2026-03-20 (1.43x vol), LPSY on 2026-03-26 (0.5x vol)."
+              "detail": "Recent structural signals: SOW on 2026-03-20 (1.43x vol), LPSY on 2026-03-26 (0.56x vol)."
             },
             {
               "step": 4,
@@ -4852,22 +5052,32 @@
         "signal": "STRONG_SELL",
         "confidence": 8,
         "rawScore": 10,
-        "delta": "price -0.3%",
+        "breakout": {
+          "state": "not_ready",
+          "score": 0,
+          "triggerPrice": 82960,
+          "distancePct": -10.32,
+          "invalidation": "A clean move below 71.242 keeps the structure defensive.",
+          "volumeSupport": "dry",
+          "reason": "Early repair / stop bleeding trigger; RS vs VNINDEX -14.8%; volume dry"
+        },
+        "executionRisk": {
+          "status": "unavailable",
+          "liquidityLabel": "trap_risk",
+          "avgValue20": 1126089066330,
+          "tradedValue": 581219895000,
+          "stopDistancePct": null,
+          "stopDistanceAtr": null,
+          "riskReward1": null,
+          "riskReward2": null,
+          "pilotShares": 0,
+          "fullShares": 0,
+          "pilotNotional": 0,
+          "fullNotional": 0,
+          "reason": "No valid active buy plan with entry and stop exists yet."
+        },
+        "delta": "no change",
         "historyMini": [
-          {
-            "timestamp": "2026-03-25T12:56:28.385Z",
-            "price": 77000,
-            "signal": "STRONG_SELL",
-            "confidence": 7,
-            "observedPct": 0.46
-          },
-          {
-            "timestamp": "2026-03-26T02:33:24.518Z",
-            "price": 75400,
-            "signal": "STRONG_SELL",
-            "confidence": 8,
-            "observedPct": 0.4
-          },
           {
             "timestamp": "2026-03-26T02:39:02.518Z",
             "price": 75500,
@@ -4888,12 +5098,26 @@
             "signal": "STRONG_SELL",
             "confidence": 8,
             "observedPct": 0.43
+          },
+          {
+            "timestamp": "2026-03-26T06:47:20.968Z",
+            "price": 74400,
+            "signal": "STRONG_SELL",
+            "confidence": 8,
+            "observedPct": 0.43
+          },
+          {
+            "timestamp": "2026-03-26T06:57:56.700Z",
+            "price": 74400,
+            "signal": "STRONG_SELL",
+            "confidence": 8,
+            "observedPct": 0.43
           }
         ]
       }
     ],
     "alerts": {
-      "generated": "2026-03-26T06:41:14.308Z",
+      "generated": "2026-03-26T06:57:59.362Z",
       "scanMode": "watchlist",
       "universeCount": 5,
       "requestedCount": 5,
@@ -4988,7 +5212,7 @@
                 "Markdown Phase E - Active Downtrend",
                 "Signal STRONG_SELL",
                 "Active SOW",
-                "Relative vs VNINDEX 3M -14.5%"
+                "Relative vs VNINDEX 3M -14.8%"
               ],
               "next": [
                 "Do not open new longs while the structure is damaged.",
@@ -5037,19 +5261,19 @@
                     "active": false,
                     "name": "backup",
                     "date": "2026-03-26",
-                    "price": 74300,
+                    "price": 74400,
                     "support": 71600,
                     "resistance": 100000,
-                    "volumeRatio": 0.5
+                    "volumeRatio": 0.56
                   },
                   "lpsy": {
                     "active": true,
                     "name": "LPSY",
                     "date": "2026-03-26",
-                    "price": 74300,
+                    "price": 74400,
                     "support": 75900,
                     "resistance": 100000,
-                    "volumeRatio": 0.5
+                    "volumeRatio": 0.56
                   }
                 }
               },
@@ -5069,7 +5293,7 @@
                 "Markdown Phase E - Active Downtrend",
                 "Signal STRONG_SELL",
                 "Active SOW",
-                "Relative vs VNINDEX 3M -4.1%"
+                "Relative vs VNINDEX 3M -4.3%"
               ],
               "next": [
                 "Do not open new longs while the structure is damaged.",
@@ -5118,19 +5342,19 @@
                     "active": false,
                     "name": "backup",
                     "date": "2026-03-26",
-                    "price": 77700,
+                    "price": 77900,
                     "support": 74200,
                     "resistance": 94300,
-                    "volumeRatio": 0.47
+                    "volumeRatio": 0.53
                   },
                   "lpsy": {
-                    "active": true,
+                    "active": false,
                     "name": "LPSY",
                     "date": "2026-03-26",
-                    "price": 77700,
+                    "price": 77900,
                     "support": 77000,
                     "resistance": 94300,
-                    "volumeRatio": 0.47
+                    "volumeRatio": 0.53
                   }
                 }
               },
@@ -5149,7 +5373,7 @@
               "reasons": [
                 "Markdown Phase E - Active Downtrend",
                 "Signal STRONG_SELL",
-                "Relative vs VNINDEX 3M -4.5%"
+                "Relative vs VNINDEX 3M -4.6%"
               ],
               "next": [
                 "Do not open new longs while the structure is damaged.",
@@ -5189,19 +5413,19 @@
                     "active": false,
                     "name": "backup",
                     "date": "2026-03-26",
-                    "price": 24500,
+                    "price": 24600,
                     "support": 23800,
                     "resistance": 28850,
-                    "volumeRatio": 0.47
+                    "volumeRatio": 0.49
                   },
                   "lpsy": {
                     "active": false,
                     "name": "LPSY",
                     "date": "2026-03-26",
-                    "price": 24500,
+                    "price": 24600,
                     "support": 23800,
                     "resistance": 28850,
-                    "volumeRatio": 0.47
+                    "volumeRatio": 0.49
                   }
                 }
               },
@@ -5220,7 +5444,7 @@
               "reasons": [
                 "Markdown Phase E - Active Downtrend",
                 "Signal STRONG_SELL",
-                "Relative vs VNINDEX 3M -4.5%"
+                "Relative vs VNINDEX 3M -4.6%"
               ],
               "next": [
                 "Do not open new longs while the structure is damaged.",
@@ -5260,19 +5484,19 @@
                     "active": false,
                     "name": "backup",
                     "date": "2026-03-26",
-                    "price": 30250,
+                    "price": 30350,
                     "support": 28900,
                     "resistance": 36450,
-                    "volumeRatio": 0.36
+                    "volumeRatio": 0.39
                   },
                   "lpsy": {
                     "active": false,
                     "name": "LPSY",
                     "date": "2026-03-26",
-                    "price": 30250,
+                    "price": 30350,
                     "support": 28900,
                     "resistance": 36450,
-                    "volumeRatio": 0.36
+                    "volumeRatio": 0.39
                   }
                 }
               },
@@ -5457,7 +5681,7 @@
               "ticker": "MWG",
               "name": "Thế Giới Di Động",
               "title": "MWG near-trigger watch",
-              "summary": "Early repair / stop bleeding trigger @ 82.765 | Full demand confirmation @ 94.771",
+              "summary": "Early repair / stop bleeding trigger @ 82.775 | Full demand confirmation @ 94.771",
               "reasons": [
                 "Do not buy into active markdown. Wait for stopping action or a spring first.",
                 "Invalidation: A clean move below 73.829 keeps the structure defensive."
@@ -5470,8 +5694,8 @@
                 "watch": [
                   {
                     "label": "Early repair / stop bleeding trigger",
-                    "price": 82765,
-                    "why": "A reclaim of 82.765 would only improve the tape from damaged to repair mode. It is not the same as a confirmed buy yet."
+                    "price": 82775,
+                    "why": "A reclaim of 82.775 would only improve the tape from damaged to repair mode. It is not the same as a confirmed buy yet."
                   },
                   {
                     "label": "Full demand confirmation",
@@ -5486,8 +5710,8 @@
                   "watch": [
                     {
                       "label": "Early repair / stop bleeding trigger",
-                      "price": 82765,
-                      "why": "A reclaim of 82.765 would only improve the tape from damaged to repair mode. It is not the same as a confirmed buy yet."
+                      "price": 82775,
+                      "why": "A reclaim of 82.775 would only improve the tape from damaged to repair mode. It is not the same as a confirmed buy yet."
                     },
                     {
                       "label": "Full demand confirmation",
@@ -5573,11 +5797,11 @@
               "ticker": "CTG",
               "name": "VietinBank",
               "title": "CTG strength leader #1",
-              "summary": "Watch 41/100 vs VNINDEX 3M +1.9%.",
+              "summary": "Watch 41/100 vs VNINDEX 3M +1.8%.",
               "reasons": [
                 "Strength Watch",
                 "Rank #1",
-                "Price vs SMA50 -10.1%"
+                "Price vs SMA50 -9.8%"
               ],
               "next": [
                 "Keep it on the front page even if the setup is not buy-ready yet.",
@@ -5593,14 +5817,14 @@
                   "percentile": 100
                 },
                 "relative": {
-                  "ret1d": -0.0132,
-                  "ret1w": -0.0303,
-                  "ret1m": -0.1273,
-                  "ret3m": -0.0482,
-                  "vsVNINDEX3m": 0.0189,
-                  "vsVN303m": 0.054,
-                  "priceVsSma20Pct": -3.5,
-                  "priceVsSma50Pct": -10.11
+                  "ret1d": -0.0103,
+                  "ret1w": -0.0274,
+                  "ret1m": -0.1247,
+                  "ret3m": -0.0453,
+                  "vsVNINDEX3m": 0.0176,
+                  "vsVN303m": 0.0533,
+                  "priceVsSma20Pct": -3.23,
+                  "priceVsSma50Pct": -9.84
                 },
                 "signal": "HOLD"
               },
@@ -5615,11 +5839,11 @@
               "ticker": "HDB",
               "name": "HDBank",
               "title": "HDB strength leader #3",
-              "summary": "Weak 34/100 vs VNINDEX 3M -4.5%.",
+              "summary": "Weak 34/100 vs VNINDEX 3M -4.6%.",
               "reasons": [
                 "Strength Weak",
                 "Rank #3",
-                "Price vs SMA50 -9.7%"
+                "Price vs SMA50 -9.4%"
               ],
               "next": [
                 "Keep it on the front page even if the setup is not buy-ready yet.",
@@ -5635,14 +5859,14 @@
                   "percentile": 50
                 },
                 "relative": {
-                  "ret1d": -0.0161,
-                  "ret1w": -0.0448,
-                  "ret1m": -0.1388,
-                  "ret3m": -0.1123,
-                  "vsVNINDEX3m": -0.0452,
+                  "ret1d": -0.012,
+                  "ret1w": -0.0409,
+                  "ret1m": -0.1353,
+                  "ret3m": -0.1087,
+                  "vsVNINDEX3m": -0.0458,
                   "vsVN303m": -0.0101,
-                  "priceVsSma20Pct": -4.21,
-                  "priceVsSma50Pct": -9.74
+                  "priceVsSma20Pct": -3.84,
+                  "priceVsSma50Pct": -9.38
                 },
                 "signal": "STRONG_SELL"
               },
@@ -5657,11 +5881,11 @@
               "ticker": "MWG",
               "name": "Thế Giới Di Động",
               "title": "MWG strength leader #2",
-              "summary": "Weak 36/100 vs VNINDEX 3M -4.1%.",
+              "summary": "Weak 36/100 vs VNINDEX 3M -4.3%.",
               "reasons": [
                 "Strength Weak",
                 "Rank #2",
-                "Price vs SMA50 -10.1%"
+                "Price vs SMA50 -9.9%"
               ],
               "next": [
                 "Keep it on the front page even if the setup is not buy-ready yet.",
@@ -5677,14 +5901,14 @@
                   "percentile": 75
                 },
                 "relative": {
-                  "ret1d": -0.0189,
-                  "ret1w": -0.057,
-                  "ret1m": -0.1645,
-                  "ret3m": -0.1079,
-                  "vsVNINDEX3m": -0.0408,
-                  "vsVN303m": -0.0057,
-                  "priceVsSma20Pct": -6.12,
-                  "priceVsSma50Pct": -10.13
+                  "ret1d": -0.0164,
+                  "ret1w": -0.0546,
+                  "ret1m": -0.1624,
+                  "ret3m": -0.1056,
+                  "vsVNINDEX3m": -0.0427,
+                  "vsVN303m": -0.007,
+                  "priceVsSma20Pct": -5.89,
+                  "priceVsSma50Pct": -9.9
                 },
                 "signal": "STRONG_SELL"
               },
@@ -5744,7 +5968,7 @@
             "Markdown Phase E - Active Downtrend",
             "Signal STRONG_SELL",
             "Active SOW",
-            "Relative vs VNINDEX 3M -14.5%"
+            "Relative vs VNINDEX 3M -14.8%"
           ],
           "next": [
             "Do not open new longs while the structure is damaged.",
@@ -5793,19 +6017,19 @@
                 "active": false,
                 "name": "backup",
                 "date": "2026-03-26",
-                "price": 74300,
+                "price": 74400,
                 "support": 71600,
                 "resistance": 100000,
-                "volumeRatio": 0.5
+                "volumeRatio": 0.56
               },
               "lpsy": {
                 "active": true,
                 "name": "LPSY",
                 "date": "2026-03-26",
-                "price": 74300,
+                "price": 74400,
                 "support": 75900,
                 "resistance": 100000,
-                "volumeRatio": 0.5
+                "volumeRatio": 0.56
               }
             }
           },
@@ -5825,7 +6049,7 @@
             "Markdown Phase E - Active Downtrend",
             "Signal STRONG_SELL",
             "Active SOW",
-            "Relative vs VNINDEX 3M -4.1%"
+            "Relative vs VNINDEX 3M -4.3%"
           ],
           "next": [
             "Do not open new longs while the structure is damaged.",
@@ -5874,19 +6098,19 @@
                 "active": false,
                 "name": "backup",
                 "date": "2026-03-26",
-                "price": 77700,
+                "price": 77900,
                 "support": 74200,
                 "resistance": 94300,
-                "volumeRatio": 0.47
+                "volumeRatio": 0.53
               },
               "lpsy": {
-                "active": true,
+                "active": false,
                 "name": "LPSY",
                 "date": "2026-03-26",
-                "price": 77700,
+                "price": 77900,
                 "support": 77000,
                 "resistance": 94300,
-                "volumeRatio": 0.47
+                "volumeRatio": 0.53
               }
             }
           },
@@ -5905,7 +6129,7 @@
           "reasons": [
             "Markdown Phase E - Active Downtrend",
             "Signal STRONG_SELL",
-            "Relative vs VNINDEX 3M -4.5%"
+            "Relative vs VNINDEX 3M -4.6%"
           ],
           "next": [
             "Do not open new longs while the structure is damaged.",
@@ -5945,19 +6169,19 @@
                 "active": false,
                 "name": "backup",
                 "date": "2026-03-26",
-                "price": 24500,
+                "price": 24600,
                 "support": 23800,
                 "resistance": 28850,
-                "volumeRatio": 0.47
+                "volumeRatio": 0.49
               },
               "lpsy": {
                 "active": false,
                 "name": "LPSY",
                 "date": "2026-03-26",
-                "price": 24500,
+                "price": 24600,
                 "support": 23800,
                 "resistance": 28850,
-                "volumeRatio": 0.47
+                "volumeRatio": 0.49
               }
             }
           },
@@ -5976,7 +6200,7 @@
           "reasons": [
             "Markdown Phase E - Active Downtrend",
             "Signal STRONG_SELL",
-            "Relative vs VNINDEX 3M -4.5%"
+            "Relative vs VNINDEX 3M -4.6%"
           ],
           "next": [
             "Do not open new longs while the structure is damaged.",
@@ -6016,19 +6240,19 @@
                 "active": false,
                 "name": "backup",
                 "date": "2026-03-26",
-                "price": 30250,
+                "price": 30350,
                 "support": 28900,
                 "resistance": 36450,
-                "volumeRatio": 0.36
+                "volumeRatio": 0.39
               },
               "lpsy": {
                 "active": false,
                 "name": "LPSY",
                 "date": "2026-03-26",
-                "price": 30250,
+                "price": 30350,
                 "support": 28900,
                 "resistance": 36450,
-                "volumeRatio": 0.36
+                "volumeRatio": 0.39
               }
             }
           },
@@ -6205,7 +6429,7 @@
           "ticker": "MWG",
           "name": "Thế Giới Di Động",
           "title": "MWG near-trigger watch",
-          "summary": "Early repair / stop bleeding trigger @ 82.765 | Full demand confirmation @ 94.771",
+          "summary": "Early repair / stop bleeding trigger @ 82.775 | Full demand confirmation @ 94.771",
           "reasons": [
             "Do not buy into active markdown. Wait for stopping action or a spring first.",
             "Invalidation: A clean move below 73.829 keeps the structure defensive."
@@ -6218,8 +6442,8 @@
             "watch": [
               {
                 "label": "Early repair / stop bleeding trigger",
-                "price": 82765,
-                "why": "A reclaim of 82.765 would only improve the tape from damaged to repair mode. It is not the same as a confirmed buy yet."
+                "price": 82775,
+                "why": "A reclaim of 82.775 would only improve the tape from damaged to repair mode. It is not the same as a confirmed buy yet."
               },
               {
                 "label": "Full demand confirmation",
@@ -6234,8 +6458,8 @@
               "watch": [
                 {
                   "label": "Early repair / stop bleeding trigger",
-                  "price": 82765,
-                  "why": "A reclaim of 82.765 would only improve the tape from damaged to repair mode. It is not the same as a confirmed buy yet."
+                  "price": 82775,
+                  "why": "A reclaim of 82.775 would only improve the tape from damaged to repair mode. It is not the same as a confirmed buy yet."
                 },
                 {
                   "label": "Full demand confirmation",
@@ -6313,11 +6537,11 @@
           "ticker": "CTG",
           "name": "VietinBank",
           "title": "CTG strength leader #1",
-          "summary": "Watch 41/100 vs VNINDEX 3M +1.9%.",
+          "summary": "Watch 41/100 vs VNINDEX 3M +1.8%.",
           "reasons": [
             "Strength Watch",
             "Rank #1",
-            "Price vs SMA50 -10.1%"
+            "Price vs SMA50 -9.8%"
           ],
           "next": [
             "Keep it on the front page even if the setup is not buy-ready yet.",
@@ -6333,14 +6557,14 @@
               "percentile": 100
             },
             "relative": {
-              "ret1d": -0.0132,
-              "ret1w": -0.0303,
-              "ret1m": -0.1273,
-              "ret3m": -0.0482,
-              "vsVNINDEX3m": 0.0189,
-              "vsVN303m": 0.054,
-              "priceVsSma20Pct": -3.5,
-              "priceVsSma50Pct": -10.11
+              "ret1d": -0.0103,
+              "ret1w": -0.0274,
+              "ret1m": -0.1247,
+              "ret3m": -0.0453,
+              "vsVNINDEX3m": 0.0176,
+              "vsVN303m": 0.0533,
+              "priceVsSma20Pct": -3.23,
+              "priceVsSma50Pct": -9.84
             },
             "signal": "HOLD"
           },
@@ -6355,11 +6579,11 @@
           "ticker": "HDB",
           "name": "HDBank",
           "title": "HDB strength leader #3",
-          "summary": "Weak 34/100 vs VNINDEX 3M -4.5%.",
+          "summary": "Weak 34/100 vs VNINDEX 3M -4.6%.",
           "reasons": [
             "Strength Weak",
             "Rank #3",
-            "Price vs SMA50 -9.7%"
+            "Price vs SMA50 -9.4%"
           ],
           "next": [
             "Keep it on the front page even if the setup is not buy-ready yet.",
@@ -6375,14 +6599,14 @@
               "percentile": 50
             },
             "relative": {
-              "ret1d": -0.0161,
-              "ret1w": -0.0448,
-              "ret1m": -0.1388,
-              "ret3m": -0.1123,
-              "vsVNINDEX3m": -0.0452,
+              "ret1d": -0.012,
+              "ret1w": -0.0409,
+              "ret1m": -0.1353,
+              "ret3m": -0.1087,
+              "vsVNINDEX3m": -0.0458,
               "vsVN303m": -0.0101,
-              "priceVsSma20Pct": -4.21,
-              "priceVsSma50Pct": -9.74
+              "priceVsSma20Pct": -3.84,
+              "priceVsSma50Pct": -9.38
             },
             "signal": "STRONG_SELL"
           },
@@ -6397,11 +6621,11 @@
           "ticker": "MWG",
           "name": "Thế Giới Di Động",
           "title": "MWG strength leader #2",
-          "summary": "Weak 36/100 vs VNINDEX 3M -4.1%.",
+          "summary": "Weak 36/100 vs VNINDEX 3M -4.3%.",
           "reasons": [
             "Strength Weak",
             "Rank #2",
-            "Price vs SMA50 -10.1%"
+            "Price vs SMA50 -9.9%"
           ],
           "next": [
             "Keep it on the front page even if the setup is not buy-ready yet.",
@@ -6417,14 +6641,14 @@
               "percentile": 75
             },
             "relative": {
-              "ret1d": -0.0189,
-              "ret1w": -0.057,
-              "ret1m": -0.1645,
-              "ret3m": -0.1079,
-              "vsVNINDEX3m": -0.0408,
-              "vsVN303m": -0.0057,
-              "priceVsSma20Pct": -6.12,
-              "priceVsSma50Pct": -10.13
+              "ret1d": -0.0164,
+              "ret1w": -0.0546,
+              "ret1m": -0.1624,
+              "ret3m": -0.1056,
+              "vsVNINDEX3m": -0.0427,
+              "vsVN303m": -0.007,
+              "priceVsSma20Pct": -5.89,
+              "priceVsSma50Pct": -9.9
             },
             "signal": "STRONG_SELL"
           },
@@ -6490,8 +6714,8 @@
       }
     },
     "smartLists": {
-      "generated": "2026-03-26T06:41:14.316Z",
-      "snapshotGenerated": "2026-03-26T06:41:14.308Z",
+      "generated": "2026-03-26T06:57:59.372Z",
+      "snapshotGenerated": "2026-03-26T06:57:59.362Z",
       "universeCount": 5,
       "market": {
         "regime": "bearish",
@@ -6549,7 +6773,7 @@
               "ticker": "CTG",
               "name": "VietinBank",
               "sector": "BANK",
-              "price": 33600,
+              "price": 33700,
               "signal": "HOLD",
               "confidence": 4,
               "strength": {
@@ -6565,13 +6789,13 @@
                 "coveragePct": 100
               },
               "relative": {
-                "ret1w": -0.0303,
-                "ret1m": -0.1273,
-                "ret3m": -0.0482,
-                "vsVNINDEX3m": 0.0189,
-                "vsVN303m": 0.054,
-                "priceVsSma20Pct": -3.5,
-                "priceVsSma50Pct": -10.11
+                "ret1w": -0.0274,
+                "ret1m": -0.1247,
+                "ret3m": -0.0453,
+                "vsVNINDEX3m": 0.0176,
+                "vsVN303m": 0.0533,
+                "priceVsSma20Pct": -3.23,
+                "priceVsSma50Pct": -9.84
               },
               "wyckoff": {
                 "phase": "Accumulation",
@@ -6587,17 +6811,17 @@
                 "label": "Early repair trigger",
                 "reason": "A reclaim of 34.840 would be the first sign that sellers are losing control, but it is still not the full breakout."
               },
-              "triggerDistancePct": 3.69,
+              "triggerDistancePct": 3.38,
               "score": 157,
-              "reason": "Watch strength | RS vs index +1.9% | quality 94"
+              "reason": "Watch strength | RS vs index +1.8% | quality 94"
             },
             {
               "ticker": "MWG",
               "name": "Thế Giới Di Động",
               "sector": "RETAIL",
-              "price": 77700,
+              "price": 77900,
               "signal": "STRONG_SELL",
-              "confidence": 9,
+              "confidence": 8,
               "strength": {
                 "score": 36,
                 "label": "Weak",
@@ -6611,37 +6835,37 @@
                 "coveragePct": 100
               },
               "relative": {
-                "ret1w": -0.057,
-                "ret1m": -0.1645,
-                "ret3m": -0.1079,
-                "vsVNINDEX3m": -0.0408,
-                "vsVN303m": -0.0057,
-                "priceVsSma20Pct": -6.12,
-                "priceVsSma50Pct": -10.13
+                "ret1w": -0.0546,
+                "ret1m": -0.1624,
+                "ret3m": -0.1056,
+                "vsVNINDEX3m": -0.0427,
+                "vsVN303m": -0.007,
+                "priceVsSma20Pct": -5.89,
+                "priceVsSma50Pct": -9.9
               },
               "wyckoff": {
                 "phase": "Markdown",
                 "stage": "Phase E",
                 "label": "Markdown Phase E - Active Downtrend",
                 "bias": "avoid",
-                "confidence": 85,
+                "confidence": 77,
                 "entryStatus": "avoid"
               },
               "trigger": {
                 "kind": "watch",
-                "price": 82765,
+                "price": 82775,
                 "label": "Early repair / stop bleeding trigger",
-                "reason": "A reclaim of 82.765 would only improve the tape from damaged to repair mode. It is not the same as a confirmed buy yet."
+                "reason": "A reclaim of 82.775 would only improve the tape from damaged to repair mode. It is not the same as a confirmed buy yet."
               },
-              "triggerDistancePct": 6.52,
+              "triggerDistancePct": 6.26,
               "score": 106.5,
-              "reason": "Weak strength | RS vs index -4.1% | quality 96"
+              "reason": "Weak strength | RS vs index -4.3% | quality 96"
             },
             {
               "ticker": "HDB",
               "name": "HDBank",
               "sector": "BANK",
-              "price": 24500,
+              "price": 24600,
               "signal": "STRONG_SELL",
               "confidence": 6,
               "strength": {
@@ -6657,13 +6881,13 @@
                 "coveragePct": 100
               },
               "relative": {
-                "ret1w": -0.0448,
-                "ret1m": -0.1388,
-                "ret3m": -0.1123,
-                "vsVNINDEX3m": -0.0452,
+                "ret1w": -0.0409,
+                "ret1m": -0.1353,
+                "ret3m": -0.1087,
+                "vsVNINDEX3m": -0.0458,
                 "vsVN303m": -0.0101,
-                "priceVsSma20Pct": -4.21,
-                "priceVsSma50Pct": -9.74
+                "priceVsSma20Pct": -3.84,
+                "priceVsSma50Pct": -9.38
               },
               "wyckoff": {
                 "phase": "Markdown",
@@ -6679,13 +6903,13 @@
                 "label": "Early repair / stop bleeding trigger",
                 "reason": "A reclaim of 25.820 would only improve the tape from damaged to repair mode. It is not the same as a confirmed buy yet."
               },
-              "triggerDistancePct": 5.39,
+              "triggerDistancePct": 4.96,
               "score": 87,
-              "reason": "Weak strength | RS vs index -4.5% | quality 94"
+              "reason": "Weak strength | RS vs index -4.6% | quality 94"
             }
           ],
           "meta": {
-            "snapshotGenerated": "2026-03-26T06:41:14.308Z",
+            "snapshotGenerated": "2026-03-26T06:57:59.362Z",
             "marketRegime": "bearish",
             "marketSession": "open_pm",
             "pulseStatus": "correction",
@@ -6695,7 +6919,7 @@
             "averageStrength": 37,
             "averageQuality": 94.7,
             "topTicker": "CTG",
-            "topReason": "Watch strength | RS vs index +1.9% | quality 94"
+            "topReason": "Watch strength | RS vs index +1.8% | quality 94"
           }
         },
         {
@@ -6711,7 +6935,7 @@
               "ticker": "CTG",
               "name": "VietinBank",
               "sector": "BANK",
-              "price": 33600,
+              "price": 33700,
               "signal": "HOLD",
               "confidence": 4,
               "strength": {
@@ -6727,13 +6951,13 @@
                 "coveragePct": 100
               },
               "relative": {
-                "ret1w": -0.0303,
-                "ret1m": -0.1273,
-                "ret3m": -0.0482,
-                "vsVNINDEX3m": 0.0189,
-                "vsVN303m": 0.054,
-                "priceVsSma20Pct": -3.5,
-                "priceVsSma50Pct": -10.11
+                "ret1w": -0.0274,
+                "ret1m": -0.1247,
+                "ret3m": -0.0453,
+                "vsVNINDEX3m": 0.0176,
+                "vsVN303m": 0.0533,
+                "priceVsSma20Pct": -3.23,
+                "priceVsSma50Pct": -9.84
               },
               "wyckoff": {
                 "phase": "Accumulation",
@@ -6749,13 +6973,13 @@
                 "label": "Early repair trigger",
                 "reason": "A reclaim of 34.840 would be the first sign that sellers are losing control, but it is still not the full breakout."
               },
-              "triggerDistancePct": 3.69,
-              "score": 40.01,
-              "reason": "early repair trigger 34.840 | distance +3.7%"
+              "triggerDistancePct": 3.38,
+              "score": 40.32,
+              "reason": "early repair trigger 34.840 | distance +3.4%"
             }
           ],
           "meta": {
-            "snapshotGenerated": "2026-03-26T06:41:14.308Z",
+            "snapshotGenerated": "2026-03-26T06:57:59.362Z",
             "marketRegime": "bearish",
             "marketSession": "open_pm",
             "pulseStatus": "correction",
@@ -6765,7 +6989,7 @@
             "averageStrength": 41,
             "averageQuality": 94,
             "topTicker": "CTG",
-            "topReason": "early repair trigger 34.840 | distance +3.7%"
+            "topReason": "early repair trigger 34.840 | distance +3.4%"
           }
         },
         {
@@ -6781,7 +7005,7 @@
               "ticker": "CTG",
               "name": "VietinBank",
               "sector": "BANK",
-              "price": 33600,
+              "price": 33700,
               "signal": "HOLD",
               "confidence": 4,
               "strength": {
@@ -6797,13 +7021,13 @@
                 "coveragePct": 100
               },
               "relative": {
-                "ret1w": -0.0303,
-                "ret1m": -0.1273,
-                "ret3m": -0.0482,
-                "vsVNINDEX3m": 0.0189,
-                "vsVN303m": 0.054,
-                "priceVsSma20Pct": -3.5,
-                "priceVsSma50Pct": -10.11
+                "ret1w": -0.0274,
+                "ret1m": -0.1247,
+                "ret3m": -0.0453,
+                "vsVNINDEX3m": 0.0176,
+                "vsVN303m": 0.0533,
+                "priceVsSma20Pct": -3.23,
+                "priceVsSma50Pct": -9.84
               },
               "wyckoff": {
                 "phase": "Accumulation",
@@ -6819,13 +7043,13 @@
                 "label": "Early repair trigger",
                 "reason": "A reclaim of 34.840 would be the first sign that sellers are losing control, but it is still not the full breakout."
               },
-              "triggerDistancePct": 3.69,
+              "triggerDistancePct": 3.38,
               "score": 70.3,
               "reason": "Accumulation Phase B - Early Base Repair repair | 2 watch trigger(s) | 4/7 buy tests passed | trigger 34.840"
             }
           ],
           "meta": {
-            "snapshotGenerated": "2026-03-26T06:41:14.308Z",
+            "snapshotGenerated": "2026-03-26T06:57:59.362Z",
             "marketRegime": "bearish",
             "marketSession": "open_pm",
             "pulseStatus": "correction",
@@ -6854,7 +7078,7 @@
               "ticker": "FPT",
               "name": "FPT Corp",
               "sector": "TECH",
-              "price": 74300,
+              "price": 74400,
               "signal": "STRONG_SELL",
               "confidence": 8,
               "strength": {
@@ -6870,13 +7094,13 @@
                 "coveragePct": 100
               },
               "relative": {
-                "ret1w": -0.0326,
-                "ret1m": -0.1661,
-                "ret3m": -0.2121,
-                "vsVNINDEX3m": -0.145,
-                "vsVN303m": -0.1099,
-                "priceVsSma20Pct": -7.03,
-                "priceVsSma50Pct": -19.18
+                "ret1w": -0.0313,
+                "ret1m": -0.165,
+                "ret3m": -0.211,
+                "vsVNINDEX3m": -0.1481,
+                "vsVN303m": -0.1124,
+                "priceVsSma20Pct": -6.91,
+                "priceVsSma50Pct": -19.07
               },
               "wyckoff": {
                 "phase": "Markdown",
@@ -6892,15 +7116,15 @@
                 "label": "Early repair / stop bleeding trigger",
                 "reason": "A reclaim of 82.960 would only improve the tape from damaged to repair mode. It is not the same as a confirmed buy yet."
               },
-              "triggerDistancePct": 11.66,
-              "score": 126.333,
-              "reason": "STRONG_SELL | Markdown Phase E - Active Downtrend | price vs SMA50 -19.2% | RS vs index -14.5%"
+              "triggerDistancePct": 11.51,
+              "score": 126.3755,
+              "reason": "STRONG_SELL | Markdown Phase E - Active Downtrend | price vs SMA50 -19.1% | RS vs index -14.8%"
             },
             {
               "ticker": "TCB",
               "name": "Techcombank",
               "sector": "BANK",
-              "price": 30250,
+              "price": 30350,
               "signal": "STRONG_SELL",
               "confidence": 6,
               "strength": {
@@ -6916,13 +7140,13 @@
                 "coveragePct": 100
               },
               "relative": {
-                "ret1w": 0.0067,
-                "ret1m": -0.1597,
-                "ret3m": -0.1116,
-                "vsVNINDEX3m": -0.0445,
-                "vsVN303m": -0.0094,
-                "priceVsSma20Pct": -2.7,
-                "priceVsSma50Pct": -10.58
+                "ret1w": 0.01,
+                "ret1m": -0.1569,
+                "ret3m": -0.1087,
+                "vsVNINDEX3m": -0.0458,
+                "vsVN303m": -0.0101,
+                "priceVsSma20Pct": -2.4,
+                "priceVsSma50Pct": -10.29
               },
               "wyckoff": {
                 "phase": "Markdown",
@@ -6938,17 +7162,17 @@
                 "label": "Early repair / stop bleeding trigger",
                 "reason": "A reclaim of 31.920 would only improve the tape from damaged to repair mode. It is not the same as a confirmed buy yet."
               },
-              "triggerDistancePct": 5.52,
-              "score": 109.6555,
-              "reason": "STRONG_SELL | Markdown Phase E - Active Downtrend | price vs SMA50 -10.6% | RS vs index -4.5%"
+              "triggerDistancePct": 5.17,
+              "score": 109.527,
+              "reason": "STRONG_SELL | Markdown Phase E - Active Downtrend | price vs SMA50 -10.3% | RS vs index -4.6%"
             },
             {
               "ticker": "MWG",
               "name": "Thế Giới Di Động",
               "sector": "RETAIL",
-              "price": 77700,
+              "price": 77900,
               "signal": "STRONG_SELL",
-              "confidence": 9,
+              "confidence": 8,
               "strength": {
                 "score": 36,
                 "label": "Weak",
@@ -6962,37 +7186,37 @@
                 "coveragePct": 100
               },
               "relative": {
-                "ret1w": -0.057,
-                "ret1m": -0.1645,
-                "ret3m": -0.1079,
-                "vsVNINDEX3m": -0.0408,
-                "vsVN303m": -0.0057,
-                "priceVsSma20Pct": -6.12,
-                "priceVsSma50Pct": -10.13
+                "ret1w": -0.0546,
+                "ret1m": -0.1624,
+                "ret3m": -0.1056,
+                "vsVNINDEX3m": -0.0427,
+                "vsVN303m": -0.007,
+                "priceVsSma20Pct": -5.89,
+                "priceVsSma50Pct": -9.9
               },
               "wyckoff": {
                 "phase": "Markdown",
                 "stage": "Phase E",
                 "label": "Markdown Phase E - Active Downtrend",
                 "bias": "avoid",
-                "confidence": 85,
+                "confidence": 77,
                 "entryStatus": "avoid"
               },
               "trigger": {
                 "kind": "watch",
-                "price": 82765,
+                "price": 82775,
                 "label": "Early repair / stop bleeding trigger",
-                "reason": "A reclaim of 82.765 would only improve the tape from damaged to repair mode. It is not the same as a confirmed buy yet."
+                "reason": "A reclaim of 82.775 would only improve the tape from damaged to repair mode. It is not the same as a confirmed buy yet."
               },
-              "triggerDistancePct": 6.52,
-              "score": 108.656,
-              "reason": "STRONG_SELL | Markdown Phase E - Active Downtrend | price vs SMA50 -10.1% | RS vs index -4.1%"
+              "triggerDistancePct": 6.26,
+              "score": 108.0845,
+              "reason": "STRONG_SELL | Markdown Phase E - Active Downtrend | price vs SMA50 -9.9% | RS vs index -4.3%"
             },
             {
               "ticker": "HDB",
               "name": "HDBank",
               "sector": "BANK",
-              "price": 24500,
+              "price": 24600,
               "signal": "STRONG_SELL",
               "confidence": 6,
               "strength": {
@@ -7008,13 +7232,13 @@
                 "coveragePct": 100
               },
               "relative": {
-                "ret1w": -0.0448,
-                "ret1m": -0.1388,
-                "ret3m": -0.1123,
-                "vsVNINDEX3m": -0.0452,
+                "ret1w": -0.0409,
+                "ret1m": -0.1353,
+                "ret3m": -0.1087,
+                "vsVNINDEX3m": -0.0458,
                 "vsVN303m": -0.0101,
-                "priceVsSma20Pct": -4.21,
-                "priceVsSma50Pct": -9.74
+                "priceVsSma20Pct": -3.84,
+                "priceVsSma50Pct": -9.38
               },
               "wyckoff": {
                 "phase": "Markdown",
@@ -7030,13 +7254,13 @@
                 "label": "Early repair / stop bleeding trigger",
                 "reason": "A reclaim of 25.820 would only improve the tape from damaged to repair mode. It is not the same as a confirmed buy yet."
               },
-              "triggerDistancePct": 5.39,
-              "score": 107.77599999999998,
-              "reason": "STRONG_SELL | Markdown Phase E - Active Downtrend | price vs SMA50 -9.7% | RS vs index -4.5%"
+              "triggerDistancePct": 4.96,
+              "score": 107.58099999999999,
+              "reason": "STRONG_SELL | Markdown Phase E - Active Downtrend | price vs SMA50 -9.4% | RS vs index -4.6%"
             }
           ],
           "meta": {
-            "snapshotGenerated": "2026-03-26T06:41:14.308Z",
+            "snapshotGenerated": "2026-03-26T06:57:59.362Z",
             "marketRegime": "bearish",
             "marketSession": "open_pm",
             "pulseStatus": "correction",
@@ -7046,7 +7270,7 @@
             "averageStrength": 27.5,
             "averageQuality": 95,
             "topTicker": "FPT",
-            "topReason": "STRONG_SELL | Markdown Phase E - Active Downtrend | price vs SMA50 -19.2% | RS vs index -14.5%"
+            "topReason": "STRONG_SELL | Markdown Phase E - Active Downtrend | price vs SMA50 -19.1% | RS vs index -14.8%"
           }
         },
         {
@@ -7065,7 +7289,7 @@
               "ticker": "FPT",
               "name": "FPT Corp",
               "sector": "TECH",
-              "price": 74300,
+              "price": 74400,
               "signal": "STRONG_SELL",
               "confidence": 8,
               "strength": {
@@ -7081,13 +7305,13 @@
                 "coveragePct": 100
               },
               "relative": {
-                "ret1w": -0.0326,
-                "ret1m": -0.1661,
-                "ret3m": -0.2121,
-                "vsVNINDEX3m": -0.145,
-                "vsVN303m": -0.1099,
-                "priceVsSma20Pct": -7.03,
-                "priceVsSma50Pct": -19.18
+                "ret1w": -0.0313,
+                "ret1m": -0.165,
+                "ret3m": -0.211,
+                "vsVNINDEX3m": -0.1481,
+                "vsVN303m": -0.1124,
+                "priceVsSma20Pct": -6.91,
+                "priceVsSma50Pct": -19.07
               },
               "wyckoff": {
                 "phase": "Markdown",
@@ -7103,17 +7327,17 @@
                 "label": "Early repair / stop bleeding trigger",
                 "reason": "A reclaim of 82.960 would only improve the tape from damaged to repair mode. It is not the same as a confirmed buy yet."
               },
-              "triggerDistancePct": 11.66,
-              "score": 134.333,
-              "reason": "STRONG_SELL | Markdown Phase E - Active Downtrend | 6/8 sell tests passed | RS vs index -14.5%"
+              "triggerDistancePct": 11.51,
+              "score": 134.3755,
+              "reason": "STRONG_SELL | Markdown Phase E - Active Downtrend | 6/8 sell tests passed | RS vs index -14.8%"
             },
             {
               "ticker": "MWG",
               "name": "Thế Giới Di Động",
               "sector": "RETAIL",
-              "price": 77700,
+              "price": 77900,
               "signal": "STRONG_SELL",
-              "confidence": 9,
+              "confidence": 8,
               "strength": {
                 "score": 36,
                 "label": "Weak",
@@ -7127,37 +7351,37 @@
                 "coveragePct": 100
               },
               "relative": {
-                "ret1w": -0.057,
-                "ret1m": -0.1645,
-                "ret3m": -0.1079,
-                "vsVNINDEX3m": -0.0408,
-                "vsVN303m": -0.0057,
-                "priceVsSma20Pct": -6.12,
-                "priceVsSma50Pct": -10.13
+                "ret1w": -0.0546,
+                "ret1m": -0.1624,
+                "ret3m": -0.1056,
+                "vsVNINDEX3m": -0.0427,
+                "vsVN303m": -0.007,
+                "priceVsSma20Pct": -5.89,
+                "priceVsSma50Pct": -9.9
               },
               "wyckoff": {
                 "phase": "Markdown",
                 "stage": "Phase E",
                 "label": "Markdown Phase E - Active Downtrend",
                 "bias": "avoid",
-                "confidence": 85,
+                "confidence": 77,
                 "entryStatus": "avoid"
               },
               "trigger": {
                 "kind": "watch",
-                "price": 82765,
+                "price": 82775,
                 "label": "Early repair / stop bleeding trigger",
-                "reason": "A reclaim of 82.765 would only improve the tape from damaged to repair mode. It is not the same as a confirmed buy yet."
+                "reason": "A reclaim of 82.775 would only improve the tape from damaged to repair mode. It is not the same as a confirmed buy yet."
               },
-              "triggerDistancePct": 6.52,
-              "score": 117.656,
-              "reason": "STRONG_SELL | Markdown Phase E - Active Downtrend | 6/8 sell tests passed | RS vs index -4.1%"
+              "triggerDistancePct": 6.26,
+              "score": 116.0845,
+              "reason": "STRONG_SELL | Markdown Phase E - Active Downtrend | 6/8 sell tests passed | RS vs index -4.3%"
             },
             {
               "ticker": "TCB",
               "name": "Techcombank",
               "sector": "BANK",
-              "price": 30250,
+              "price": 30350,
               "signal": "STRONG_SELL",
               "confidence": 6,
               "strength": {
@@ -7173,13 +7397,13 @@
                 "coveragePct": 100
               },
               "relative": {
-                "ret1w": 0.0067,
-                "ret1m": -0.1597,
-                "ret3m": -0.1116,
-                "vsVNINDEX3m": -0.0445,
-                "vsVN303m": -0.0094,
-                "priceVsSma20Pct": -2.7,
-                "priceVsSma50Pct": -10.58
+                "ret1w": 0.01,
+                "ret1m": -0.1569,
+                "ret3m": -0.1087,
+                "vsVNINDEX3m": -0.0458,
+                "vsVN303m": -0.0101,
+                "priceVsSma20Pct": -2.4,
+                "priceVsSma50Pct": -10.29
               },
               "wyckoff": {
                 "phase": "Markdown",
@@ -7195,15 +7419,15 @@
                 "label": "Early repair / stop bleeding trigger",
                 "reason": "A reclaim of 31.920 would only improve the tape from damaged to repair mode. It is not the same as a confirmed buy yet."
               },
-              "triggerDistancePct": 5.52,
-              "score": 115.6555,
-              "reason": "STRONG_SELL | Markdown Phase E - Active Downtrend | 5/8 sell tests passed | RS vs index -4.5%"
+              "triggerDistancePct": 5.17,
+              "score": 115.527,
+              "reason": "STRONG_SELL | Markdown Phase E - Active Downtrend | 5/8 sell tests passed | RS vs index -4.6%"
             },
             {
               "ticker": "HDB",
               "name": "HDBank",
               "sector": "BANK",
-              "price": 24500,
+              "price": 24600,
               "signal": "STRONG_SELL",
               "confidence": 6,
               "strength": {
@@ -7219,13 +7443,13 @@
                 "coveragePct": 100
               },
               "relative": {
-                "ret1w": -0.0448,
-                "ret1m": -0.1388,
-                "ret3m": -0.1123,
-                "vsVNINDEX3m": -0.0452,
+                "ret1w": -0.0409,
+                "ret1m": -0.1353,
+                "ret3m": -0.1087,
+                "vsVNINDEX3m": -0.0458,
                 "vsVN303m": -0.0101,
-                "priceVsSma20Pct": -4.21,
-                "priceVsSma50Pct": -9.74
+                "priceVsSma20Pct": -3.84,
+                "priceVsSma50Pct": -9.38
               },
               "wyckoff": {
                 "phase": "Markdown",
@@ -7241,13 +7465,13 @@
                 "label": "Early repair / stop bleeding trigger",
                 "reason": "A reclaim of 25.820 would only improve the tape from damaged to repair mode. It is not the same as a confirmed buy yet."
               },
-              "triggerDistancePct": 5.39,
-              "score": 113.77599999999998,
-              "reason": "STRONG_SELL | Markdown Phase E - Active Downtrend | 6/8 sell tests passed | RS vs index -4.5%"
+              "triggerDistancePct": 4.96,
+              "score": 113.58099999999999,
+              "reason": "STRONG_SELL | Markdown Phase E - Active Downtrend | 6/8 sell tests passed | RS vs index -4.6%"
             }
           ],
           "meta": {
-            "snapshotGenerated": "2026-03-26T06:41:14.308Z",
+            "snapshotGenerated": "2026-03-26T06:57:59.362Z",
             "marketRegime": "bearish",
             "marketSession": "open_pm",
             "pulseStatus": "correction",
@@ -7257,7 +7481,7 @@
             "averageStrength": 27.5,
             "averageQuality": 95,
             "topTicker": "FPT",
-            "topReason": "STRONG_SELL | Markdown Phase E - Active Downtrend | 6/8 sell tests passed | RS vs index -14.5%"
+            "topReason": "STRONG_SELL | Markdown Phase E - Active Downtrend | 6/8 sell tests passed | RS vs index -14.8%"
           }
         },
         {
@@ -7277,9 +7501,9 @@
               "ticker": "MWG",
               "name": "Thế Giới Di Động",
               "sector": "RETAIL",
-              "price": 77700,
+              "price": 77900,
               "signal": "STRONG_SELL",
-              "confidence": 9,
+              "confidence": 8,
               "strength": {
                 "score": 36,
                 "label": "Weak",
@@ -7293,29 +7517,29 @@
                 "coveragePct": 100
               },
               "relative": {
-                "ret1w": -0.057,
-                "ret1m": -0.1645,
-                "ret3m": -0.1079,
-                "vsVNINDEX3m": -0.0408,
-                "vsVN303m": -0.0057,
-                "priceVsSma20Pct": -6.12,
-                "priceVsSma50Pct": -10.13
+                "ret1w": -0.0546,
+                "ret1m": -0.1624,
+                "ret3m": -0.1056,
+                "vsVNINDEX3m": -0.0427,
+                "vsVN303m": -0.007,
+                "priceVsSma20Pct": -5.89,
+                "priceVsSma50Pct": -9.9
               },
               "wyckoff": {
                 "phase": "Markdown",
                 "stage": "Phase E",
                 "label": "Markdown Phase E - Active Downtrend",
                 "bias": "avoid",
-                "confidence": 85,
+                "confidence": 77,
                 "entryStatus": "avoid"
               },
               "trigger": {
                 "kind": "watch",
-                "price": 82765,
+                "price": 82775,
                 "label": "Early repair / stop bleeding trigger",
-                "reason": "A reclaim of 82.765 would only improve the tape from damaged to repair mode. It is not the same as a confirmed buy yet."
+                "reason": "A reclaim of 82.775 would only improve the tape from damaged to repair mode. It is not the same as a confirmed buy yet."
               },
-              "triggerDistancePct": 6.52,
+              "triggerDistancePct": 6.26,
               "score": 105,
               "reason": "high quality | coverage 100% | Weak | STRONG_SELL"
             },
@@ -7323,7 +7547,7 @@
               "ticker": "CTG",
               "name": "VietinBank",
               "sector": "BANK",
-              "price": 33600,
+              "price": 33700,
               "signal": "HOLD",
               "confidence": 4,
               "strength": {
@@ -7339,13 +7563,13 @@
                 "coveragePct": 100
               },
               "relative": {
-                "ret1w": -0.0303,
-                "ret1m": -0.1273,
-                "ret3m": -0.0482,
-                "vsVNINDEX3m": 0.0189,
-                "vsVN303m": 0.054,
-                "priceVsSma20Pct": -3.5,
-                "priceVsSma50Pct": -10.11
+                "ret1w": -0.0274,
+                "ret1m": -0.1247,
+                "ret3m": -0.0453,
+                "vsVNINDEX3m": 0.0176,
+                "vsVN303m": 0.0533,
+                "priceVsSma20Pct": -3.23,
+                "priceVsSma50Pct": -9.84
               },
               "wyckoff": {
                 "phase": "Accumulation",
@@ -7361,7 +7585,7 @@
                 "label": "Early repair trigger",
                 "reason": "A reclaim of 34.840 would be the first sign that sellers are losing control, but it is still not the full breakout."
               },
-              "triggerDistancePct": 3.69,
+              "triggerDistancePct": 3.38,
               "score": 104.25,
               "reason": "high quality | coverage 100% | Watch | HOLD"
             },
@@ -7369,7 +7593,7 @@
               "ticker": "HDB",
               "name": "HDBank",
               "sector": "BANK",
-              "price": 24500,
+              "price": 24600,
               "signal": "STRONG_SELL",
               "confidence": 6,
               "strength": {
@@ -7385,13 +7609,13 @@
                 "coveragePct": 100
               },
               "relative": {
-                "ret1w": -0.0448,
-                "ret1m": -0.1388,
-                "ret3m": -0.1123,
-                "vsVNINDEX3m": -0.0452,
+                "ret1w": -0.0409,
+                "ret1m": -0.1353,
+                "ret3m": -0.1087,
+                "vsVNINDEX3m": -0.0458,
                 "vsVN303m": -0.0101,
-                "priceVsSma20Pct": -4.21,
-                "priceVsSma50Pct": -9.74
+                "priceVsSma20Pct": -3.84,
+                "priceVsSma50Pct": -9.38
               },
               "wyckoff": {
                 "phase": "Markdown",
@@ -7407,7 +7631,7 @@
                 "label": "Early repair / stop bleeding trigger",
                 "reason": "A reclaim of 25.820 would only improve the tape from damaged to repair mode. It is not the same as a confirmed buy yet."
               },
-              "triggerDistancePct": 5.39,
+              "triggerDistancePct": 4.96,
               "score": 102.5,
               "reason": "high quality | coverage 100% | Weak | STRONG_SELL"
             },
@@ -7415,7 +7639,7 @@
               "ticker": "TCB",
               "name": "Techcombank",
               "sector": "BANK",
-              "price": 30250,
+              "price": 30350,
               "signal": "STRONG_SELL",
               "confidence": 6,
               "strength": {
@@ -7431,13 +7655,13 @@
                 "coveragePct": 100
               },
               "relative": {
-                "ret1w": 0.0067,
-                "ret1m": -0.1597,
-                "ret3m": -0.1116,
-                "vsVNINDEX3m": -0.0445,
-                "vsVN303m": -0.0094,
-                "priceVsSma20Pct": -2.7,
-                "priceVsSma50Pct": -10.58
+                "ret1w": 0.01,
+                "ret1m": -0.1569,
+                "ret3m": -0.1087,
+                "vsVNINDEX3m": -0.0458,
+                "vsVN303m": -0.0101,
+                "priceVsSma20Pct": -2.4,
+                "priceVsSma50Pct": -10.29
               },
               "wyckoff": {
                 "phase": "Markdown",
@@ -7453,7 +7677,7 @@
                 "label": "Early repair / stop bleeding trigger",
                 "reason": "A reclaim of 31.920 would only improve the tape from damaged to repair mode. It is not the same as a confirmed buy yet."
               },
-              "triggerDistancePct": 5.52,
+              "triggerDistancePct": 5.17,
               "score": 101.5,
               "reason": "high quality | coverage 100% | Weak | STRONG_SELL"
             },
@@ -7461,7 +7685,7 @@
               "ticker": "FPT",
               "name": "FPT Corp",
               "sector": "TECH",
-              "price": 74300,
+              "price": 74400,
               "signal": "STRONG_SELL",
               "confidence": 8,
               "strength": {
@@ -7477,13 +7701,13 @@
                 "coveragePct": 100
               },
               "relative": {
-                "ret1w": -0.0326,
-                "ret1m": -0.1661,
-                "ret3m": -0.2121,
-                "vsVNINDEX3m": -0.145,
-                "vsVN303m": -0.1099,
-                "priceVsSma20Pct": -7.03,
-                "priceVsSma50Pct": -19.18
+                "ret1w": -0.0313,
+                "ret1m": -0.165,
+                "ret3m": -0.211,
+                "vsVNINDEX3m": -0.1481,
+                "vsVN303m": -0.1124,
+                "priceVsSma20Pct": -6.91,
+                "priceVsSma50Pct": -19.07
               },
               "wyckoff": {
                 "phase": "Markdown",
@@ -7499,13 +7723,13 @@
                 "label": "Early repair / stop bleeding trigger",
                 "reason": "A reclaim of 82.960 would only improve the tape from damaged to repair mode. It is not the same as a confirmed buy yet."
               },
-              "triggerDistancePct": 11.66,
+              "triggerDistancePct": 11.51,
               "score": 98.5,
               "reason": "high quality | coverage 100% | Weak | STRONG_SELL"
             }
           ],
           "meta": {
-            "snapshotGenerated": "2026-03-26T06:41:14.308Z",
+            "snapshotGenerated": "2026-03-26T06:57:59.362Z",
             "marketRegime": "bearish",
             "marketSession": "open_pm",
             "pulseStatus": "correction",
@@ -7535,7 +7759,7 @@
               "ticker": "CTG",
               "name": "VietinBank",
               "sector": "BANK",
-              "price": 33600,
+              "price": 33700,
               "signal": "HOLD",
               "confidence": 4,
               "strength": {
@@ -7551,13 +7775,13 @@
                 "coveragePct": 100
               },
               "relative": {
-                "ret1w": -0.0303,
-                "ret1m": -0.1273,
-                "ret3m": -0.0482,
-                "vsVNINDEX3m": 0.0189,
-                "vsVN303m": 0.054,
-                "priceVsSma20Pct": -3.5,
-                "priceVsSma50Pct": -10.11
+                "ret1w": -0.0274,
+                "ret1m": -0.1247,
+                "ret3m": -0.0453,
+                "vsVNINDEX3m": 0.0176,
+                "vsVN303m": 0.0533,
+                "priceVsSma20Pct": -3.23,
+                "priceVsSma50Pct": -9.84
               },
               "wyckoff": {
                 "phase": "Accumulation",
@@ -7573,17 +7797,17 @@
                 "label": "Early repair trigger",
                 "reason": "A reclaim of 34.840 would be the first sign that sellers are losing control, but it is still not the full breakout."
               },
-              "triggerDistancePct": 3.69,
+              "triggerDistancePct": 3.38,
               "score": 157,
-              "reason": "Watch strength | RS vs index +1.9% | quality 94"
+              "reason": "Watch strength | RS vs index +1.8% | quality 94"
             },
             {
               "ticker": "MWG",
               "name": "Thế Giới Di Động",
               "sector": "RETAIL",
-              "price": 77700,
+              "price": 77900,
               "signal": "STRONG_SELL",
-              "confidence": 9,
+              "confidence": 8,
               "strength": {
                 "score": 36,
                 "label": "Weak",
@@ -7597,37 +7821,37 @@
                 "coveragePct": 100
               },
               "relative": {
-                "ret1w": -0.057,
-                "ret1m": -0.1645,
-                "ret3m": -0.1079,
-                "vsVNINDEX3m": -0.0408,
-                "vsVN303m": -0.0057,
-                "priceVsSma20Pct": -6.12,
-                "priceVsSma50Pct": -10.13
+                "ret1w": -0.0546,
+                "ret1m": -0.1624,
+                "ret3m": -0.1056,
+                "vsVNINDEX3m": -0.0427,
+                "vsVN303m": -0.007,
+                "priceVsSma20Pct": -5.89,
+                "priceVsSma50Pct": -9.9
               },
               "wyckoff": {
                 "phase": "Markdown",
                 "stage": "Phase E",
                 "label": "Markdown Phase E - Active Downtrend",
                 "bias": "avoid",
-                "confidence": 85,
+                "confidence": 77,
                 "entryStatus": "avoid"
               },
               "trigger": {
                 "kind": "watch",
-                "price": 82765,
+                "price": 82775,
                 "label": "Early repair / stop bleeding trigger",
-                "reason": "A reclaim of 82.765 would only improve the tape from damaged to repair mode. It is not the same as a confirmed buy yet."
+                "reason": "A reclaim of 82.775 would only improve the tape from damaged to repair mode. It is not the same as a confirmed buy yet."
               },
-              "triggerDistancePct": 6.52,
+              "triggerDistancePct": 6.26,
               "score": 106.5,
-              "reason": "Weak strength | RS vs index -4.1% | quality 96"
+              "reason": "Weak strength | RS vs index -4.3% | quality 96"
             },
             {
               "ticker": "HDB",
               "name": "HDBank",
               "sector": "BANK",
-              "price": 24500,
+              "price": 24600,
               "signal": "STRONG_SELL",
               "confidence": 6,
               "strength": {
@@ -7643,13 +7867,13 @@
                 "coveragePct": 100
               },
               "relative": {
-                "ret1w": -0.0448,
-                "ret1m": -0.1388,
-                "ret3m": -0.1123,
-                "vsVNINDEX3m": -0.0452,
+                "ret1w": -0.0409,
+                "ret1m": -0.1353,
+                "ret3m": -0.1087,
+                "vsVNINDEX3m": -0.0458,
                 "vsVN303m": -0.0101,
-                "priceVsSma20Pct": -4.21,
-                "priceVsSma50Pct": -9.74
+                "priceVsSma20Pct": -3.84,
+                "priceVsSma50Pct": -9.38
               },
               "wyckoff": {
                 "phase": "Markdown",
@@ -7665,13 +7889,13 @@
                 "label": "Early repair / stop bleeding trigger",
                 "reason": "A reclaim of 25.820 would only improve the tape from damaged to repair mode. It is not the same as a confirmed buy yet."
               },
-              "triggerDistancePct": 5.39,
+              "triggerDistancePct": 4.96,
               "score": 87,
-              "reason": "Weak strength | RS vs index -4.5% | quality 94"
+              "reason": "Weak strength | RS vs index -4.6% | quality 94"
             }
           ],
           "meta": {
-            "snapshotGenerated": "2026-03-26T06:41:14.308Z",
+            "snapshotGenerated": "2026-03-26T06:57:59.362Z",
             "marketRegime": "bearish",
             "marketSession": "open_pm",
             "pulseStatus": "correction",
@@ -7681,7 +7905,7 @@
             "averageStrength": 37,
             "averageQuality": 94.7,
             "topTicker": "CTG",
-            "topReason": "Watch strength | RS vs index +1.9% | quality 94"
+            "topReason": "Watch strength | RS vs index +1.8% | quality 94"
           }
         },
         "near_entry": {
@@ -7697,7 +7921,7 @@
               "ticker": "CTG",
               "name": "VietinBank",
               "sector": "BANK",
-              "price": 33600,
+              "price": 33700,
               "signal": "HOLD",
               "confidence": 4,
               "strength": {
@@ -7713,13 +7937,13 @@
                 "coveragePct": 100
               },
               "relative": {
-                "ret1w": -0.0303,
-                "ret1m": -0.1273,
-                "ret3m": -0.0482,
-                "vsVNINDEX3m": 0.0189,
-                "vsVN303m": 0.054,
-                "priceVsSma20Pct": -3.5,
-                "priceVsSma50Pct": -10.11
+                "ret1w": -0.0274,
+                "ret1m": -0.1247,
+                "ret3m": -0.0453,
+                "vsVNINDEX3m": 0.0176,
+                "vsVN303m": 0.0533,
+                "priceVsSma20Pct": -3.23,
+                "priceVsSma50Pct": -9.84
               },
               "wyckoff": {
                 "phase": "Accumulation",
@@ -7735,13 +7959,13 @@
                 "label": "Early repair trigger",
                 "reason": "A reclaim of 34.840 would be the first sign that sellers are losing control, but it is still not the full breakout."
               },
-              "triggerDistancePct": 3.69,
-              "score": 40.01,
-              "reason": "early repair trigger 34.840 | distance +3.7%"
+              "triggerDistancePct": 3.38,
+              "score": 40.32,
+              "reason": "early repair trigger 34.840 | distance +3.4%"
             }
           ],
           "meta": {
-            "snapshotGenerated": "2026-03-26T06:41:14.308Z",
+            "snapshotGenerated": "2026-03-26T06:57:59.362Z",
             "marketRegime": "bearish",
             "marketSession": "open_pm",
             "pulseStatus": "correction",
@@ -7751,7 +7975,7 @@
             "averageStrength": 41,
             "averageQuality": 94,
             "topTicker": "CTG",
-            "topReason": "early repair trigger 34.840 | distance +3.7%"
+            "topReason": "early repair trigger 34.840 | distance +3.4%"
           }
         },
         "repair_watch": {
@@ -7767,7 +7991,7 @@
               "ticker": "CTG",
               "name": "VietinBank",
               "sector": "BANK",
-              "price": 33600,
+              "price": 33700,
               "signal": "HOLD",
               "confidence": 4,
               "strength": {
@@ -7783,13 +8007,13 @@
                 "coveragePct": 100
               },
               "relative": {
-                "ret1w": -0.0303,
-                "ret1m": -0.1273,
-                "ret3m": -0.0482,
-                "vsVNINDEX3m": 0.0189,
-                "vsVN303m": 0.054,
-                "priceVsSma20Pct": -3.5,
-                "priceVsSma50Pct": -10.11
+                "ret1w": -0.0274,
+                "ret1m": -0.1247,
+                "ret3m": -0.0453,
+                "vsVNINDEX3m": 0.0176,
+                "vsVN303m": 0.0533,
+                "priceVsSma20Pct": -3.23,
+                "priceVsSma50Pct": -9.84
               },
               "wyckoff": {
                 "phase": "Accumulation",
@@ -7805,13 +8029,13 @@
                 "label": "Early repair trigger",
                 "reason": "A reclaim of 34.840 would be the first sign that sellers are losing control, but it is still not the full breakout."
               },
-              "triggerDistancePct": 3.69,
+              "triggerDistancePct": 3.38,
               "score": 70.3,
               "reason": "Accumulation Phase B - Early Base Repair repair | 2 watch trigger(s) | 4/7 buy tests passed | trigger 34.840"
             }
           ],
           "meta": {
-            "snapshotGenerated": "2026-03-26T06:41:14.308Z",
+            "snapshotGenerated": "2026-03-26T06:57:59.362Z",
             "marketRegime": "bearish",
             "marketSession": "open_pm",
             "pulseStatus": "correction",
@@ -7840,7 +8064,7 @@
               "ticker": "FPT",
               "name": "FPT Corp",
               "sector": "TECH",
-              "price": 74300,
+              "price": 74400,
               "signal": "STRONG_SELL",
               "confidence": 8,
               "strength": {
@@ -7856,13 +8080,13 @@
                 "coveragePct": 100
               },
               "relative": {
-                "ret1w": -0.0326,
-                "ret1m": -0.1661,
-                "ret3m": -0.2121,
-                "vsVNINDEX3m": -0.145,
-                "vsVN303m": -0.1099,
-                "priceVsSma20Pct": -7.03,
-                "priceVsSma50Pct": -19.18
+                "ret1w": -0.0313,
+                "ret1m": -0.165,
+                "ret3m": -0.211,
+                "vsVNINDEX3m": -0.1481,
+                "vsVN303m": -0.1124,
+                "priceVsSma20Pct": -6.91,
+                "priceVsSma50Pct": -19.07
               },
               "wyckoff": {
                 "phase": "Markdown",
@@ -7878,15 +8102,15 @@
                 "label": "Early repair / stop bleeding trigger",
                 "reason": "A reclaim of 82.960 would only improve the tape from damaged to repair mode. It is not the same as a confirmed buy yet."
               },
-              "triggerDistancePct": 11.66,
-              "score": 126.333,
-              "reason": "STRONG_SELL | Markdown Phase E - Active Downtrend | price vs SMA50 -19.2% | RS vs index -14.5%"
+              "triggerDistancePct": 11.51,
+              "score": 126.3755,
+              "reason": "STRONG_SELL | Markdown Phase E - Active Downtrend | price vs SMA50 -19.1% | RS vs index -14.8%"
             },
             {
               "ticker": "TCB",
               "name": "Techcombank",
               "sector": "BANK",
-              "price": 30250,
+              "price": 30350,
               "signal": "STRONG_SELL",
               "confidence": 6,
               "strength": {
@@ -7902,13 +8126,13 @@
                 "coveragePct": 100
               },
               "relative": {
-                "ret1w": 0.0067,
-                "ret1m": -0.1597,
-                "ret3m": -0.1116,
-                "vsVNINDEX3m": -0.0445,
-                "vsVN303m": -0.0094,
-                "priceVsSma20Pct": -2.7,
-                "priceVsSma50Pct": -10.58
+                "ret1w": 0.01,
+                "ret1m": -0.1569,
+                "ret3m": -0.1087,
+                "vsVNINDEX3m": -0.0458,
+                "vsVN303m": -0.0101,
+                "priceVsSma20Pct": -2.4,
+                "priceVsSma50Pct": -10.29
               },
               "wyckoff": {
                 "phase": "Markdown",
@@ -7924,17 +8148,17 @@
                 "label": "Early repair / stop bleeding trigger",
                 "reason": "A reclaim of 31.920 would only improve the tape from damaged to repair mode. It is not the same as a confirmed buy yet."
               },
-              "triggerDistancePct": 5.52,
-              "score": 109.6555,
-              "reason": "STRONG_SELL | Markdown Phase E - Active Downtrend | price vs SMA50 -10.6% | RS vs index -4.5%"
+              "triggerDistancePct": 5.17,
+              "score": 109.527,
+              "reason": "STRONG_SELL | Markdown Phase E - Active Downtrend | price vs SMA50 -10.3% | RS vs index -4.6%"
             },
             {
               "ticker": "MWG",
               "name": "Thế Giới Di Động",
               "sector": "RETAIL",
-              "price": 77700,
+              "price": 77900,
               "signal": "STRONG_SELL",
-              "confidence": 9,
+              "confidence": 8,
               "strength": {
                 "score": 36,
                 "label": "Weak",
@@ -7948,37 +8172,37 @@
                 "coveragePct": 100
               },
               "relative": {
-                "ret1w": -0.057,
-                "ret1m": -0.1645,
-                "ret3m": -0.1079,
-                "vsVNINDEX3m": -0.0408,
-                "vsVN303m": -0.0057,
-                "priceVsSma20Pct": -6.12,
-                "priceVsSma50Pct": -10.13
+                "ret1w": -0.0546,
+                "ret1m": -0.1624,
+                "ret3m": -0.1056,
+                "vsVNINDEX3m": -0.0427,
+                "vsVN303m": -0.007,
+                "priceVsSma20Pct": -5.89,
+                "priceVsSma50Pct": -9.9
               },
               "wyckoff": {
                 "phase": "Markdown",
                 "stage": "Phase E",
                 "label": "Markdown Phase E - Active Downtrend",
                 "bias": "avoid",
-                "confidence": 85,
+                "confidence": 77,
                 "entryStatus": "avoid"
               },
               "trigger": {
                 "kind": "watch",
-                "price": 82765,
+                "price": 82775,
                 "label": "Early repair / stop bleeding trigger",
-                "reason": "A reclaim of 82.765 would only improve the tape from damaged to repair mode. It is not the same as a confirmed buy yet."
+                "reason": "A reclaim of 82.775 would only improve the tape from damaged to repair mode. It is not the same as a confirmed buy yet."
               },
-              "triggerDistancePct": 6.52,
-              "score": 108.656,
-              "reason": "STRONG_SELL | Markdown Phase E - Active Downtrend | price vs SMA50 -10.1% | RS vs index -4.1%"
+              "triggerDistancePct": 6.26,
+              "score": 108.0845,
+              "reason": "STRONG_SELL | Markdown Phase E - Active Downtrend | price vs SMA50 -9.9% | RS vs index -4.3%"
             },
             {
               "ticker": "HDB",
               "name": "HDBank",
               "sector": "BANK",
-              "price": 24500,
+              "price": 24600,
               "signal": "STRONG_SELL",
               "confidence": 6,
               "strength": {
@@ -7994,13 +8218,13 @@
                 "coveragePct": 100
               },
               "relative": {
-                "ret1w": -0.0448,
-                "ret1m": -0.1388,
-                "ret3m": -0.1123,
-                "vsVNINDEX3m": -0.0452,
+                "ret1w": -0.0409,
+                "ret1m": -0.1353,
+                "ret3m": -0.1087,
+                "vsVNINDEX3m": -0.0458,
                 "vsVN303m": -0.0101,
-                "priceVsSma20Pct": -4.21,
-                "priceVsSma50Pct": -9.74
+                "priceVsSma20Pct": -3.84,
+                "priceVsSma50Pct": -9.38
               },
               "wyckoff": {
                 "phase": "Markdown",
@@ -8016,13 +8240,13 @@
                 "label": "Early repair / stop bleeding trigger",
                 "reason": "A reclaim of 25.820 would only improve the tape from damaged to repair mode. It is not the same as a confirmed buy yet."
               },
-              "triggerDistancePct": 5.39,
-              "score": 107.77599999999998,
-              "reason": "STRONG_SELL | Markdown Phase E - Active Downtrend | price vs SMA50 -9.7% | RS vs index -4.5%"
+              "triggerDistancePct": 4.96,
+              "score": 107.58099999999999,
+              "reason": "STRONG_SELL | Markdown Phase E - Active Downtrend | price vs SMA50 -9.4% | RS vs index -4.6%"
             }
           ],
           "meta": {
-            "snapshotGenerated": "2026-03-26T06:41:14.308Z",
+            "snapshotGenerated": "2026-03-26T06:57:59.362Z",
             "marketRegime": "bearish",
             "marketSession": "open_pm",
             "pulseStatus": "correction",
@@ -8032,7 +8256,7 @@
             "averageStrength": 27.5,
             "averageQuality": 95,
             "topTicker": "FPT",
-            "topReason": "STRONG_SELL | Markdown Phase E - Active Downtrend | price vs SMA50 -19.2% | RS vs index -14.5%"
+            "topReason": "STRONG_SELL | Markdown Phase E - Active Downtrend | price vs SMA50 -19.1% | RS vs index -14.8%"
           }
         },
         "short_candidates": {
@@ -8051,7 +8275,7 @@
               "ticker": "FPT",
               "name": "FPT Corp",
               "sector": "TECH",
-              "price": 74300,
+              "price": 74400,
               "signal": "STRONG_SELL",
               "confidence": 8,
               "strength": {
@@ -8067,13 +8291,13 @@
                 "coveragePct": 100
               },
               "relative": {
-                "ret1w": -0.0326,
-                "ret1m": -0.1661,
-                "ret3m": -0.2121,
-                "vsVNINDEX3m": -0.145,
-                "vsVN303m": -0.1099,
-                "priceVsSma20Pct": -7.03,
-                "priceVsSma50Pct": -19.18
+                "ret1w": -0.0313,
+                "ret1m": -0.165,
+                "ret3m": -0.211,
+                "vsVNINDEX3m": -0.1481,
+                "vsVN303m": -0.1124,
+                "priceVsSma20Pct": -6.91,
+                "priceVsSma50Pct": -19.07
               },
               "wyckoff": {
                 "phase": "Markdown",
@@ -8089,17 +8313,17 @@
                 "label": "Early repair / stop bleeding trigger",
                 "reason": "A reclaim of 82.960 would only improve the tape from damaged to repair mode. It is not the same as a confirmed buy yet."
               },
-              "triggerDistancePct": 11.66,
-              "score": 134.333,
-              "reason": "STRONG_SELL | Markdown Phase E - Active Downtrend | 6/8 sell tests passed | RS vs index -14.5%"
+              "triggerDistancePct": 11.51,
+              "score": 134.3755,
+              "reason": "STRONG_SELL | Markdown Phase E - Active Downtrend | 6/8 sell tests passed | RS vs index -14.8%"
             },
             {
               "ticker": "MWG",
               "name": "Thế Giới Di Động",
               "sector": "RETAIL",
-              "price": 77700,
+              "price": 77900,
               "signal": "STRONG_SELL",
-              "confidence": 9,
+              "confidence": 8,
               "strength": {
                 "score": 36,
                 "label": "Weak",
@@ -8113,37 +8337,37 @@
                 "coveragePct": 100
               },
               "relative": {
-                "ret1w": -0.057,
-                "ret1m": -0.1645,
-                "ret3m": -0.1079,
-                "vsVNINDEX3m": -0.0408,
-                "vsVN303m": -0.0057,
-                "priceVsSma20Pct": -6.12,
-                "priceVsSma50Pct": -10.13
+                "ret1w": -0.0546,
+                "ret1m": -0.1624,
+                "ret3m": -0.1056,
+                "vsVNINDEX3m": -0.0427,
+                "vsVN303m": -0.007,
+                "priceVsSma20Pct": -5.89,
+                "priceVsSma50Pct": -9.9
               },
               "wyckoff": {
                 "phase": "Markdown",
                 "stage": "Phase E",
                 "label": "Markdown Phase E - Active Downtrend",
                 "bias": "avoid",
-                "confidence": 85,
+                "confidence": 77,
                 "entryStatus": "avoid"
               },
               "trigger": {
                 "kind": "watch",
-                "price": 82765,
+                "price": 82775,
                 "label": "Early repair / stop bleeding trigger",
-                "reason": "A reclaim of 82.765 would only improve the tape from damaged to repair mode. It is not the same as a confirmed buy yet."
+                "reason": "A reclaim of 82.775 would only improve the tape from damaged to repair mode. It is not the same as a confirmed buy yet."
               },
-              "triggerDistancePct": 6.52,
-              "score": 117.656,
-              "reason": "STRONG_SELL | Markdown Phase E - Active Downtrend | 6/8 sell tests passed | RS vs index -4.1%"
+              "triggerDistancePct": 6.26,
+              "score": 116.0845,
+              "reason": "STRONG_SELL | Markdown Phase E - Active Downtrend | 6/8 sell tests passed | RS vs index -4.3%"
             },
             {
               "ticker": "TCB",
               "name": "Techcombank",
               "sector": "BANK",
-              "price": 30250,
+              "price": 30350,
               "signal": "STRONG_SELL",
               "confidence": 6,
               "strength": {
@@ -8159,13 +8383,13 @@
                 "coveragePct": 100
               },
               "relative": {
-                "ret1w": 0.0067,
-                "ret1m": -0.1597,
-                "ret3m": -0.1116,
-                "vsVNINDEX3m": -0.0445,
-                "vsVN303m": -0.0094,
-                "priceVsSma20Pct": -2.7,
-                "priceVsSma50Pct": -10.58
+                "ret1w": 0.01,
+                "ret1m": -0.1569,
+                "ret3m": -0.1087,
+                "vsVNINDEX3m": -0.0458,
+                "vsVN303m": -0.0101,
+                "priceVsSma20Pct": -2.4,
+                "priceVsSma50Pct": -10.29
               },
               "wyckoff": {
                 "phase": "Markdown",
@@ -8181,15 +8405,15 @@
                 "label": "Early repair / stop bleeding trigger",
                 "reason": "A reclaim of 31.920 would only improve the tape from damaged to repair mode. It is not the same as a confirmed buy yet."
               },
-              "triggerDistancePct": 5.52,
-              "score": 115.6555,
-              "reason": "STRONG_SELL | Markdown Phase E - Active Downtrend | 5/8 sell tests passed | RS vs index -4.5%"
+              "triggerDistancePct": 5.17,
+              "score": 115.527,
+              "reason": "STRONG_SELL | Markdown Phase E - Active Downtrend | 5/8 sell tests passed | RS vs index -4.6%"
             },
             {
               "ticker": "HDB",
               "name": "HDBank",
               "sector": "BANK",
-              "price": 24500,
+              "price": 24600,
               "signal": "STRONG_SELL",
               "confidence": 6,
               "strength": {
@@ -8205,13 +8429,13 @@
                 "coveragePct": 100
               },
               "relative": {
-                "ret1w": -0.0448,
-                "ret1m": -0.1388,
-                "ret3m": -0.1123,
-                "vsVNINDEX3m": -0.0452,
+                "ret1w": -0.0409,
+                "ret1m": -0.1353,
+                "ret3m": -0.1087,
+                "vsVNINDEX3m": -0.0458,
                 "vsVN303m": -0.0101,
-                "priceVsSma20Pct": -4.21,
-                "priceVsSma50Pct": -9.74
+                "priceVsSma20Pct": -3.84,
+                "priceVsSma50Pct": -9.38
               },
               "wyckoff": {
                 "phase": "Markdown",
@@ -8227,13 +8451,13 @@
                 "label": "Early repair / stop bleeding trigger",
                 "reason": "A reclaim of 25.820 would only improve the tape from damaged to repair mode. It is not the same as a confirmed buy yet."
               },
-              "triggerDistancePct": 5.39,
-              "score": 113.77599999999998,
-              "reason": "STRONG_SELL | Markdown Phase E - Active Downtrend | 6/8 sell tests passed | RS vs index -4.5%"
+              "triggerDistancePct": 4.96,
+              "score": 113.58099999999999,
+              "reason": "STRONG_SELL | Markdown Phase E - Active Downtrend | 6/8 sell tests passed | RS vs index -4.6%"
             }
           ],
           "meta": {
-            "snapshotGenerated": "2026-03-26T06:41:14.308Z",
+            "snapshotGenerated": "2026-03-26T06:57:59.362Z",
             "marketRegime": "bearish",
             "marketSession": "open_pm",
             "pulseStatus": "correction",
@@ -8243,7 +8467,7 @@
             "averageStrength": 27.5,
             "averageQuality": 95,
             "topTicker": "FPT",
-            "topReason": "STRONG_SELL | Markdown Phase E - Active Downtrend | 6/8 sell tests passed | RS vs index -14.5%"
+            "topReason": "STRONG_SELL | Markdown Phase E - Active Downtrend | 6/8 sell tests passed | RS vs index -14.8%"
           }
         },
         "quality_names": {
@@ -8263,9 +8487,9 @@
               "ticker": "MWG",
               "name": "Thế Giới Di Động",
               "sector": "RETAIL",
-              "price": 77700,
+              "price": 77900,
               "signal": "STRONG_SELL",
-              "confidence": 9,
+              "confidence": 8,
               "strength": {
                 "score": 36,
                 "label": "Weak",
@@ -8279,29 +8503,29 @@
                 "coveragePct": 100
               },
               "relative": {
-                "ret1w": -0.057,
-                "ret1m": -0.1645,
-                "ret3m": -0.1079,
-                "vsVNINDEX3m": -0.0408,
-                "vsVN303m": -0.0057,
-                "priceVsSma20Pct": -6.12,
-                "priceVsSma50Pct": -10.13
+                "ret1w": -0.0546,
+                "ret1m": -0.1624,
+                "ret3m": -0.1056,
+                "vsVNINDEX3m": -0.0427,
+                "vsVN303m": -0.007,
+                "priceVsSma20Pct": -5.89,
+                "priceVsSma50Pct": -9.9
               },
               "wyckoff": {
                 "phase": "Markdown",
                 "stage": "Phase E",
                 "label": "Markdown Phase E - Active Downtrend",
                 "bias": "avoid",
-                "confidence": 85,
+                "confidence": 77,
                 "entryStatus": "avoid"
               },
               "trigger": {
                 "kind": "watch",
-                "price": 82765,
+                "price": 82775,
                 "label": "Early repair / stop bleeding trigger",
-                "reason": "A reclaim of 82.765 would only improve the tape from damaged to repair mode. It is not the same as a confirmed buy yet."
+                "reason": "A reclaim of 82.775 would only improve the tape from damaged to repair mode. It is not the same as a confirmed buy yet."
               },
-              "triggerDistancePct": 6.52,
+              "triggerDistancePct": 6.26,
               "score": 105,
               "reason": "high quality | coverage 100% | Weak | STRONG_SELL"
             },
@@ -8309,7 +8533,7 @@
               "ticker": "CTG",
               "name": "VietinBank",
               "sector": "BANK",
-              "price": 33600,
+              "price": 33700,
               "signal": "HOLD",
               "confidence": 4,
               "strength": {
@@ -8325,13 +8549,13 @@
                 "coveragePct": 100
               },
               "relative": {
-                "ret1w": -0.0303,
-                "ret1m": -0.1273,
-                "ret3m": -0.0482,
-                "vsVNINDEX3m": 0.0189,
-                "vsVN303m": 0.054,
-                "priceVsSma20Pct": -3.5,
-                "priceVsSma50Pct": -10.11
+                "ret1w": -0.0274,
+                "ret1m": -0.1247,
+                "ret3m": -0.0453,
+                "vsVNINDEX3m": 0.0176,
+                "vsVN303m": 0.0533,
+                "priceVsSma20Pct": -3.23,
+                "priceVsSma50Pct": -9.84
               },
               "wyckoff": {
                 "phase": "Accumulation",
@@ -8347,7 +8571,7 @@
                 "label": "Early repair trigger",
                 "reason": "A reclaim of 34.840 would be the first sign that sellers are losing control, but it is still not the full breakout."
               },
-              "triggerDistancePct": 3.69,
+              "triggerDistancePct": 3.38,
               "score": 104.25,
               "reason": "high quality | coverage 100% | Watch | HOLD"
             },
@@ -8355,7 +8579,7 @@
               "ticker": "HDB",
               "name": "HDBank",
               "sector": "BANK",
-              "price": 24500,
+              "price": 24600,
               "signal": "STRONG_SELL",
               "confidence": 6,
               "strength": {
@@ -8371,13 +8595,13 @@
                 "coveragePct": 100
               },
               "relative": {
-                "ret1w": -0.0448,
-                "ret1m": -0.1388,
-                "ret3m": -0.1123,
-                "vsVNINDEX3m": -0.0452,
+                "ret1w": -0.0409,
+                "ret1m": -0.1353,
+                "ret3m": -0.1087,
+                "vsVNINDEX3m": -0.0458,
                 "vsVN303m": -0.0101,
-                "priceVsSma20Pct": -4.21,
-                "priceVsSma50Pct": -9.74
+                "priceVsSma20Pct": -3.84,
+                "priceVsSma50Pct": -9.38
               },
               "wyckoff": {
                 "phase": "Markdown",
@@ -8393,7 +8617,7 @@
                 "label": "Early repair / stop bleeding trigger",
                 "reason": "A reclaim of 25.820 would only improve the tape from damaged to repair mode. It is not the same as a confirmed buy yet."
               },
-              "triggerDistancePct": 5.39,
+              "triggerDistancePct": 4.96,
               "score": 102.5,
               "reason": "high quality | coverage 100% | Weak | STRONG_SELL"
             },
@@ -8401,7 +8625,7 @@
               "ticker": "TCB",
               "name": "Techcombank",
               "sector": "BANK",
-              "price": 30250,
+              "price": 30350,
               "signal": "STRONG_SELL",
               "confidence": 6,
               "strength": {
@@ -8417,13 +8641,13 @@
                 "coveragePct": 100
               },
               "relative": {
-                "ret1w": 0.0067,
-                "ret1m": -0.1597,
-                "ret3m": -0.1116,
-                "vsVNINDEX3m": -0.0445,
-                "vsVN303m": -0.0094,
-                "priceVsSma20Pct": -2.7,
-                "priceVsSma50Pct": -10.58
+                "ret1w": 0.01,
+                "ret1m": -0.1569,
+                "ret3m": -0.1087,
+                "vsVNINDEX3m": -0.0458,
+                "vsVN303m": -0.0101,
+                "priceVsSma20Pct": -2.4,
+                "priceVsSma50Pct": -10.29
               },
               "wyckoff": {
                 "phase": "Markdown",
@@ -8439,7 +8663,7 @@
                 "label": "Early repair / stop bleeding trigger",
                 "reason": "A reclaim of 31.920 would only improve the tape from damaged to repair mode. It is not the same as a confirmed buy yet."
               },
-              "triggerDistancePct": 5.52,
+              "triggerDistancePct": 5.17,
               "score": 101.5,
               "reason": "high quality | coverage 100% | Weak | STRONG_SELL"
             },
@@ -8447,7 +8671,7 @@
               "ticker": "FPT",
               "name": "FPT Corp",
               "sector": "TECH",
-              "price": 74300,
+              "price": 74400,
               "signal": "STRONG_SELL",
               "confidence": 8,
               "strength": {
@@ -8463,13 +8687,13 @@
                 "coveragePct": 100
               },
               "relative": {
-                "ret1w": -0.0326,
-                "ret1m": -0.1661,
-                "ret3m": -0.2121,
-                "vsVNINDEX3m": -0.145,
-                "vsVN303m": -0.1099,
-                "priceVsSma20Pct": -7.03,
-                "priceVsSma50Pct": -19.18
+                "ret1w": -0.0313,
+                "ret1m": -0.165,
+                "ret3m": -0.211,
+                "vsVNINDEX3m": -0.1481,
+                "vsVN303m": -0.1124,
+                "priceVsSma20Pct": -6.91,
+                "priceVsSma50Pct": -19.07
               },
               "wyckoff": {
                 "phase": "Markdown",
@@ -8485,13 +8709,13 @@
                 "label": "Early repair / stop bleeding trigger",
                 "reason": "A reclaim of 82.960 would only improve the tape from damaged to repair mode. It is not the same as a confirmed buy yet."
               },
-              "triggerDistancePct": 11.66,
+              "triggerDistancePct": 11.51,
               "score": 98.5,
               "reason": "high quality | coverage 100% | Weak | STRONG_SELL"
             }
           ],
           "meta": {
-            "snapshotGenerated": "2026-03-26T06:41:14.308Z",
+            "snapshotGenerated": "2026-03-26T06:57:59.362Z",
             "marketRegime": "bearish",
             "marketSession": "open_pm",
             "pulseStatus": "correction",
@@ -8517,5 +8741,5 @@
       }
     }
   },
-  "prompt": ""
+  "prompt": "I have 5 Vietnam stocks monitored by my local Saigon Terminal snapshot (2026-03-26T06:57:59.362Z).\n\nRules:\n- VPS is the live market source.\n- KBS enriches fundamentals and ownership when reachable.\n- Missing CAN SLIM factors are unknown, not neutral.\n- CAN SLIM ranks ticker strength; Wyckoff governs timing, entry, and exit bias.\n- Confidence is a rule-strength score, not certainty.\n\nMarket:\n- Session: open_pm\n- Regime: bearish\n- Pulse: correction | Exposure 0-20% | Dist days 6\n- Breadth: 0 up / 5 down / 0 flat\n- Turnover: 1.5T\n- Alert center: Market risk is elevated [critical] | FPT bearish breakdown [critical] | MWG bearish breakdown [critical]\n- Smart lists: Leadership 3 | Near Entry 1 | Repair Watch 1 | Breakdown Risk 4\n\nPlease validate the rule reads, flag weak data coverage, and identify the strongest and weakest setups.\n\n▸ CTG (VietinBank, BANK)\n  Price: 33.700 (Session -1.03% | Vs prev close +1.03%) | Value: 143.8B | Vol 4.3M (0.35x avg)\nStrength: Watch 41/100 | Rank #1\n  Relative: 1W -2.7% | 1M -12.5% | 3M -4.5% | vs VNINDEX +1.8% | vs VN30 +5.3%\n  Market pulse: correction | Exposure 0-20% | Dist days 6\n  Wyckoff: Accumulation Phase B - Early Base Repair | Bias wait | Confidence 57 | Action Stay on watch, not on full risk\n  Wyckoff tests: 4/7 buy tests passed\n  Wyckoff plan: This looks more like an early base repair than a confirmed trend reversal. Stay on watch until price reclaims repair levels, then the range ceiling.\n  Observed CAN SLIM: 40/70 | Coverage 100% [C:6 A:10 N:4 S:2 L:6 I:10 M:2]\n  Rule Read: Neutral / Mixed | Rule Strength: 4/10 (low conviction)\n  Positive drivers: RS vs VNINDEX 3M +1.8%; RSI 41 in healthy range\n  Negative drivers: Price -9.8% vs SMA50; Volume only 0.35x avg20; Market regime bearish; Foreign flow unavailable\n  Warnings: Foreign flow unavailable\n  No active long entry yet. Watch: Early repair trigger 34.840 | Full demand confirmation 39.295\n\n▸ MWG (Thế Giới Di Động, RETAIL)\n  Price: 77.900 (Session -0.13% | Vs prev close +1.64%) | Value: 395.9B | Vol 5.1M (0.53x avg)\nStrength: Weak 36/100 | Rank #2\n  Relative: 1W -5.5% | 1M -16.2% | 3M -10.6% | vs VNINDEX -4.3% | vs VN30 -0.7%\n  Market pulse: correction | Exposure 0-20% | Dist days 6\n  Wyckoff: Markdown Phase E - Active Downtrend | Bias avoid | Confidence 77 | Action No long entries in active markdown\n  Wyckoff tests: 6/8 sell tests passed\n  Wyckoff plan: Do not buy into active markdown. Wait for stopping action or a spring first.\n  Observed CAN SLIM: 40/70 | Coverage 100% [C:4 A:10 N:6 S:4 L:4 I:10 M:2]\n  Rule Read: Strong Bearish Bias | Rule Strength: 8/10 (high conviction)\n  Positive drivers: RSI 44 in healthy range\n  Negative drivers: RS vs VNINDEX 3M -4.3%; Price -9.9% vs SMA50; Volume only 0.53x avg20; Market regime bearish; CAN SLIM strength Weak (36/100)\n  Warnings: Foreign flow unavailable\n  No active long entry yet. Watch: Early repair / stop bleeding trigger 82.775 | Full demand confirmation 94.771\n\n▸ HDB (HDBank, BANK)\n  Price: 24.600 (Session -1.40% | Vs prev close +1.20%) | Value: 183.7B | Vol 7.5M (0.49x avg)\nStrength: Weak 34/100 | Rank #3\n  Relative: 1W -4.1% | 1M -13.5% | 3M -10.9% | vs VNINDEX -4.6% | vs VN30 -1.0%\n  Market pulse: correction | Exposure 0-20% | Dist days 6\n  Wyckoff: Markdown Phase E - Active Downtrend | Bias avoid | Confidence 59 | Action No long entries in active markdown\n  Wyckoff tests: 6/8 sell tests passed\n  Wyckoff plan: Do not buy into active markdown. Wait for stopping action or a spring first.\n  Observed CAN SLIM: 38/70 | Coverage 100% [C:10 A:10 N:6 S:4 L:4 I:2 M:2]\n  Rule Read: Strong Bearish Bias | Rule Strength: 6/10 (moderate conviction)\n  Positive drivers: —\n  Negative drivers: RS vs VNINDEX 3M -4.6%; Price -9.4% vs SMA50; Volume only 0.49x avg20; Market regime bearish; CAN SLIM strength Weak (34/100)\n  Warnings: Foreign flow unavailable\n  No active long entry yet. Watch: Early repair / stop bleeding trigger 25.820 | Full demand confirmation 28.994\n\n▸ TCB (Techcombank, BANK)\n  Price: 30.350 (Session -1.14% | Vs prev close +1.46%) | Value: 173.6B | Vol 5.7M (0.39x avg)\nStrength: Weak 30/100 | Rank #4\n  Relative: 1W +1.0% | 1M -15.7% | 3M -10.9% | vs VNINDEX -4.6% | vs VN30 -1.0%\n  Market pulse: correction | Exposure 0-20% | Dist days 6\n  Wyckoff: Markdown Phase E - Active Downtrend | Bias avoid | Confidence 56 | Action No long entries in active markdown\n  Wyckoff tests: 5/8 sell tests passed\n  Wyckoff plan: Do not buy into active markdown. Wait for stopping action or a spring first.\n  Observed CAN SLIM: 34/70 | Coverage 100% [C:4 A:8 N:4 S:2 L:4 I:10 M:2]\n  Rule Read: Strong Bearish Bias | Rule Strength: 6/10 (moderate conviction)\n  Positive drivers: RSI 44 in healthy range\n  Negative drivers: RS vs VNINDEX 3M -4.6%; Price -10.3% vs SMA50; Volume only 0.39x avg20; Market regime bearish; CAN SLIM strength Weak (30/100)\n  Warnings: Foreign flow unavailable\n  No active long entry yet. Watch: Early repair / stop bleeding trigger 31.920 | Full demand confirmation 36.632\n\n▸ FPT (FPT Corp, TECH)\n  Price: 74.400 (Session -3.38% | Vs prev close +3.38%) | Value: 581.2B | Vol 7.7M (0.56x avg)\nStrength: Weak 10/100 | Rank #5\n  Relative: 1W -3.1% | 1M -16.5% | 3M -21.1% | vs VNINDEX -14.8% | vs VN30 -11.2%\n  Market pulse: correction | Exposure 0-20% | Dist days 6\n  Wyckoff: Markdown Phase E - Active Downtrend | Bias avoid | Confidence 85 | Action No long entries in active markdown\n  Wyckoff tests: 6/8 sell tests passed\n  Wyckoff plan: Do not buy into active markdown. Wait for stopping action or a spring first.\n  Observed CAN SLIM: 30/70 | Coverage 100% [C:6 A:4 N:2 S:4 L:2 I:10 M:2]\n  Rule Read: Strong Bearish Bias | Rule Strength: 8/10 (high conviction)\n  Positive drivers: —\n  Negative drivers: RS vs VNINDEX 3M -14.8%; Price -19.1% vs SMA50; Volume only 0.56x avg20; Market regime bearish; CAN SLIM strength Weak (10/100)\n  Warnings: Foreign flow unavailable\n  No active long entry yet. Watch: Early repair / stop bleeding trigger 82.960 | Full demand confirmation 100.500"
 }

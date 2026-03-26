@@ -18623,13 +18623,981 @@
             "observedPct": 0.43
           }
         ]
+      },
+      {
+        "id": 41,
+        "timestamp": "2026-03-26T06:57:56.712Z",
+        "ticker": "FPT",
+        "name": "FPT Corp",
+        "sector": "TECH",
+        "scanTime": "2026-03-26T06:57:56.700Z",
+        "scanRunId": "watchlist-mn74esaa-njk7qw",
+        "price": 74400,
+        "open": 77000,
+        "high": 77000,
+        "low": 74200,
+        "sessionChangePct": -3.38,
+        "prevCloseChangePct": 3.38,
+        "changePct": -3.38,
+        "priceDate": "2026-03-26",
+        "volume": 7746500,
+        "avgVol20": 13913979,
+        "volRatio": 0.56,
+        "tradedValue": 581219895000,
+        "avgValue20": 1126089066330,
+        "sma20": 79920,
+        "sma50": 91934,
+        "sma200": 92391,
+        "rsi14": 37.3,
+        "macd": -4845,
+        "atr14": 2957,
+        "pe": 15.9,
+        "pb": 3.7,
+        "eps": 6021,
+        "roe": 23.6,
+        "marketCap": 126740929802400,
+        "foreignNet5d": null,
+        "canslim": {
+          "C": 6,
+          "A": 4,
+          "N": 2,
+          "S": 4,
+          "L": 2,
+          "I": 10,
+          "M": 2
+        },
+        "observedCanSlim": {
+          "C": 6,
+          "A": 4,
+          "N": 2,
+          "S": 4,
+          "L": 2,
+          "I": 10,
+          "M": 2
+        },
+        "canslimTotal": 30,
+        "observedCanSlimTotal": 30,
+        "observedCanSlimMax": 70,
+        "coveragePct": 100,
+        "strength": {
+          "score": 10,
+          "label": "Weak",
+          "canSlimRatio": 42.9,
+          "marketLeader": false
+        },
+        "volumeSignal": "NORMAL",
+        "wyckoffPhase": "Markdown",
+        "wyckoffStage": "Phase E",
+        "wyckoffBias": "avoid",
+        "wyckoff": {
+          "phase": "Markdown",
+          "stage": "Phase E",
+          "label": "Markdown Phase E - Active Downtrend",
+          "code": "markdown",
+          "confidence": 85,
+          "confidenceLabel": "high",
+          "bias": "avoid",
+          "levels": {
+            "support": 71600,
+            "resistance": 100000,
+            "midpoint": 85800,
+            "rangeWidthPct": 38.17,
+            "pricePositionPct": 9.9,
+            "atr": 2957
+          },
+          "events": {
+            "spring": {
+              "active": false,
+              "name": "spring"
+            },
+            "upthrust": {
+              "active": false,
+              "name": "upthrust"
+            },
+            "sos": {
+              "active": false,
+              "name": "SOS"
+            },
+            "sow": {
+              "active": true,
+              "name": "SOW",
+              "index": 52,
+              "date": "2026-03-20",
+              "price": 74600,
+              "low": 73600,
+              "high": 76500,
+              "support": 75900,
+              "resistance": 106400,
+              "volumeRatio": 1.43,
+              "closeLocation": 0.34
+            },
+            "stoppingVolume": {
+              "active": false,
+              "name": "stopping_volume"
+            },
+            "buyingClimax": {
+              "active": false,
+              "name": "buying_climax"
+            },
+            "backup": {
+              "active": false,
+              "name": "backup",
+              "date": "2026-03-26",
+              "price": 74400,
+              "support": 71600,
+              "resistance": 100000,
+              "volumeRatio": 0.56
+            },
+            "lpsy": {
+              "active": true,
+              "name": "LPSY",
+              "date": "2026-03-26",
+              "price": 74400,
+              "support": 75900,
+              "resistance": 100000,
+              "volumeRatio": 0.56
+            }
+          },
+          "tests": {
+            "activeSide": "sell",
+            "summary": "6/8 sell tests passed",
+            "active": {
+              "side": "sell",
+              "supported": 8,
+              "passed": 6,
+              "ratio": 0.75,
+              "summary": "6/8 sell tests passed"
+            },
+            "buy": {
+              "side": "buy",
+              "supported": 7,
+              "passed": 1,
+              "ratio": 0.14,
+              "summary": "1/7 buy tests passed",
+              "items": [
+                {
+                  "label": "1. Downside objective accomplished",
+                  "supported": false,
+                  "passed": null,
+                  "status": "unsupported",
+                  "detail": "Point-and-Figure downside count is not implemented yet."
+                },
+                {
+                  "label": "2. Preliminary support / selling climax / test",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "Needs visible stopping action, a spring, or a mature accumulation turn."
+                },
+                {
+                  "label": "3. Activity bullish",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "Rallies should show better effort than reactions."
+                },
+                {
+                  "label": "4. Downward stride broken",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "Price needs to stop respecting the old downtrend line or shelf."
+                },
+                {
+                  "label": "5. Higher lows",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "The base should stop printing lower lows."
+                },
+                {
+                  "label": "6. Higher highs",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "Demand should start winning the swing highs."
+                },
+                {
+                  "label": "7. Stock stronger than the market",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "Relative strength should at least hold up versus VNINDEX."
+                },
+                {
+                  "label": "8. Base forming",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "A tradable accumulation needs a box or cause to build against."
+                },
+                {
+                  "label": "9. Upside reward at least 3x risk",
+                  "supported": false,
+                  "passed": null,
+                  "status": "unsupported",
+                  "detail": "No active long trigger exists yet, so reward/risk cannot be confirmed."
+                }
+              ]
+            },
+            "sell": {
+              "side": "sell",
+              "supported": 8,
+              "passed": 6,
+              "ratio": 0.75,
+              "summary": "6/8 sell tests passed",
+              "items": [
+                {
+                  "label": "1. Upside objective accomplished",
+                  "supported": false,
+                  "passed": null,
+                  "status": "unsupported",
+                  "detail": "Point-and-Figure upside count is not implemented yet."
+                },
+                {
+                  "label": "2. Activity bearish",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "Reactions should carry more pressure than rallies."
+                },
+                {
+                  "label": "3. Preliminary supply / buying climax",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "Supply should be visible near the top or at the failed breakout."
+                },
+                {
+                  "label": "4. Stock weaker than the market",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "Relative weakness should confirm the bearish case."
+                },
+                {
+                  "label": "5. Upward stride broken",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "The prior uptrend should no longer be intact."
+                },
+                {
+                  "label": "6. Lower highs",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "Bearish structures lose altitude on rallies."
+                },
+                {
+                  "label": "7. Lower lows",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "Support breaks should create lower lows."
+                },
+                {
+                  "label": "8. Crown / supply range forming",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "Distribution normally leaves a lateral crown before markdown expands."
+                },
+                {
+                  "label": "9. Downside reward at least 3x risk",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "The damaged structure should still offer meaningful downside asymmetry."
+                }
+              ]
+            }
+          },
+          "action": {
+            "label": "No long entries in active markdown",
+            "summary": "Trend and structure are both hostile. The correct action is patience.",
+            "steps": [
+              "Stand aside while price stays below key moving averages and keeps making weak rebounds.",
+              "Wait for stopping action, a spring, or a new range before reconsidering any long.",
+              "Do not treat 71.600 as stable support if price is already below it.",
+              "Keep the name on a watchlist, not in a fresh long position."
+            ],
+            "shouldAvoid": [
+              "Do not catch a falling knife in Phase E markdown.",
+              "Do not set a buy just because RSI looks low without structural repair."
+            ]
+          },
+          "entry": {
+            "status": "avoid",
+            "summary": "Do not buy into active markdown. Wait for stopping action or a spring first.",
+            "plans": [],
+            "watch": [
+              {
+                "label": "Early repair / stop bleeding trigger",
+                "price": 82960,
+                "why": "A reclaim of 82.960 would only improve the tape from damaged to repair mode. It is not the same as a confirmed buy yet."
+              },
+              {
+                "label": "Full demand confirmation",
+                "price": 100500,
+                "why": "A decisive move through 100.500 is needed before the structure becomes a real buy setup."
+              }
+            ],
+            "invalidation": "A clean move below 71.242 keeps the structure defensive."
+          },
+          "reasoning": [
+            {
+              "step": 1,
+              "title": "Trend Context",
+              "detail": "40-session backdrop is downtrend; price is -19.1% vs SMA50 with 1M return -17.8%."
+            },
+            {
+              "step": 2,
+              "title": "Trading Range Map",
+              "detail": "30-session support/resistance sit near 71.600 / 100.000; range width is 38.2% and the close sits at 10% of that box (lower third)."
+            },
+            {
+              "step": 3,
+              "title": "Supply / Demand Event",
+              "detail": "Recent structural signals: SOW on 2026-03-20 (1.43x vol), LPSY on 2026-03-26 (0.56x vol)."
+            },
+            {
+              "step": 4,
+              "title": "Phase Decision",
+              "detail": "The structure is classified as Markdown Phase E - Active Downtrend because the stock is still below trend support and no convincing stopping or spring event has appeared yet."
+            },
+            {
+              "step": 5,
+              "title": "Wyckoff Tests",
+              "detail": "6/8 sell tests passed. Supported tests are used as a confirmation layer; unsupported P&F tests stay explicitly unscored."
+            }
+          ],
+          "context": {
+            "trendBias": "downtrend",
+            "volumeDry": true,
+            "priceVsSma50Pct": -19.07,
+            "ret20": -0.1779,
+            "ret40": -0.2812,
+            "distanceFromSma20Atr": -1.87,
+            "rangeLocation": "lower third"
+          },
+          "notes": [
+            "Wyckoff output is inferred from daily OHLCV, not intraday tape.",
+            "The entry plan is only active when price behavior matches the listed confirmation condition."
+          ]
+        },
+        "relative": {
+          "ret1d": -0.0338,
+          "ret1w": -0.0313,
+          "ret1m": -0.165,
+          "ret3m": -0.211,
+          "vsVNINDEX3m": -0.1481,
+          "vsVN303m": -0.1124,
+          "priceVsSma20Pct": -6.91,
+          "priceVsSma50Pct": -19.07
+        },
+        "market": {
+          "session": "open_pm",
+          "regime": "bearish",
+          "trendScore": 0.25,
+          "pulse": {
+            "primary": "VNINDEX",
+            "status": "correction",
+            "score": 0.25,
+            "exposure": "0-20%",
+            "distributionDays": 6,
+            "followThrough": null,
+            "note": "Distribution pressure is elevated with 6 active distribution days."
+          },
+          "indexes": {
+            "VNINDEX": {
+              "price": 1644.51,
+              "open": 1661.53,
+              "prevClose": 1658.19,
+              "sessionChangePct": -1.02,
+              "prevCloseChangePct": -0.82,
+              "changePct": -1.02,
+              "ret1m": -0.1163,
+              "ret3m": -0.0629,
+              "sma20": 1718.54,
+              "sma50": 1791.39,
+              "regime": "bearish",
+              "regimeScore": 0.25,
+              "trendScore": 0.25,
+              "pulse": {
+                "symbol": "VNINDEX",
+                "status": "correction",
+                "score": 0.25,
+                "exposure": "0-20%",
+                "distributionDays": 6,
+                "distributionDayDates": [
+                  "2026-03-02",
+                  "2026-03-09",
+                  "2026-03-13",
+                  "2026-03-19",
+                  "2026-03-20",
+                  "2026-03-23"
+                ],
+                "rallyDayCount": 3,
+                "followThrough": null,
+                "note": "Distribution pressure is elevated with 6 active distribution days."
+              },
+              "date": "2026-03-26"
+            },
+            "VN30": {
+              "price": 1794.38,
+              "open": 1813.98,
+              "prevClose": 1814.73,
+              "sessionChangePct": -1.08,
+              "prevCloseChangePct": -1.12,
+              "changePct": -1.08,
+              "ret1m": -0.1245,
+              "ret3m": -0.0986,
+              "sma20": 1871.22,
+              "sma50": 1968.44,
+              "regime": "bearish",
+              "regimeScore": 0.25,
+              "trendScore": 0.25,
+              "pulse": {
+                "symbol": "VN30",
+                "status": "correction",
+                "score": 0.25,
+                "exposure": "0-20%",
+                "distributionDays": 5,
+                "distributionDayDates": [
+                  "2026-03-02",
+                  "2026-03-09",
+                  "2026-03-18",
+                  "2026-03-19",
+                  "2026-03-23"
+                ],
+                "rallyDayCount": 3,
+                "followThrough": null,
+                "note": "Distribution pressure is elevated with 5 active distribution days."
+              },
+              "date": "2026-03-26"
+            }
+          }
+        },
+        "quality": {
+          "score": 96,
+          "label": "high",
+          "coveragePct": 100,
+          "coverageLabel": "strong",
+          "historyBars": 57,
+          "freshnessSec": 1,
+          "snapshotOverlayUsed": true,
+          "missingFactors": [],
+          "missingFields": [
+            "foreignNet5d"
+          ],
+          "sourceFlags": {
+            "price": "vps_snapshot_overlay",
+            "market": "vps_history",
+            "fundamentals": "kbs_enrichment",
+            "ownership": "kbs_profile",
+            "foreign": "unavailable",
+            "providerRoadmap": {
+              "kbs": {
+                "status": "active",
+                "role": "fundamentals_ownership_enrichment"
+              },
+              "fireant": {
+                "status": "planned",
+                "role": "fundamentals_enrichment"
+              },
+              "ssi": {
+                "status": "planned",
+                "role": "execution_metadata"
+              },
+              "fiingroup": {
+                "status": "vendor_review",
+                "role": "enterprise_datafeed"
+              },
+              "vietstock": {
+                "status": "vendor_review",
+                "role": "enterprise_datafeed"
+              },
+              "vnstock": {
+                "status": "reference_only",
+                "role": "research_prototyping"
+              }
+            }
+          },
+          "warnings": [
+            "Foreign flow unavailable"
+          ]
+        },
+        "explain": {
+          "ruleRead": "Strong Bearish Bias",
+          "ruleStrength": {
+            "score": 8,
+            "label": "high conviction",
+            "rawScore": 10
+          },
+          "driversPositive": [],
+          "driversNegative": [
+            "RS vs VNINDEX 3M -14.8%",
+            "Price -19.1% vs SMA50",
+            "Volume only 0.56x avg20",
+            "Market regime bearish",
+            "CAN SLIM strength Weak (10/100)"
+          ],
+          "factorBreakdown": {
+            "C": {
+              "metric": "epsGrowthQoQ",
+              "rawValue": 0.1751,
+              "thresholds": [
+                0,
+                0.1,
+                0.2,
+                0.4
+              ],
+              "score": 6,
+              "status": "observed",
+              "legacyScore": 6,
+              "factorLabel": "Current earnings",
+              "metricLabel": "Quarterly EPS growth",
+              "displayValue": "+17.5%",
+              "bandLabel": "10.0% to 20.0%",
+              "bands": [
+                {
+                  "score": 2,
+                  "label": "< 0.0%",
+                  "active": false
+                },
+                {
+                  "score": 4,
+                  "label": "0.0% to 10.0%",
+                  "active": false
+                },
+                {
+                  "score": 6,
+                  "label": "10.0% to 20.0%",
+                  "active": true
+                },
+                {
+                  "score": 8,
+                  "label": "20.0% to 40.0%",
+                  "active": false
+                },
+                {
+                  "score": 10,
+                  "label": ">= 40.0%",
+                  "active": false
+                }
+              ],
+              "reason": "Quarterly EPS growth is +17.5%, between 10.0% and 20.0%, so C scores 6/10."
+            },
+            "A": {
+              "metric": "epsGrowth1Y",
+              "rawValue": 0.0553,
+              "thresholds": [
+                0,
+                0.08,
+                0.15,
+                0.25
+              ],
+              "score": 4,
+              "status": "observed",
+              "legacyScore": 4,
+              "factorLabel": "Annual growth",
+              "metricLabel": "Annual EPS growth",
+              "displayValue": "+5.5%",
+              "bandLabel": "0.0% to 8.0%",
+              "bands": [
+                {
+                  "score": 2,
+                  "label": "< 0.0%",
+                  "active": false
+                },
+                {
+                  "score": 4,
+                  "label": "0.0% to 8.0%",
+                  "active": true
+                },
+                {
+                  "score": 6,
+                  "label": "8.0% to 15.0%",
+                  "active": false
+                },
+                {
+                  "score": 8,
+                  "label": "15.0% to 25.0%",
+                  "active": false
+                },
+                {
+                  "score": 10,
+                  "label": ">= 25.0%",
+                  "active": false
+                }
+              ],
+              "reason": "Annual EPS growth is +5.5%, between 0.0% and 8.0%, so A scores 4/10."
+            },
+            "N": {
+              "metric": "nearHighPct",
+              "rawValue": 0.684,
+              "thresholds": [
+                0.7,
+                0.8,
+                0.9,
+                0.95
+              ],
+              "score": 2,
+              "status": "observed",
+              "legacyScore": 2,
+              "factorLabel": "New highs",
+              "metricLabel": "Price vs 52W high",
+              "displayValue": "68.4% of 52W high",
+              "bandLabel": "< 70.0%",
+              "bands": [
+                {
+                  "score": 2,
+                  "label": "< 70.0%",
+                  "active": true
+                },
+                {
+                  "score": 4,
+                  "label": "70.0% to 80.0%",
+                  "active": false
+                },
+                {
+                  "score": 6,
+                  "label": "80.0% to 90.0%",
+                  "active": false
+                },
+                {
+                  "score": 8,
+                  "label": "90.0% to 95.0%",
+                  "active": false
+                },
+                {
+                  "score": 10,
+                  "label": ">= 95.0%",
+                  "active": false
+                }
+              ],
+              "reason": "Price vs 52W high is 68.4% of 52W high, below 70.0%, so N scores 2/10."
+            },
+            "S": {
+              "metric": "volScore",
+              "rawValue": 0.56,
+              "thresholds": [
+                0.4,
+                0.7,
+                1,
+                1.5
+              ],
+              "score": 4,
+              "status": "observed",
+              "legacyScore": 4,
+              "factorLabel": "Supply / demand",
+              "metricLabel": "Volume vs avg20",
+              "displayValue": "0.56x",
+              "bandLabel": "0.40x to 0.70x",
+              "bands": [
+                {
+                  "score": 2,
+                  "label": "< 0.40x",
+                  "active": false
+                },
+                {
+                  "score": 4,
+                  "label": "0.40x to 0.70x",
+                  "active": true
+                },
+                {
+                  "score": 6,
+                  "label": "0.70x to 1.00x",
+                  "active": false
+                },
+                {
+                  "score": 8,
+                  "label": "1.00x to 1.50x",
+                  "active": false
+                },
+                {
+                  "score": 10,
+                  "label": ">= 1.50x",
+                  "active": false
+                }
+              ],
+              "reason": "Volume vs avg20 is 0.56x, between 0.40x and 0.70x, so S scores 4/10."
+            },
+            "L": {
+              "metric": "rs3m",
+              "rawValue": -0.1303,
+              "thresholds": [
+                -0.05,
+                0,
+                0.05,
+                0.15
+              ],
+              "score": 2,
+              "status": "observed",
+              "legacyScore": 2,
+              "factorLabel": "Leader / laggard",
+              "metricLabel": "3M relative strength",
+              "displayValue": "-13.0%",
+              "bandLabel": "< -5.0%",
+              "bands": [
+                {
+                  "score": 2,
+                  "label": "< -5.0%",
+                  "active": true
+                },
+                {
+                  "score": 4,
+                  "label": "-5.0% to 0.0%",
+                  "active": false
+                },
+                {
+                  "score": 6,
+                  "label": "0.0% to 5.0%",
+                  "active": false
+                },
+                {
+                  "score": 8,
+                  "label": "5.0% to 15.0%",
+                  "active": false
+                },
+                {
+                  "score": 10,
+                  "label": ">= 15.0%",
+                  "active": false
+                }
+              ],
+              "reason": "3M relative strength is -13.0%, below -5.0%, so L scores 2/10."
+            },
+            "I": {
+              "metric": "institutionScore",
+              "rawValue": 0.5699,
+              "thresholds": [
+                0.05,
+                0.1,
+                0.2,
+                0.35
+              ],
+              "score": 10,
+              "status": "observed",
+              "legacyScore": 10,
+              "factorLabel": "Institutional support",
+              "metricLabel": "Institutional ownership proxy",
+              "displayValue": "+57.0%",
+              "bandLabel": ">= 35.0%",
+              "bands": [
+                {
+                  "score": 2,
+                  "label": "< 5.0%",
+                  "active": false
+                },
+                {
+                  "score": 4,
+                  "label": "5.0% to 10.0%",
+                  "active": false
+                },
+                {
+                  "score": 6,
+                  "label": "10.0% to 20.0%",
+                  "active": false
+                },
+                {
+                  "score": 8,
+                  "label": "20.0% to 35.0%",
+                  "active": false
+                },
+                {
+                  "score": 10,
+                  "label": ">= 35.0%",
+                  "active": true
+                }
+              ],
+              "reason": "Institutional ownership proxy is +57.0%, at or above 35.0%, so I scores 10/10."
+            },
+            "M": {
+              "metric": "marketTrend",
+              "rawValue": 0.25,
+              "thresholds": [
+                0.3,
+                0.5,
+                0.6,
+                0.8
+              ],
+              "score": 2,
+              "status": "observed",
+              "legacyScore": 2,
+              "factorLabel": "Market direction",
+              "metricLabel": "Market trend score",
+              "displayValue": "0.25",
+              "bandLabel": "< 0.30",
+              "bands": [
+                {
+                  "score": 2,
+                  "label": "< 0.30",
+                  "active": true
+                },
+                {
+                  "score": 4,
+                  "label": "0.30 to 0.50",
+                  "active": false
+                },
+                {
+                  "score": 6,
+                  "label": "0.50 to 0.60",
+                  "active": false
+                },
+                {
+                  "score": 8,
+                  "label": "0.60 to 0.80",
+                  "active": false
+                },
+                {
+                  "score": 10,
+                  "label": ">= 0.80",
+                  "active": false
+                }
+              ],
+              "reason": "Market trend score is 0.25, below 0.30, so M scores 2/10."
+            }
+          },
+          "normalizedCanSlim": 30,
+          "wyckoffAction": {
+            "label": "No long entries in active markdown",
+            "summary": "Trend and structure are both hostile. The correct action is patience.",
+            "steps": [
+              "Stand aside while price stays below key moving averages and keeps making weak rebounds.",
+              "Wait for stopping action, a spring, or a new range before reconsidering any long.",
+              "Do not treat 71.600 as stable support if price is already below it.",
+              "Keep the name on a watchlist, not in a fresh long position."
+            ],
+            "shouldAvoid": [
+              "Do not catch a falling knife in Phase E markdown.",
+              "Do not set a buy just because RSI looks low without structural repair."
+            ]
+          },
+          "wyckoffEntry": {
+            "status": "avoid",
+            "summary": "Do not buy into active markdown. Wait for stopping action or a spring first.",
+            "plans": [],
+            "watch": [
+              {
+                "label": "Early repair / stop bleeding trigger",
+                "price": 82960,
+                "why": "A reclaim of 82.960 would only improve the tape from damaged to repair mode. It is not the same as a confirmed buy yet."
+              },
+              {
+                "label": "Full demand confirmation",
+                "price": 100500,
+                "why": "A decisive move through 100.500 is needed before the structure becomes a real buy setup."
+              }
+            ],
+            "invalidation": "A clean move below 71.242 keeps the structure defensive."
+          },
+          "wyckoffReasoning": [
+            {
+              "step": 1,
+              "title": "Trend Context",
+              "detail": "40-session backdrop is downtrend; price is -19.1% vs SMA50 with 1M return -17.8%."
+            },
+            {
+              "step": 2,
+              "title": "Trading Range Map",
+              "detail": "30-session support/resistance sit near 71.600 / 100.000; range width is 38.2% and the close sits at 10% of that box (lower third)."
+            },
+            {
+              "step": 3,
+              "title": "Supply / Demand Event",
+              "detail": "Recent structural signals: SOW on 2026-03-20 (1.43x vol), LPSY on 2026-03-26 (0.56x vol)."
+            },
+            {
+              "step": 4,
+              "title": "Phase Decision",
+              "detail": "The structure is classified as Markdown Phase E - Active Downtrend because the stock is still below trend support and no convincing stopping or spring event has appeared yet."
+            },
+            {
+              "step": 5,
+              "title": "Wyckoff Tests",
+              "detail": "6/8 sell tests passed. Supported tests are used as a confirmation layer; unsupported P&F tests stay explicitly unscored."
+            }
+          ]
+        },
+        "entry": [],
+        "tp": [],
+        "sl": null,
+        "signal": "STRONG_SELL",
+        "confidence": 8,
+        "rawScore": 10,
+        "breakout": {
+          "state": "not_ready",
+          "score": 0,
+          "triggerPrice": 82960,
+          "distancePct": -10.32,
+          "invalidation": "A clean move below 71.242 keeps the structure defensive.",
+          "volumeSupport": "dry",
+          "reason": "Early repair / stop bleeding trigger; RS vs VNINDEX -14.8%; volume dry"
+        },
+        "executionRisk": {
+          "status": "unavailable",
+          "liquidityLabel": "trap_risk",
+          "avgValue20": 1126089066330,
+          "tradedValue": 581219895000,
+          "stopDistancePct": null,
+          "stopDistanceAtr": null,
+          "riskReward1": null,
+          "riskReward2": null,
+          "pilotShares": 0,
+          "fullShares": 0,
+          "pilotNotional": 0,
+          "fullNotional": 0,
+          "reason": "No valid active buy plan with entry and stop exists yet."
+        },
+        "delta": "no change",
+        "historyMini": [
+          {
+            "timestamp": "2026-03-26T02:39:02.518Z",
+            "price": 75500,
+            "signal": "STRONG_SELL",
+            "confidence": 8,
+            "observedPct": 0.4
+          },
+          {
+            "timestamp": "2026-03-26T05:36:01.803Z",
+            "price": 74500,
+            "signal": "STRONG_SELL",
+            "confidence": 8,
+            "observedPct": 0.43
+          },
+          {
+            "timestamp": "2026-03-26T06:41:12.450Z",
+            "price": 74300,
+            "signal": "STRONG_SELL",
+            "confidence": 8,
+            "observedPct": 0.43
+          },
+          {
+            "timestamp": "2026-03-26T06:47:20.968Z",
+            "price": 74400,
+            "signal": "STRONG_SELL",
+            "confidence": 8,
+            "observedPct": 0.43
+          },
+          {
+            "timestamp": "2026-03-26T06:57:56.700Z",
+            "price": 74400,
+            "signal": "STRONG_SELL",
+            "confidence": 8,
+            "observedPct": 0.43
+          }
+        ],
+        "_scanMode": "watchlist",
+        "_scanUniverseKey": "CTG|FPT|HDB|MWG|TCB"
       }
     ],
     "meta": {
       "name": "FPT Corp",
       "sector": "TECH"
     },
-    "lastScan": "2026-03-26T06:47:20.983Z"
+    "lastScan": "2026-03-26T06:57:56.712Z"
   },
   "TCB": {
     "ticker": "TCB",
@@ -35543,13 +36511,974 @@
             "observedPct": 0.49
           }
         ]
+      },
+      {
+        "id": 34,
+        "timestamp": "2026-03-26T06:57:57.341Z",
+        "ticker": "TCB",
+        "name": "Techcombank",
+        "sector": "BANK",
+        "scanTime": "2026-03-26T06:57:57.325Z",
+        "scanRunId": "watchlist-mn74esaa-njk7qw",
+        "price": 30350,
+        "open": 30700,
+        "high": 30700,
+        "low": 30150,
+        "sessionChangePct": -1.14,
+        "prevCloseChangePct": 1.46,
+        "changePct": -1.14,
+        "priceDate": "2026-03-26",
+        "volume": 5720700,
+        "avgVol20": 14505488,
+        "volRatio": 0.39,
+        "tradedValue": 173623245000,
+        "avgValue20": 451203956148,
+        "sma20": 31095,
+        "sma50": 33832,
+        "sma200": 34004,
+        "rsi14": 44,
+        "macd": -1192,
+        "atr14": 939,
+        "pe": 9.8,
+        "pb": 1.4,
+        "eps": 3576,
+        "roe": 15.4,
+        "marketCap": 215067396564900,
+        "foreignNet5d": null,
+        "canslim": {
+          "C": 4,
+          "A": 8,
+          "N": 4,
+          "S": 2,
+          "L": 4,
+          "I": 10,
+          "M": 2
+        },
+        "observedCanSlim": {
+          "C": 4,
+          "A": 8,
+          "N": 4,
+          "S": 2,
+          "L": 4,
+          "I": 10,
+          "M": 2
+        },
+        "canslimTotal": 34,
+        "observedCanSlimTotal": 34,
+        "observedCanSlimMax": 70,
+        "coveragePct": 100,
+        "strength": {
+          "score": 30,
+          "label": "Weak",
+          "canSlimRatio": 48.6,
+          "marketLeader": false
+        },
+        "volumeSignal": "DRY_UP",
+        "wyckoffPhase": "Markdown",
+        "wyckoffStage": "Phase E",
+        "wyckoffBias": "avoid",
+        "wyckoff": {
+          "phase": "Markdown",
+          "stage": "Phase E",
+          "label": "Markdown Phase E - Active Downtrend",
+          "code": "markdown",
+          "confidence": 56,
+          "confidenceLabel": "low",
+          "bias": "avoid",
+          "levels": {
+            "support": 28900,
+            "resistance": 36450,
+            "midpoint": 32675,
+            "rangeWidthPct": 24.88,
+            "pricePositionPct": 19.2,
+            "atr": 939
+          },
+          "events": {
+            "spring": {
+              "active": false,
+              "name": "spring"
+            },
+            "upthrust": {
+              "active": false,
+              "name": "upthrust"
+            },
+            "sos": {
+              "active": false,
+              "name": "SOS"
+            },
+            "sow": {
+              "active": false,
+              "name": "SOW"
+            },
+            "stoppingVolume": {
+              "active": false,
+              "name": "stopping_volume"
+            },
+            "buyingClimax": {
+              "active": false,
+              "name": "buying_climax"
+            },
+            "backup": {
+              "active": false,
+              "name": "backup",
+              "date": "2026-03-26",
+              "price": 30350,
+              "support": 28900,
+              "resistance": 36450,
+              "volumeRatio": 0.39
+            },
+            "lpsy": {
+              "active": false,
+              "name": "LPSY",
+              "date": "2026-03-26",
+              "price": 30350,
+              "support": 28900,
+              "resistance": 36450,
+              "volumeRatio": 0.39
+            }
+          },
+          "tests": {
+            "activeSide": "sell",
+            "summary": "5/8 sell tests passed",
+            "active": {
+              "side": "sell",
+              "supported": 8,
+              "passed": 5,
+              "ratio": 0.63,
+              "summary": "5/8 sell tests passed"
+            },
+            "buy": {
+              "side": "buy",
+              "supported": 7,
+              "passed": 1,
+              "ratio": 0.14,
+              "summary": "1/7 buy tests passed",
+              "items": [
+                {
+                  "label": "1. Downside objective accomplished",
+                  "supported": false,
+                  "passed": null,
+                  "status": "unsupported",
+                  "detail": "Point-and-Figure downside count is not implemented yet."
+                },
+                {
+                  "label": "2. Preliminary support / selling climax / test",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "Needs visible stopping action, a spring, or a mature accumulation turn."
+                },
+                {
+                  "label": "3. Activity bullish",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "Rallies should show better effort than reactions."
+                },
+                {
+                  "label": "4. Downward stride broken",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "Price needs to stop respecting the old downtrend line or shelf."
+                },
+                {
+                  "label": "5. Higher lows",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "The base should stop printing lower lows."
+                },
+                {
+                  "label": "6. Higher highs",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "Demand should start winning the swing highs."
+                },
+                {
+                  "label": "7. Stock stronger than the market",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "Relative strength should at least hold up versus VNINDEX."
+                },
+                {
+                  "label": "8. Base forming",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "A tradable accumulation needs a box or cause to build against."
+                },
+                {
+                  "label": "9. Upside reward at least 3x risk",
+                  "supported": false,
+                  "passed": null,
+                  "status": "unsupported",
+                  "detail": "No active long trigger exists yet, so reward/risk cannot be confirmed."
+                }
+              ]
+            },
+            "sell": {
+              "side": "sell",
+              "supported": 8,
+              "passed": 5,
+              "ratio": 0.63,
+              "summary": "5/8 sell tests passed",
+              "items": [
+                {
+                  "label": "1. Upside objective accomplished",
+                  "supported": false,
+                  "passed": null,
+                  "status": "unsupported",
+                  "detail": "Point-and-Figure upside count is not implemented yet."
+                },
+                {
+                  "label": "2. Activity bearish",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "Reactions should carry more pressure than rallies."
+                },
+                {
+                  "label": "3. Preliminary supply / buying climax",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "Supply should be visible near the top or at the failed breakout."
+                },
+                {
+                  "label": "4. Stock weaker than the market",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "Relative weakness should confirm the bearish case."
+                },
+                {
+                  "label": "5. Upward stride broken",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "The prior uptrend should no longer be intact."
+                },
+                {
+                  "label": "6. Lower highs",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "Bearish structures lose altitude on rallies."
+                },
+                {
+                  "label": "7. Lower lows",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "Support breaks should create lower lows."
+                },
+                {
+                  "label": "8. Crown / supply range forming",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "Distribution normally leaves a lateral crown before markdown expands."
+                },
+                {
+                  "label": "9. Downside reward at least 3x risk",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "The damaged structure should still offer meaningful downside asymmetry."
+                }
+              ]
+            }
+          },
+          "action": {
+            "label": "No long entries in active markdown",
+            "summary": "Trend and structure are both hostile. The correct action is patience.",
+            "steps": [
+              "Stand aside while price stays below key moving averages and keeps making weak rebounds.",
+              "Wait for stopping action, a spring, or a new range before reconsidering any long.",
+              "Do not treat 28.900 as stable support if price is already below it.",
+              "Keep the name on a watchlist, not in a fresh long position."
+            ],
+            "shouldAvoid": [
+              "Do not catch a falling knife in Phase E markdown.",
+              "Do not set a buy just because RSI looks low without structural repair."
+            ]
+          },
+          "entry": {
+            "status": "avoid",
+            "summary": "Do not buy into active markdown. Wait for stopping action or a spring first.",
+            "plans": [],
+            "watch": [
+              {
+                "label": "Early repair / stop bleeding trigger",
+                "price": 31920,
+                "why": "A reclaim of 31.920 would only improve the tape from damaged to repair mode. It is not the same as a confirmed buy yet."
+              },
+              {
+                "label": "Full demand confirmation",
+                "price": 36632,
+                "why": "A decisive move through 36.632 is needed before the structure becomes a real buy setup."
+              }
+            ],
+            "invalidation": "A clean move below 28.756 keeps the structure defensive."
+          },
+          "reasoning": [
+            {
+              "step": 1,
+              "title": "Trend Context",
+              "detail": "40-session backdrop is downtrend; price is -10.3% vs SMA50 with 1M return -16.7%."
+            },
+            {
+              "step": 2,
+              "title": "Trading Range Map",
+              "detail": "30-session support/resistance sit near 28.900 / 36.450; range width is 24.9% and the close sits at 19% of that box (lower third)."
+            },
+            {
+              "step": 3,
+              "title": "Supply / Demand Event",
+              "detail": "No decisive spring, upthrust, SOS, or SOW is visible in the recent daily-bar window, so the read leans more on range position and trend state than on a fresh Wyckoff trigger."
+            },
+            {
+              "step": 4,
+              "title": "Phase Decision",
+              "detail": "The structure is classified as Markdown Phase E - Active Downtrend because the stock is still below trend support and no convincing stopping or spring event has appeared yet."
+            },
+            {
+              "step": 5,
+              "title": "Wyckoff Tests",
+              "detail": "5/8 sell tests passed. Supported tests are used as a confirmation layer; unsupported P&F tests stay explicitly unscored."
+            }
+          ],
+          "context": {
+            "trendBias": "downtrend",
+            "volumeDry": true,
+            "priceVsSma50Pct": -10.29,
+            "ret20": -0.1674,
+            "ret40": -0.1569,
+            "distanceFromSma20Atr": -0.79,
+            "rangeLocation": "lower third"
+          },
+          "notes": [
+            "Wyckoff output is inferred from daily OHLCV, not intraday tape.",
+            "The entry plan is only active when price behavior matches the listed confirmation condition."
+          ]
+        },
+        "relative": {
+          "ret1d": -0.0146,
+          "ret1w": 0.01,
+          "ret1m": -0.1569,
+          "ret3m": -0.1087,
+          "vsVNINDEX3m": -0.0458,
+          "vsVN303m": -0.0101,
+          "priceVsSma20Pct": -2.4,
+          "priceVsSma50Pct": -10.29
+        },
+        "market": {
+          "session": "open_pm",
+          "regime": "bearish",
+          "trendScore": 0.25,
+          "pulse": {
+            "primary": "VNINDEX",
+            "status": "correction",
+            "score": 0.25,
+            "exposure": "0-20%",
+            "distributionDays": 6,
+            "followThrough": null,
+            "note": "Distribution pressure is elevated with 6 active distribution days."
+          },
+          "indexes": {
+            "VNINDEX": {
+              "price": 1644.51,
+              "open": 1661.53,
+              "prevClose": 1658.19,
+              "sessionChangePct": -1.02,
+              "prevCloseChangePct": -0.82,
+              "changePct": -1.02,
+              "ret1m": -0.1163,
+              "ret3m": -0.0629,
+              "sma20": 1718.54,
+              "sma50": 1791.39,
+              "regime": "bearish",
+              "regimeScore": 0.25,
+              "trendScore": 0.25,
+              "pulse": {
+                "symbol": "VNINDEX",
+                "status": "correction",
+                "score": 0.25,
+                "exposure": "0-20%",
+                "distributionDays": 6,
+                "distributionDayDates": [
+                  "2026-03-02",
+                  "2026-03-09",
+                  "2026-03-13",
+                  "2026-03-19",
+                  "2026-03-20",
+                  "2026-03-23"
+                ],
+                "rallyDayCount": 3,
+                "followThrough": null,
+                "note": "Distribution pressure is elevated with 6 active distribution days."
+              },
+              "date": "2026-03-26"
+            },
+            "VN30": {
+              "price": 1794.38,
+              "open": 1813.98,
+              "prevClose": 1814.73,
+              "sessionChangePct": -1.08,
+              "prevCloseChangePct": -1.12,
+              "changePct": -1.08,
+              "ret1m": -0.1245,
+              "ret3m": -0.0986,
+              "sma20": 1871.22,
+              "sma50": 1968.44,
+              "regime": "bearish",
+              "regimeScore": 0.25,
+              "trendScore": 0.25,
+              "pulse": {
+                "symbol": "VN30",
+                "status": "correction",
+                "score": 0.25,
+                "exposure": "0-20%",
+                "distributionDays": 5,
+                "distributionDayDates": [
+                  "2026-03-02",
+                  "2026-03-09",
+                  "2026-03-18",
+                  "2026-03-19",
+                  "2026-03-23"
+                ],
+                "rallyDayCount": 3,
+                "followThrough": null,
+                "note": "Distribution pressure is elevated with 5 active distribution days."
+              },
+              "date": "2026-03-26"
+            }
+          }
+        },
+        "quality": {
+          "score": 94,
+          "label": "high",
+          "coveragePct": 100,
+          "coverageLabel": "strong",
+          "historyBars": 57,
+          "freshnessSec": 1,
+          "snapshotOverlayUsed": true,
+          "missingFactors": [],
+          "missingFields": [
+            "foreignNet5d"
+          ],
+          "sourceFlags": {
+            "price": "vps_snapshot_overlay",
+            "market": "vps_history",
+            "fundamentals": "kbs_enrichment",
+            "ownership": "kbs_profile",
+            "foreign": "unavailable",
+            "providerRoadmap": {
+              "kbs": {
+                "status": "active",
+                "role": "fundamentals_ownership_enrichment"
+              },
+              "fireant": {
+                "status": "planned",
+                "role": "fundamentals_enrichment"
+              },
+              "ssi": {
+                "status": "planned",
+                "role": "execution_metadata"
+              },
+              "fiingroup": {
+                "status": "vendor_review",
+                "role": "enterprise_datafeed"
+              },
+              "vietstock": {
+                "status": "vendor_review",
+                "role": "enterprise_datafeed"
+              },
+              "vnstock": {
+                "status": "reference_only",
+                "role": "research_prototyping"
+              }
+            }
+          },
+          "warnings": [
+            "Foreign flow unavailable"
+          ]
+        },
+        "explain": {
+          "ruleRead": "Strong Bearish Bias",
+          "ruleStrength": {
+            "score": 6,
+            "label": "moderate conviction",
+            "rawScore": 18
+          },
+          "driversPositive": [
+            "RSI 44 in healthy range"
+          ],
+          "driversNegative": [
+            "RS vs VNINDEX 3M -4.6%",
+            "Price -10.3% vs SMA50",
+            "Volume only 0.39x avg20",
+            "Market regime bearish",
+            "CAN SLIM strength Weak (30/100)"
+          ],
+          "factorBreakdown": {
+            "C": {
+              "metric": "epsGrowthQoQ",
+              "rawValue": 0.0104,
+              "thresholds": [
+                0,
+                0.1,
+                0.2,
+                0.4
+              ],
+              "score": 4,
+              "status": "observed",
+              "legacyScore": 4,
+              "factorLabel": "Current earnings",
+              "metricLabel": "Quarterly EPS growth",
+              "displayValue": "+1.0%",
+              "bandLabel": "0.0% to 10.0%",
+              "bands": [
+                {
+                  "score": 2,
+                  "label": "< 0.0%",
+                  "active": false
+                },
+                {
+                  "score": 4,
+                  "label": "0.0% to 10.0%",
+                  "active": true
+                },
+                {
+                  "score": 6,
+                  "label": "10.0% to 20.0%",
+                  "active": false
+                },
+                {
+                  "score": 8,
+                  "label": "20.0% to 40.0%",
+                  "active": false
+                },
+                {
+                  "score": 10,
+                  "label": ">= 40.0%",
+                  "active": false
+                }
+              ],
+              "reason": "Quarterly EPS growth is +1.0%, between 0.0% and 10.0%, so C scores 4/10."
+            },
+            "A": {
+              "metric": "epsGrowth1Y",
+              "rawValue": 0.1928,
+              "thresholds": [
+                0,
+                0.08,
+                0.15,
+                0.25
+              ],
+              "score": 8,
+              "status": "observed",
+              "legacyScore": 8,
+              "factorLabel": "Annual growth",
+              "metricLabel": "Annual EPS growth",
+              "displayValue": "+19.3%",
+              "bandLabel": "15.0% to 25.0%",
+              "bands": [
+                {
+                  "score": 2,
+                  "label": "< 0.0%",
+                  "active": false
+                },
+                {
+                  "score": 4,
+                  "label": "0.0% to 8.0%",
+                  "active": false
+                },
+                {
+                  "score": 6,
+                  "label": "8.0% to 15.0%",
+                  "active": false
+                },
+                {
+                  "score": 8,
+                  "label": "15.0% to 25.0%",
+                  "active": true
+                },
+                {
+                  "score": 10,
+                  "label": ">= 25.0%",
+                  "active": false
+                }
+              ],
+              "reason": "Annual EPS growth is +19.3%, between 15.0% and 25.0%, so A scores 8/10."
+            },
+            "N": {
+              "metric": "nearHighPct",
+              "rawValue": 0.795,
+              "thresholds": [
+                0.7,
+                0.8,
+                0.9,
+                0.95
+              ],
+              "score": 4,
+              "status": "observed",
+              "legacyScore": 4,
+              "factorLabel": "New highs",
+              "metricLabel": "Price vs 52W high",
+              "displayValue": "79.5% of 52W high",
+              "bandLabel": "70.0% to 80.0%",
+              "bands": [
+                {
+                  "score": 2,
+                  "label": "< 70.0%",
+                  "active": false
+                },
+                {
+                  "score": 4,
+                  "label": "70.0% to 80.0%",
+                  "active": true
+                },
+                {
+                  "score": 6,
+                  "label": "80.0% to 90.0%",
+                  "active": false
+                },
+                {
+                  "score": 8,
+                  "label": "90.0% to 95.0%",
+                  "active": false
+                },
+                {
+                  "score": 10,
+                  "label": ">= 95.0%",
+                  "active": false
+                }
+              ],
+              "reason": "Price vs 52W high is 79.5% of 52W high, between 70.0% and 80.0%, so N scores 4/10."
+            },
+            "S": {
+              "metric": "volScore",
+              "rawValue": 0.39,
+              "thresholds": [
+                0.4,
+                0.7,
+                1,
+                1.5
+              ],
+              "score": 2,
+              "status": "observed",
+              "legacyScore": 2,
+              "factorLabel": "Supply / demand",
+              "metricLabel": "Volume vs avg20",
+              "displayValue": "0.39x",
+              "bandLabel": "< 0.40x",
+              "bands": [
+                {
+                  "score": 2,
+                  "label": "< 0.40x",
+                  "active": true
+                },
+                {
+                  "score": 4,
+                  "label": "0.40x to 0.70x",
+                  "active": false
+                },
+                {
+                  "score": 6,
+                  "label": "0.70x to 1.00x",
+                  "active": false
+                },
+                {
+                  "score": 8,
+                  "label": "1.00x to 1.50x",
+                  "active": false
+                },
+                {
+                  "score": 10,
+                  "label": ">= 1.50x",
+                  "active": false
+                }
+              ],
+              "reason": "Volume vs avg20 is 0.39x, below 0.40x, so S scores 2/10."
+            },
+            "L": {
+              "metric": "rs3m",
+              "rawValue": -0.028,
+              "thresholds": [
+                -0.05,
+                0,
+                0.05,
+                0.15
+              ],
+              "score": 4,
+              "status": "observed",
+              "legacyScore": 4,
+              "factorLabel": "Leader / laggard",
+              "metricLabel": "3M relative strength",
+              "displayValue": "-2.8%",
+              "bandLabel": "-5.0% to 0.0%",
+              "bands": [
+                {
+                  "score": 2,
+                  "label": "< -5.0%",
+                  "active": false
+                },
+                {
+                  "score": 4,
+                  "label": "-5.0% to 0.0%",
+                  "active": true
+                },
+                {
+                  "score": 6,
+                  "label": "0.0% to 5.0%",
+                  "active": false
+                },
+                {
+                  "score": 8,
+                  "label": "5.0% to 15.0%",
+                  "active": false
+                },
+                {
+                  "score": 10,
+                  "label": ">= 15.0%",
+                  "active": false
+                }
+              ],
+              "reason": "3M relative strength is -2.8%, between -5.0% and 0.0%, so L scores 4/10."
+            },
+            "I": {
+              "metric": "institutionScore",
+              "rawValue": 1,
+              "thresholds": [
+                0.05,
+                0.1,
+                0.2,
+                0.35
+              ],
+              "score": 10,
+              "status": "observed",
+              "legacyScore": 10,
+              "factorLabel": "Institutional support",
+              "metricLabel": "Institutional ownership proxy",
+              "displayValue": "+100.0%",
+              "bandLabel": ">= 35.0%",
+              "bands": [
+                {
+                  "score": 2,
+                  "label": "< 5.0%",
+                  "active": false
+                },
+                {
+                  "score": 4,
+                  "label": "5.0% to 10.0%",
+                  "active": false
+                },
+                {
+                  "score": 6,
+                  "label": "10.0% to 20.0%",
+                  "active": false
+                },
+                {
+                  "score": 8,
+                  "label": "20.0% to 35.0%",
+                  "active": false
+                },
+                {
+                  "score": 10,
+                  "label": ">= 35.0%",
+                  "active": true
+                }
+              ],
+              "reason": "Institutional ownership proxy is +100.0%, at or above 35.0%, so I scores 10/10."
+            },
+            "M": {
+              "metric": "marketTrend",
+              "rawValue": 0.25,
+              "thresholds": [
+                0.3,
+                0.5,
+                0.6,
+                0.8
+              ],
+              "score": 2,
+              "status": "observed",
+              "legacyScore": 2,
+              "factorLabel": "Market direction",
+              "metricLabel": "Market trend score",
+              "displayValue": "0.25",
+              "bandLabel": "< 0.30",
+              "bands": [
+                {
+                  "score": 2,
+                  "label": "< 0.30",
+                  "active": true
+                },
+                {
+                  "score": 4,
+                  "label": "0.30 to 0.50",
+                  "active": false
+                },
+                {
+                  "score": 6,
+                  "label": "0.50 to 0.60",
+                  "active": false
+                },
+                {
+                  "score": 8,
+                  "label": "0.60 to 0.80",
+                  "active": false
+                },
+                {
+                  "score": 10,
+                  "label": ">= 0.80",
+                  "active": false
+                }
+              ],
+              "reason": "Market trend score is 0.25, below 0.30, so M scores 2/10."
+            }
+          },
+          "normalizedCanSlim": 34,
+          "wyckoffAction": {
+            "label": "No long entries in active markdown",
+            "summary": "Trend and structure are both hostile. The correct action is patience.",
+            "steps": [
+              "Stand aside while price stays below key moving averages and keeps making weak rebounds.",
+              "Wait for stopping action, a spring, or a new range before reconsidering any long.",
+              "Do not treat 28.900 as stable support if price is already below it.",
+              "Keep the name on a watchlist, not in a fresh long position."
+            ],
+            "shouldAvoid": [
+              "Do not catch a falling knife in Phase E markdown.",
+              "Do not set a buy just because RSI looks low without structural repair."
+            ]
+          },
+          "wyckoffEntry": {
+            "status": "avoid",
+            "summary": "Do not buy into active markdown. Wait for stopping action or a spring first.",
+            "plans": [],
+            "watch": [
+              {
+                "label": "Early repair / stop bleeding trigger",
+                "price": 31920,
+                "why": "A reclaim of 31.920 would only improve the tape from damaged to repair mode. It is not the same as a confirmed buy yet."
+              },
+              {
+                "label": "Full demand confirmation",
+                "price": 36632,
+                "why": "A decisive move through 36.632 is needed before the structure becomes a real buy setup."
+              }
+            ],
+            "invalidation": "A clean move below 28.756 keeps the structure defensive."
+          },
+          "wyckoffReasoning": [
+            {
+              "step": 1,
+              "title": "Trend Context",
+              "detail": "40-session backdrop is downtrend; price is -10.3% vs SMA50 with 1M return -16.7%."
+            },
+            {
+              "step": 2,
+              "title": "Trading Range Map",
+              "detail": "30-session support/resistance sit near 28.900 / 36.450; range width is 24.9% and the close sits at 19% of that box (lower third)."
+            },
+            {
+              "step": 3,
+              "title": "Supply / Demand Event",
+              "detail": "No decisive spring, upthrust, SOS, or SOW is visible in the recent daily-bar window, so the read leans more on range position and trend state than on a fresh Wyckoff trigger."
+            },
+            {
+              "step": 4,
+              "title": "Phase Decision",
+              "detail": "The structure is classified as Markdown Phase E - Active Downtrend because the stock is still below trend support and no convincing stopping or spring event has appeared yet."
+            },
+            {
+              "step": 5,
+              "title": "Wyckoff Tests",
+              "detail": "5/8 sell tests passed. Supported tests are used as a confirmation layer; unsupported P&F tests stay explicitly unscored."
+            }
+          ]
+        },
+        "entry": [],
+        "tp": [],
+        "sl": null,
+        "signal": "STRONG_SELL",
+        "confidence": 6,
+        "rawScore": 18,
+        "breakout": {
+          "state": "not_ready",
+          "score": 4,
+          "triggerPrice": 31920,
+          "distancePct": -4.92,
+          "invalidation": "A clean move below 28.756 keeps the structure defensive.",
+          "volumeSupport": "dry",
+          "reason": "Early repair / stop bleeding trigger; RS vs VNINDEX -4.6%; volume dry"
+        },
+        "executionRisk": {
+          "status": "unavailable",
+          "liquidityLabel": "trap_risk",
+          "avgValue20": 451203956148,
+          "tradedValue": 173623245000,
+          "stopDistancePct": null,
+          "stopDistanceAtr": null,
+          "riskReward1": null,
+          "riskReward2": null,
+          "pilotShares": 0,
+          "fullShares": 0,
+          "pilotNotional": 0,
+          "fullNotional": 0,
+          "reason": "No valid active buy plan with entry and stop exists yet."
+        },
+        "delta": "price +0.5%",
+        "historyMini": [
+          {
+            "timestamp": "2026-03-26T02:39:05.838Z",
+            "price": 30300,
+            "signal": "STRONG_SELL",
+            "confidence": 6,
+            "observedPct": 0.49
+          },
+          {
+            "timestamp": "2026-03-26T05:36:02.235Z",
+            "price": 30350,
+            "signal": "STRONG_SELL",
+            "confidence": 6,
+            "observedPct": 0.49
+          },
+          {
+            "timestamp": "2026-03-26T06:41:13.057Z",
+            "price": 30250,
+            "signal": "STRONG_SELL",
+            "confidence": 6,
+            "observedPct": 0.49
+          },
+          {
+            "timestamp": "2026-03-26T06:47:21.364Z",
+            "price": 30200,
+            "signal": "STRONG_SELL",
+            "confidence": 6,
+            "observedPct": 0.49
+          },
+          {
+            "timestamp": "2026-03-26T06:57:57.325Z",
+            "price": 30350,
+            "signal": "STRONG_SELL",
+            "confidence": 6,
+            "observedPct": 0.49
+          }
+        ],
+        "_scanMode": "watchlist",
+        "_scanUniverseKey": "CTG|FPT|HDB|MWG|TCB"
       }
     ],
     "meta": {
       "name": "Techcombank",
       "sector": "BANK"
     },
-    "lastScan": "2026-03-26T06:47:21.384Z"
+    "lastScan": "2026-03-26T06:57:57.341Z"
   },
   "HDB": {
     "ticker": "HDB",
@@ -52438,13 +54367,972 @@
             "observedPct": 0.54
           }
         ]
+      },
+      {
+        "id": 34,
+        "timestamp": "2026-03-26T06:57:58.137Z",
+        "ticker": "HDB",
+        "name": "HDBank",
+        "sector": "BANK",
+        "scanTime": "2026-03-26T06:57:58.122Z",
+        "scanRunId": "watchlist-mn74esaa-njk7qw",
+        "price": 24600,
+        "open": 24950,
+        "high": 25000,
+        "low": 24500,
+        "sessionChangePct": -1.4,
+        "prevCloseChangePct": 1.2,
+        "changePct": -1.4,
+        "priceDate": "2026-03-26",
+        "volume": 7453200,
+        "avgVol20": 15079599,
+        "volRatio": 0.49,
+        "tradedValue": 183721380000,
+        "avgValue20": 385244437828,
+        "sma20": 25583,
+        "sma50": 27147,
+        "sma200": 27342,
+        "rsi14": 39.2,
+        "macd": -750,
+        "atr14": 839,
+        "pe": 6.4,
+        "pb": 1.5,
+        "eps": 4644,
+        "roe": 24.5,
+        "marketCap": 123129797545800,
+        "foreignNet5d": null,
+        "canslim": {
+          "C": 10,
+          "A": 10,
+          "N": 6,
+          "S": 4,
+          "L": 4,
+          "I": 2,
+          "M": 2
+        },
+        "observedCanSlim": {
+          "C": 10,
+          "A": 10,
+          "N": 6,
+          "S": 4,
+          "L": 4,
+          "I": 2,
+          "M": 2
+        },
+        "canslimTotal": 38,
+        "observedCanSlimTotal": 38,
+        "observedCanSlimMax": 70,
+        "coveragePct": 100,
+        "strength": {
+          "score": 34,
+          "label": "Weak",
+          "canSlimRatio": 54.3,
+          "marketLeader": false
+        },
+        "volumeSignal": "DRY_UP",
+        "wyckoffPhase": "Markdown",
+        "wyckoffStage": "Phase E",
+        "wyckoffBias": "avoid",
+        "wyckoff": {
+          "phase": "Markdown",
+          "stage": "Phase E",
+          "label": "Markdown Phase E - Active Downtrend",
+          "code": "markdown",
+          "confidence": 59,
+          "confidenceLabel": "low",
+          "bias": "avoid",
+          "levels": {
+            "support": 23800,
+            "resistance": 28850,
+            "midpoint": 26325,
+            "rangeWidthPct": 20.53,
+            "pricePositionPct": 15.8,
+            "atr": 839
+          },
+          "events": {
+            "spring": {
+              "active": false,
+              "name": "spring"
+            },
+            "upthrust": {
+              "active": false,
+              "name": "upthrust"
+            },
+            "sos": {
+              "active": false,
+              "name": "SOS"
+            },
+            "sow": {
+              "active": false,
+              "name": "SOW"
+            },
+            "stoppingVolume": {
+              "active": false,
+              "name": "stopping_volume"
+            },
+            "buyingClimax": {
+              "active": false,
+              "name": "buying_climax"
+            },
+            "backup": {
+              "active": false,
+              "name": "backup",
+              "date": "2026-03-26",
+              "price": 24600,
+              "support": 23800,
+              "resistance": 28850,
+              "volumeRatio": 0.49
+            },
+            "lpsy": {
+              "active": false,
+              "name": "LPSY",
+              "date": "2026-03-26",
+              "price": 24600,
+              "support": 23800,
+              "resistance": 28850,
+              "volumeRatio": 0.49
+            }
+          },
+          "tests": {
+            "activeSide": "sell",
+            "summary": "6/8 sell tests passed",
+            "active": {
+              "side": "sell",
+              "supported": 8,
+              "passed": 6,
+              "ratio": 0.75,
+              "summary": "6/8 sell tests passed"
+            },
+            "buy": {
+              "side": "buy",
+              "supported": 7,
+              "passed": 1,
+              "ratio": 0.14,
+              "summary": "1/7 buy tests passed",
+              "items": [
+                {
+                  "label": "1. Downside objective accomplished",
+                  "supported": false,
+                  "passed": null,
+                  "status": "unsupported",
+                  "detail": "Point-and-Figure downside count is not implemented yet."
+                },
+                {
+                  "label": "2. Preliminary support / selling climax / test",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "Needs visible stopping action, a spring, or a mature accumulation turn."
+                },
+                {
+                  "label": "3. Activity bullish",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "Rallies should show better effort than reactions."
+                },
+                {
+                  "label": "4. Downward stride broken",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "Price needs to stop respecting the old downtrend line or shelf."
+                },
+                {
+                  "label": "5. Higher lows",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "The base should stop printing lower lows."
+                },
+                {
+                  "label": "6. Higher highs",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "Demand should start winning the swing highs."
+                },
+                {
+                  "label": "7. Stock stronger than the market",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "Relative strength should at least hold up versus VNINDEX."
+                },
+                {
+                  "label": "8. Base forming",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "A tradable accumulation needs a box or cause to build against."
+                },
+                {
+                  "label": "9. Upside reward at least 3x risk",
+                  "supported": false,
+                  "passed": null,
+                  "status": "unsupported",
+                  "detail": "No active long trigger exists yet, so reward/risk cannot be confirmed."
+                }
+              ]
+            },
+            "sell": {
+              "side": "sell",
+              "supported": 8,
+              "passed": 6,
+              "ratio": 0.75,
+              "summary": "6/8 sell tests passed",
+              "items": [
+                {
+                  "label": "1. Upside objective accomplished",
+                  "supported": false,
+                  "passed": null,
+                  "status": "unsupported",
+                  "detail": "Point-and-Figure upside count is not implemented yet."
+                },
+                {
+                  "label": "2. Activity bearish",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "Reactions should carry more pressure than rallies."
+                },
+                {
+                  "label": "3. Preliminary supply / buying climax",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "Supply should be visible near the top or at the failed breakout."
+                },
+                {
+                  "label": "4. Stock weaker than the market",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "Relative weakness should confirm the bearish case."
+                },
+                {
+                  "label": "5. Upward stride broken",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "The prior uptrend should no longer be intact."
+                },
+                {
+                  "label": "6. Lower highs",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "Bearish structures lose altitude on rallies."
+                },
+                {
+                  "label": "7. Lower lows",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "Support breaks should create lower lows."
+                },
+                {
+                  "label": "8. Crown / supply range forming",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "Distribution normally leaves a lateral crown before markdown expands."
+                },
+                {
+                  "label": "9. Downside reward at least 3x risk",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "The damaged structure should still offer meaningful downside asymmetry."
+                }
+              ]
+            }
+          },
+          "action": {
+            "label": "No long entries in active markdown",
+            "summary": "Trend and structure are both hostile. The correct action is patience.",
+            "steps": [
+              "Stand aside while price stays below key moving averages and keeps making weak rebounds.",
+              "Wait for stopping action, a spring, or a new range before reconsidering any long.",
+              "Do not treat 23.800 as stable support if price is already below it.",
+              "Keep the name on a watchlist, not in a fresh long position."
+            ],
+            "shouldAvoid": [
+              "Do not catch a falling knife in Phase E markdown.",
+              "Do not set a buy just because RSI looks low without structural repair."
+            ]
+          },
+          "entry": {
+            "status": "avoid",
+            "summary": "Do not buy into active markdown. Wait for stopping action or a spring first.",
+            "plans": [],
+            "watch": [
+              {
+                "label": "Early repair / stop bleeding trigger",
+                "price": 25820,
+                "why": "A reclaim of 25.820 would only improve the tape from damaged to repair mode. It is not the same as a confirmed buy yet."
+              },
+              {
+                "label": "Full demand confirmation",
+                "price": 28994,
+                "why": "A decisive move through 28.994 is needed before the structure becomes a real buy setup."
+              }
+            ],
+            "invalidation": "A clean move below 23.681 keeps the structure defensive."
+          },
+          "reasoning": [
+            {
+              "step": 1,
+              "title": "Trend Context",
+              "detail": "40-session backdrop is downtrend; price is -9.4% vs SMA50 with 1M return -13.4%."
+            },
+            {
+              "step": 2,
+              "title": "Trading Range Map",
+              "detail": "30-session support/resistance sit near 23.800 / 28.850; range width is 20.5% and the close sits at 16% of that box (lower third)."
+            },
+            {
+              "step": 3,
+              "title": "Supply / Demand Event",
+              "detail": "No decisive spring, upthrust, SOS, or SOW is visible in the recent daily-bar window, so the read leans more on range position and trend state than on a fresh Wyckoff trigger."
+            },
+            {
+              "step": 4,
+              "title": "Phase Decision",
+              "detail": "The structure is classified as Markdown Phase E - Active Downtrend because the stock is still below trend support and no convincing stopping or spring event has appeared yet."
+            },
+            {
+              "step": 5,
+              "title": "Wyckoff Tests",
+              "detail": "6/8 sell tests passed. Supported tests are used as a confirmation layer; unsupported P&F tests stay explicitly unscored."
+            }
+          ],
+          "context": {
+            "trendBias": "downtrend",
+            "volumeDry": false,
+            "priceVsSma50Pct": -9.38,
+            "ret20": -0.1338,
+            "ret40": -0.1575,
+            "distanceFromSma20Atr": -1.17,
+            "rangeLocation": "lower third"
+          },
+          "notes": [
+            "Wyckoff output is inferred from daily OHLCV, not intraday tape.",
+            "The entry plan is only active when price behavior matches the listed confirmation condition."
+          ]
+        },
+        "relative": {
+          "ret1d": -0.012,
+          "ret1w": -0.0409,
+          "ret1m": -0.1353,
+          "ret3m": -0.1087,
+          "vsVNINDEX3m": -0.0458,
+          "vsVN303m": -0.0101,
+          "priceVsSma20Pct": -3.84,
+          "priceVsSma50Pct": -9.38
+        },
+        "market": {
+          "session": "open_pm",
+          "regime": "bearish",
+          "trendScore": 0.25,
+          "pulse": {
+            "primary": "VNINDEX",
+            "status": "correction",
+            "score": 0.25,
+            "exposure": "0-20%",
+            "distributionDays": 6,
+            "followThrough": null,
+            "note": "Distribution pressure is elevated with 6 active distribution days."
+          },
+          "indexes": {
+            "VNINDEX": {
+              "price": 1644.51,
+              "open": 1661.53,
+              "prevClose": 1658.19,
+              "sessionChangePct": -1.02,
+              "prevCloseChangePct": -0.82,
+              "changePct": -1.02,
+              "ret1m": -0.1163,
+              "ret3m": -0.0629,
+              "sma20": 1718.54,
+              "sma50": 1791.39,
+              "regime": "bearish",
+              "regimeScore": 0.25,
+              "trendScore": 0.25,
+              "pulse": {
+                "symbol": "VNINDEX",
+                "status": "correction",
+                "score": 0.25,
+                "exposure": "0-20%",
+                "distributionDays": 6,
+                "distributionDayDates": [
+                  "2026-03-02",
+                  "2026-03-09",
+                  "2026-03-13",
+                  "2026-03-19",
+                  "2026-03-20",
+                  "2026-03-23"
+                ],
+                "rallyDayCount": 3,
+                "followThrough": null,
+                "note": "Distribution pressure is elevated with 6 active distribution days."
+              },
+              "date": "2026-03-26"
+            },
+            "VN30": {
+              "price": 1794.38,
+              "open": 1813.98,
+              "prevClose": 1814.73,
+              "sessionChangePct": -1.08,
+              "prevCloseChangePct": -1.12,
+              "changePct": -1.08,
+              "ret1m": -0.1245,
+              "ret3m": -0.0986,
+              "sma20": 1871.22,
+              "sma50": 1968.44,
+              "regime": "bearish",
+              "regimeScore": 0.25,
+              "trendScore": 0.25,
+              "pulse": {
+                "symbol": "VN30",
+                "status": "correction",
+                "score": 0.25,
+                "exposure": "0-20%",
+                "distributionDays": 5,
+                "distributionDayDates": [
+                  "2026-03-02",
+                  "2026-03-09",
+                  "2026-03-18",
+                  "2026-03-19",
+                  "2026-03-23"
+                ],
+                "rallyDayCount": 3,
+                "followThrough": null,
+                "note": "Distribution pressure is elevated with 5 active distribution days."
+              },
+              "date": "2026-03-26"
+            }
+          }
+        },
+        "quality": {
+          "score": 94,
+          "label": "high",
+          "coveragePct": 100,
+          "coverageLabel": "strong",
+          "historyBars": 57,
+          "freshnessSec": 1,
+          "snapshotOverlayUsed": true,
+          "missingFactors": [],
+          "missingFields": [
+            "foreignNet5d"
+          ],
+          "sourceFlags": {
+            "price": "vps_snapshot_overlay",
+            "market": "vps_history",
+            "fundamentals": "kbs_enrichment",
+            "ownership": "kbs_profile",
+            "foreign": "unavailable",
+            "providerRoadmap": {
+              "kbs": {
+                "status": "active",
+                "role": "fundamentals_ownership_enrichment"
+              },
+              "fireant": {
+                "status": "planned",
+                "role": "fundamentals_enrichment"
+              },
+              "ssi": {
+                "status": "planned",
+                "role": "execution_metadata"
+              },
+              "fiingroup": {
+                "status": "vendor_review",
+                "role": "enterprise_datafeed"
+              },
+              "vietstock": {
+                "status": "vendor_review",
+                "role": "enterprise_datafeed"
+              },
+              "vnstock": {
+                "status": "reference_only",
+                "role": "research_prototyping"
+              }
+            }
+          },
+          "warnings": [
+            "Foreign flow unavailable"
+          ]
+        },
+        "explain": {
+          "ruleRead": "Strong Bearish Bias",
+          "ruleStrength": {
+            "score": 6,
+            "label": "moderate conviction",
+            "rawScore": 18
+          },
+          "driversPositive": [],
+          "driversNegative": [
+            "RS vs VNINDEX 3M -4.6%",
+            "Price -9.4% vs SMA50",
+            "Volume only 0.49x avg20",
+            "Market regime bearish",
+            "CAN SLIM strength Weak (34/100)"
+          ],
+          "factorBreakdown": {
+            "C": {
+              "metric": "epsGrowthQoQ",
+              "rawValue": 0.6125,
+              "thresholds": [
+                0,
+                0.1,
+                0.2,
+                0.4
+              ],
+              "score": 10,
+              "status": "observed",
+              "legacyScore": 10,
+              "factorLabel": "Current earnings",
+              "metricLabel": "Quarterly EPS growth",
+              "displayValue": "+61.3%",
+              "bandLabel": ">= 40.0%",
+              "bands": [
+                {
+                  "score": 2,
+                  "label": "< 0.0%",
+                  "active": false
+                },
+                {
+                  "score": 4,
+                  "label": "0.0% to 10.0%",
+                  "active": false
+                },
+                {
+                  "score": 6,
+                  "label": "10.0% to 20.0%",
+                  "active": false
+                },
+                {
+                  "score": 8,
+                  "label": "20.0% to 40.0%",
+                  "active": false
+                },
+                {
+                  "score": 10,
+                  "label": ">= 40.0%",
+                  "active": true
+                }
+              ],
+              "reason": "Quarterly EPS growth is +61.3%, at or above 40.0%, so C scores 10/10."
+            },
+            "A": {
+              "metric": "epsGrowth1Y",
+              "rawValue": 0.2872,
+              "thresholds": [
+                0,
+                0.08,
+                0.15,
+                0.25
+              ],
+              "score": 10,
+              "status": "observed",
+              "legacyScore": 10,
+              "factorLabel": "Annual growth",
+              "metricLabel": "Annual EPS growth",
+              "displayValue": "+28.7%",
+              "bandLabel": ">= 25.0%",
+              "bands": [
+                {
+                  "score": 2,
+                  "label": "< 0.0%",
+                  "active": false
+                },
+                {
+                  "score": 4,
+                  "label": "0.0% to 8.0%",
+                  "active": false
+                },
+                {
+                  "score": 6,
+                  "label": "8.0% to 15.0%",
+                  "active": false
+                },
+                {
+                  "score": 8,
+                  "label": "15.0% to 25.0%",
+                  "active": false
+                },
+                {
+                  "score": 10,
+                  "label": ">= 25.0%",
+                  "active": true
+                }
+              ],
+              "reason": "Annual EPS growth is +28.7%, at or above 25.0%, so A scores 10/10."
+            },
+            "N": {
+              "metric": "nearHighPct",
+              "rawValue": 0.82,
+              "thresholds": [
+                0.7,
+                0.8,
+                0.9,
+                0.95
+              ],
+              "score": 6,
+              "status": "observed",
+              "legacyScore": 6,
+              "factorLabel": "New highs",
+              "metricLabel": "Price vs 52W high",
+              "displayValue": "82.0% of 52W high",
+              "bandLabel": "80.0% to 90.0%",
+              "bands": [
+                {
+                  "score": 2,
+                  "label": "< 70.0%",
+                  "active": false
+                },
+                {
+                  "score": 4,
+                  "label": "70.0% to 80.0%",
+                  "active": false
+                },
+                {
+                  "score": 6,
+                  "label": "80.0% to 90.0%",
+                  "active": true
+                },
+                {
+                  "score": 8,
+                  "label": "90.0% to 95.0%",
+                  "active": false
+                },
+                {
+                  "score": 10,
+                  "label": ">= 95.0%",
+                  "active": false
+                }
+              ],
+              "reason": "Price vs 52W high is 82.0% of 52W high, between 80.0% and 90.0%, so N scores 6/10."
+            },
+            "S": {
+              "metric": "volScore",
+              "rawValue": 0.49,
+              "thresholds": [
+                0.4,
+                0.7,
+                1,
+                1.5
+              ],
+              "score": 4,
+              "status": "observed",
+              "legacyScore": 4,
+              "factorLabel": "Supply / demand",
+              "metricLabel": "Volume vs avg20",
+              "displayValue": "0.49x",
+              "bandLabel": "0.40x to 0.70x",
+              "bands": [
+                {
+                  "score": 2,
+                  "label": "< 0.40x",
+                  "active": false
+                },
+                {
+                  "score": 4,
+                  "label": "0.40x to 0.70x",
+                  "active": true
+                },
+                {
+                  "score": 6,
+                  "label": "0.70x to 1.00x",
+                  "active": false
+                },
+                {
+                  "score": 8,
+                  "label": "1.00x to 1.50x",
+                  "active": false
+                },
+                {
+                  "score": 10,
+                  "label": ">= 1.50x",
+                  "active": false
+                }
+              ],
+              "reason": "Volume vs avg20 is 0.49x, between 0.40x and 0.70x, so S scores 4/10."
+            },
+            "L": {
+              "metric": "rs3m",
+              "rawValue": -0.028,
+              "thresholds": [
+                -0.05,
+                0,
+                0.05,
+                0.15
+              ],
+              "score": 4,
+              "status": "observed",
+              "legacyScore": 4,
+              "factorLabel": "Leader / laggard",
+              "metricLabel": "3M relative strength",
+              "displayValue": "-2.8%",
+              "bandLabel": "-5.0% to 0.0%",
+              "bands": [
+                {
+                  "score": 2,
+                  "label": "< -5.0%",
+                  "active": false
+                },
+                {
+                  "score": 4,
+                  "label": "-5.0% to 0.0%",
+                  "active": true
+                },
+                {
+                  "score": 6,
+                  "label": "0.0% to 5.0%",
+                  "active": false
+                },
+                {
+                  "score": 8,
+                  "label": "5.0% to 15.0%",
+                  "active": false
+                },
+                {
+                  "score": 10,
+                  "label": ">= 15.0%",
+                  "active": false
+                }
+              ],
+              "reason": "3M relative strength is -2.8%, between -5.0% and 0.0%, so L scores 4/10."
+            },
+            "I": {
+              "metric": "institutionScore",
+              "rawValue": 0.01,
+              "thresholds": [
+                0.05,
+                0.1,
+                0.2,
+                0.35
+              ],
+              "score": 2,
+              "status": "observed",
+              "legacyScore": 2,
+              "factorLabel": "Institutional support",
+              "metricLabel": "Institutional ownership proxy",
+              "displayValue": "+1.0%",
+              "bandLabel": "< 5.0%",
+              "bands": [
+                {
+                  "score": 2,
+                  "label": "< 5.0%",
+                  "active": true
+                },
+                {
+                  "score": 4,
+                  "label": "5.0% to 10.0%",
+                  "active": false
+                },
+                {
+                  "score": 6,
+                  "label": "10.0% to 20.0%",
+                  "active": false
+                },
+                {
+                  "score": 8,
+                  "label": "20.0% to 35.0%",
+                  "active": false
+                },
+                {
+                  "score": 10,
+                  "label": ">= 35.0%",
+                  "active": false
+                }
+              ],
+              "reason": "Institutional ownership proxy is +1.0%, below 5.0%, so I scores 2/10."
+            },
+            "M": {
+              "metric": "marketTrend",
+              "rawValue": 0.25,
+              "thresholds": [
+                0.3,
+                0.5,
+                0.6,
+                0.8
+              ],
+              "score": 2,
+              "status": "observed",
+              "legacyScore": 2,
+              "factorLabel": "Market direction",
+              "metricLabel": "Market trend score",
+              "displayValue": "0.25",
+              "bandLabel": "< 0.30",
+              "bands": [
+                {
+                  "score": 2,
+                  "label": "< 0.30",
+                  "active": true
+                },
+                {
+                  "score": 4,
+                  "label": "0.30 to 0.50",
+                  "active": false
+                },
+                {
+                  "score": 6,
+                  "label": "0.50 to 0.60",
+                  "active": false
+                },
+                {
+                  "score": 8,
+                  "label": "0.60 to 0.80",
+                  "active": false
+                },
+                {
+                  "score": 10,
+                  "label": ">= 0.80",
+                  "active": false
+                }
+              ],
+              "reason": "Market trend score is 0.25, below 0.30, so M scores 2/10."
+            }
+          },
+          "normalizedCanSlim": 38,
+          "wyckoffAction": {
+            "label": "No long entries in active markdown",
+            "summary": "Trend and structure are both hostile. The correct action is patience.",
+            "steps": [
+              "Stand aside while price stays below key moving averages and keeps making weak rebounds.",
+              "Wait for stopping action, a spring, or a new range before reconsidering any long.",
+              "Do not treat 23.800 as stable support if price is already below it.",
+              "Keep the name on a watchlist, not in a fresh long position."
+            ],
+            "shouldAvoid": [
+              "Do not catch a falling knife in Phase E markdown.",
+              "Do not set a buy just because RSI looks low without structural repair."
+            ]
+          },
+          "wyckoffEntry": {
+            "status": "avoid",
+            "summary": "Do not buy into active markdown. Wait for stopping action or a spring first.",
+            "plans": [],
+            "watch": [
+              {
+                "label": "Early repair / stop bleeding trigger",
+                "price": 25820,
+                "why": "A reclaim of 25.820 would only improve the tape from damaged to repair mode. It is not the same as a confirmed buy yet."
+              },
+              {
+                "label": "Full demand confirmation",
+                "price": 28994,
+                "why": "A decisive move through 28.994 is needed before the structure becomes a real buy setup."
+              }
+            ],
+            "invalidation": "A clean move below 23.681 keeps the structure defensive."
+          },
+          "wyckoffReasoning": [
+            {
+              "step": 1,
+              "title": "Trend Context",
+              "detail": "40-session backdrop is downtrend; price is -9.4% vs SMA50 with 1M return -13.4%."
+            },
+            {
+              "step": 2,
+              "title": "Trading Range Map",
+              "detail": "30-session support/resistance sit near 23.800 / 28.850; range width is 20.5% and the close sits at 16% of that box (lower third)."
+            },
+            {
+              "step": 3,
+              "title": "Supply / Demand Event",
+              "detail": "No decisive spring, upthrust, SOS, or SOW is visible in the recent daily-bar window, so the read leans more on range position and trend state than on a fresh Wyckoff trigger."
+            },
+            {
+              "step": 4,
+              "title": "Phase Decision",
+              "detail": "The structure is classified as Markdown Phase E - Active Downtrend because the stock is still below trend support and no convincing stopping or spring event has appeared yet."
+            },
+            {
+              "step": 5,
+              "title": "Wyckoff Tests",
+              "detail": "6/8 sell tests passed. Supported tests are used as a confirmation layer; unsupported P&F tests stay explicitly unscored."
+            }
+          ]
+        },
+        "entry": [],
+        "tp": [],
+        "sl": null,
+        "signal": "STRONG_SELL",
+        "confidence": 6,
+        "rawScore": 18,
+        "breakout": {
+          "state": "not_ready",
+          "score": 4,
+          "triggerPrice": 25820,
+          "distancePct": -4.73,
+          "invalidation": "A clean move below 23.681 keeps the structure defensive.",
+          "volumeSupport": "dry",
+          "reason": "Early repair / stop bleeding trigger; RS vs VNINDEX -4.6%; volume dry"
+        },
+        "executionRisk": {
+          "status": "unavailable",
+          "liquidityLabel": "trap_risk",
+          "avgValue20": 385244437828,
+          "tradedValue": 183721380000,
+          "stopDistancePct": null,
+          "stopDistanceAtr": null,
+          "riskReward1": null,
+          "riskReward2": null,
+          "pilotShares": 0,
+          "fullShares": 0,
+          "pilotNotional": 0,
+          "fullNotional": 0,
+          "reason": "No valid active buy plan with entry and stop exists yet."
+        },
+        "delta": "price +0.2%",
+        "historyMini": [
+          {
+            "timestamp": "2026-03-26T02:39:07.015Z",
+            "price": 24600,
+            "signal": "STRONG_SELL",
+            "confidence": 6,
+            "observedPct": 0.51
+          },
+          {
+            "timestamp": "2026-03-26T05:36:02.705Z",
+            "price": 24650,
+            "signal": "STRONG_SELL",
+            "confidence": 6,
+            "observedPct": 0.51
+          },
+          {
+            "timestamp": "2026-03-26T06:41:13.439Z",
+            "price": 24500,
+            "signal": "STRONG_SELL",
+            "confidence": 6,
+            "observedPct": 0.54
+          },
+          {
+            "timestamp": "2026-03-26T06:47:21.648Z",
+            "price": 24550,
+            "signal": "STRONG_SELL",
+            "confidence": 6,
+            "observedPct": 0.54
+          },
+          {
+            "timestamp": "2026-03-26T06:57:58.122Z",
+            "price": 24600,
+            "signal": "STRONG_SELL",
+            "confidence": 6,
+            "observedPct": 0.54
+          }
+        ],
+        "_scanMode": "watchlist",
+        "_scanUniverseKey": "CTG|FPT|HDB|MWG|TCB"
       }
     ],
     "meta": {
       "name": "HDBank",
       "sector": "BANK"
     },
-    "lastScan": "2026-03-26T06:47:21.664Z"
+    "lastScan": "2026-03-26T06:57:58.137Z"
   },
   "MWG": {
     "ticker": "MWG",
@@ -69471,13 +72359,983 @@
             "observedPct": 0.57
           }
         ]
+      },
+      {
+        "id": 34,
+        "timestamp": "2026-03-26T06:57:58.854Z",
+        "ticker": "MWG",
+        "name": "Thế Giới Di Động",
+        "sector": "RETAIL",
+        "scanTime": "2026-03-26T06:57:58.844Z",
+        "scanRunId": "watchlist-mn74esaa-njk7qw",
+        "price": 77900,
+        "open": 78000,
+        "high": 78900,
+        "low": 77400,
+        "sessionChangePct": -0.13,
+        "prevCloseChangePct": 1.64,
+        "changePct": -0.13,
+        "priceDate": "2026-03-26",
+        "volume": 5090900,
+        "avgVol20": 9650420,
+        "volRatio": 0.53,
+        "tradedValue": 395868384000,
+        "avgValue20": 800665691990,
+        "sma20": 82775,
+        "sma50": 86462,
+        "sma200": 86677,
+        "rsi14": 44,
+        "macd": -2834,
+        "atr14": 3421,
+        "pe": 18.5,
+        "pb": 3.9,
+        "eps": 4773,
+        "roe": 23.1,
+        "marketCap": 114390192909100,
+        "foreignNet5d": null,
+        "canslim": {
+          "C": 4,
+          "A": 10,
+          "N": 6,
+          "S": 4,
+          "L": 4,
+          "I": 10,
+          "M": 2
+        },
+        "observedCanSlim": {
+          "C": 4,
+          "A": 10,
+          "N": 6,
+          "S": 4,
+          "L": 4,
+          "I": 10,
+          "M": 2
+        },
+        "canslimTotal": 40,
+        "observedCanSlimTotal": 40,
+        "observedCanSlimMax": 70,
+        "coveragePct": 100,
+        "strength": {
+          "score": 36,
+          "label": "Weak",
+          "canSlimRatio": 57.1,
+          "marketLeader": false
+        },
+        "volumeSignal": "NORMAL",
+        "wyckoffPhase": "Markdown",
+        "wyckoffStage": "Phase E",
+        "wyckoffBias": "avoid",
+        "wyckoff": {
+          "phase": "Markdown",
+          "stage": "Phase E",
+          "label": "Markdown Phase E - Active Downtrend",
+          "code": "markdown",
+          "confidence": 77,
+          "confidenceLabel": "moderate",
+          "bias": "avoid",
+          "levels": {
+            "support": 74200,
+            "resistance": 94300,
+            "midpoint": 84250,
+            "rangeWidthPct": 25.8,
+            "pricePositionPct": 18.4,
+            "atr": 3421
+          },
+          "events": {
+            "spring": {
+              "active": false,
+              "name": "spring"
+            },
+            "upthrust": {
+              "active": false,
+              "name": "upthrust"
+            },
+            "sos": {
+              "active": false,
+              "name": "SOS"
+            },
+            "sow": {
+              "active": true,
+              "name": "SOW",
+              "index": 53,
+              "date": "2026-03-23",
+              "price": 74200,
+              "low": 74200,
+              "high": 78100,
+              "support": 77000,
+              "resistance": 94400,
+              "volumeRatio": 1.98,
+              "closeLocation": 0
+            },
+            "stoppingVolume": {
+              "active": false,
+              "name": "stopping_volume"
+            },
+            "buyingClimax": {
+              "active": false,
+              "name": "buying_climax"
+            },
+            "backup": {
+              "active": false,
+              "name": "backup",
+              "date": "2026-03-26",
+              "price": 77900,
+              "support": 74200,
+              "resistance": 94300,
+              "volumeRatio": 0.53
+            },
+            "lpsy": {
+              "active": false,
+              "name": "LPSY",
+              "date": "2026-03-26",
+              "price": 77900,
+              "support": 77000,
+              "resistance": 94300,
+              "volumeRatio": 0.53
+            }
+          },
+          "tests": {
+            "activeSide": "sell",
+            "summary": "6/8 sell tests passed",
+            "active": {
+              "side": "sell",
+              "supported": 8,
+              "passed": 6,
+              "ratio": 0.75,
+              "summary": "6/8 sell tests passed"
+            },
+            "buy": {
+              "side": "buy",
+              "supported": 7,
+              "passed": 1,
+              "ratio": 0.14,
+              "summary": "1/7 buy tests passed",
+              "items": [
+                {
+                  "label": "1. Downside objective accomplished",
+                  "supported": false,
+                  "passed": null,
+                  "status": "unsupported",
+                  "detail": "Point-and-Figure downside count is not implemented yet."
+                },
+                {
+                  "label": "2. Preliminary support / selling climax / test",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "Needs visible stopping action, a spring, or a mature accumulation turn."
+                },
+                {
+                  "label": "3. Activity bullish",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "Rallies should show better effort than reactions."
+                },
+                {
+                  "label": "4. Downward stride broken",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "Price needs to stop respecting the old downtrend line or shelf."
+                },
+                {
+                  "label": "5. Higher lows",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "The base should stop printing lower lows."
+                },
+                {
+                  "label": "6. Higher highs",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "Demand should start winning the swing highs."
+                },
+                {
+                  "label": "7. Stock stronger than the market",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "Relative strength should at least hold up versus VNINDEX."
+                },
+                {
+                  "label": "8. Base forming",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "A tradable accumulation needs a box or cause to build against."
+                },
+                {
+                  "label": "9. Upside reward at least 3x risk",
+                  "supported": false,
+                  "passed": null,
+                  "status": "unsupported",
+                  "detail": "No active long trigger exists yet, so reward/risk cannot be confirmed."
+                }
+              ]
+            },
+            "sell": {
+              "side": "sell",
+              "supported": 8,
+              "passed": 6,
+              "ratio": 0.75,
+              "summary": "6/8 sell tests passed",
+              "items": [
+                {
+                  "label": "1. Upside objective accomplished",
+                  "supported": false,
+                  "passed": null,
+                  "status": "unsupported",
+                  "detail": "Point-and-Figure upside count is not implemented yet."
+                },
+                {
+                  "label": "2. Activity bearish",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "Reactions should carry more pressure than rallies."
+                },
+                {
+                  "label": "3. Preliminary supply / buying climax",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "Supply should be visible near the top or at the failed breakout."
+                },
+                {
+                  "label": "4. Stock weaker than the market",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "Relative weakness should confirm the bearish case."
+                },
+                {
+                  "label": "5. Upward stride broken",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "The prior uptrend should no longer be intact."
+                },
+                {
+                  "label": "6. Lower highs",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "Bearish structures lose altitude on rallies."
+                },
+                {
+                  "label": "7. Lower lows",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "Support breaks should create lower lows."
+                },
+                {
+                  "label": "8. Crown / supply range forming",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "Distribution normally leaves a lateral crown before markdown expands."
+                },
+                {
+                  "label": "9. Downside reward at least 3x risk",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "The damaged structure should still offer meaningful downside asymmetry."
+                }
+              ]
+            }
+          },
+          "action": {
+            "label": "No long entries in active markdown",
+            "summary": "Trend and structure are both hostile. The correct action is patience.",
+            "steps": [
+              "Stand aside while price stays below key moving averages and keeps making weak rebounds.",
+              "Wait for stopping action, a spring, or a new range before reconsidering any long.",
+              "Do not treat 74.200 as stable support if price is already below it.",
+              "Keep the name on a watchlist, not in a fresh long position."
+            ],
+            "shouldAvoid": [
+              "Do not catch a falling knife in Phase E markdown.",
+              "Do not set a buy just because RSI looks low without structural repair."
+            ]
+          },
+          "entry": {
+            "status": "avoid",
+            "summary": "Do not buy into active markdown. Wait for stopping action or a spring first.",
+            "plans": [],
+            "watch": [
+              {
+                "label": "Early repair / stop bleeding trigger",
+                "price": 82775,
+                "why": "A reclaim of 82.775 would only improve the tape from damaged to repair mode. It is not the same as a confirmed buy yet."
+              },
+              {
+                "label": "Full demand confirmation",
+                "price": 94771,
+                "why": "A decisive move through 94.771 is needed before the structure becomes a real buy setup."
+              }
+            ],
+            "invalidation": "A clean move below 73.829 keeps the structure defensive."
+          },
+          "reasoning": [
+            {
+              "step": 1,
+              "title": "Trend Context",
+              "detail": "40-session backdrop is downtrend; price is -9.9% vs SMA50 with 1M return -16.8%."
+            },
+            {
+              "step": 2,
+              "title": "Trading Range Map",
+              "detail": "30-session support/resistance sit near 74.200 / 94.300; range width is 25.8% and the close sits at 18% of that box (lower third)."
+            },
+            {
+              "step": 3,
+              "title": "Supply / Demand Event",
+              "detail": "Recent structural signals: SOW on 2026-03-23 (1.98x vol)."
+            },
+            {
+              "step": 4,
+              "title": "Phase Decision",
+              "detail": "The structure is classified as Markdown Phase E - Active Downtrend because the stock is still below trend support and no convincing stopping or spring event has appeared yet."
+            },
+            {
+              "step": 5,
+              "title": "Wyckoff Tests",
+              "detail": "6/8 sell tests passed. Supported tests are used as a confirmation layer; unsupported P&F tests stay explicitly unscored."
+            }
+          ],
+          "context": {
+            "trendBias": "downtrend",
+            "volumeDry": false,
+            "priceVsSma50Pct": -9.9,
+            "ret20": -0.1677,
+            "ret40": -0.0994,
+            "distanceFromSma20Atr": -1.43,
+            "rangeLocation": "lower third"
+          },
+          "notes": [
+            "Wyckoff output is inferred from daily OHLCV, not intraday tape.",
+            "The entry plan is only active when price behavior matches the listed confirmation condition."
+          ]
+        },
+        "relative": {
+          "ret1d": -0.0164,
+          "ret1w": -0.0546,
+          "ret1m": -0.1624,
+          "ret3m": -0.1056,
+          "vsVNINDEX3m": -0.0427,
+          "vsVN303m": -0.007,
+          "priceVsSma20Pct": -5.89,
+          "priceVsSma50Pct": -9.9
+        },
+        "market": {
+          "session": "open_pm",
+          "regime": "bearish",
+          "trendScore": 0.25,
+          "pulse": {
+            "primary": "VNINDEX",
+            "status": "correction",
+            "score": 0.25,
+            "exposure": "0-20%",
+            "distributionDays": 6,
+            "followThrough": null,
+            "note": "Distribution pressure is elevated with 6 active distribution days."
+          },
+          "indexes": {
+            "VNINDEX": {
+              "price": 1644.51,
+              "open": 1661.53,
+              "prevClose": 1658.19,
+              "sessionChangePct": -1.02,
+              "prevCloseChangePct": -0.82,
+              "changePct": -1.02,
+              "ret1m": -0.1163,
+              "ret3m": -0.0629,
+              "sma20": 1718.54,
+              "sma50": 1791.39,
+              "regime": "bearish",
+              "regimeScore": 0.25,
+              "trendScore": 0.25,
+              "pulse": {
+                "symbol": "VNINDEX",
+                "status": "correction",
+                "score": 0.25,
+                "exposure": "0-20%",
+                "distributionDays": 6,
+                "distributionDayDates": [
+                  "2026-03-02",
+                  "2026-03-09",
+                  "2026-03-13",
+                  "2026-03-19",
+                  "2026-03-20",
+                  "2026-03-23"
+                ],
+                "rallyDayCount": 3,
+                "followThrough": null,
+                "note": "Distribution pressure is elevated with 6 active distribution days."
+              },
+              "date": "2026-03-26"
+            },
+            "VN30": {
+              "price": 1794.38,
+              "open": 1813.98,
+              "prevClose": 1814.73,
+              "sessionChangePct": -1.08,
+              "prevCloseChangePct": -1.12,
+              "changePct": -1.08,
+              "ret1m": -0.1245,
+              "ret3m": -0.0986,
+              "sma20": 1871.22,
+              "sma50": 1968.44,
+              "regime": "bearish",
+              "regimeScore": 0.25,
+              "trendScore": 0.25,
+              "pulse": {
+                "symbol": "VN30",
+                "status": "correction",
+                "score": 0.25,
+                "exposure": "0-20%",
+                "distributionDays": 5,
+                "distributionDayDates": [
+                  "2026-03-02",
+                  "2026-03-09",
+                  "2026-03-18",
+                  "2026-03-19",
+                  "2026-03-23"
+                ],
+                "rallyDayCount": 3,
+                "followThrough": null,
+                "note": "Distribution pressure is elevated with 5 active distribution days."
+              },
+              "date": "2026-03-26"
+            }
+          }
+        },
+        "quality": {
+          "score": 96,
+          "label": "high",
+          "coveragePct": 100,
+          "coverageLabel": "strong",
+          "historyBars": 57,
+          "freshnessSec": 1,
+          "snapshotOverlayUsed": true,
+          "missingFactors": [],
+          "missingFields": [
+            "foreignNet5d"
+          ],
+          "sourceFlags": {
+            "price": "vps_snapshot_overlay",
+            "market": "vps_history",
+            "fundamentals": "kbs_enrichment",
+            "ownership": "kbs_profile",
+            "foreign": "unavailable",
+            "providerRoadmap": {
+              "kbs": {
+                "status": "active",
+                "role": "fundamentals_ownership_enrichment"
+              },
+              "fireant": {
+                "status": "planned",
+                "role": "fundamentals_enrichment"
+              },
+              "ssi": {
+                "status": "planned",
+                "role": "execution_metadata"
+              },
+              "fiingroup": {
+                "status": "vendor_review",
+                "role": "enterprise_datafeed"
+              },
+              "vietstock": {
+                "status": "vendor_review",
+                "role": "enterprise_datafeed"
+              },
+              "vnstock": {
+                "status": "reference_only",
+                "role": "research_prototyping"
+              }
+            }
+          },
+          "warnings": [
+            "Foreign flow unavailable"
+          ]
+        },
+        "explain": {
+          "ruleRead": "Strong Bearish Bias",
+          "ruleStrength": {
+            "score": 8,
+            "label": "high conviction",
+            "rawScore": 18
+          },
+          "driversPositive": [
+            "RSI 44 in healthy range"
+          ],
+          "driversNegative": [
+            "RS vs VNINDEX 3M -4.3%",
+            "Price -9.9% vs SMA50",
+            "Volume only 0.53x avg20",
+            "Market regime bearish",
+            "CAN SLIM strength Weak (36/100)"
+          ],
+          "factorBreakdown": {
+            "C": {
+              "metric": "epsGrowthQoQ",
+              "rawValue": 0.0169,
+              "thresholds": [
+                0,
+                0.1,
+                0.2,
+                0.4
+              ],
+              "score": 4,
+              "status": "observed",
+              "legacyScore": 4,
+              "factorLabel": "Current earnings",
+              "metricLabel": "Quarterly EPS growth",
+              "displayValue": "+1.7%",
+              "bandLabel": "0.0% to 10.0%",
+              "bands": [
+                {
+                  "score": 2,
+                  "label": "< 0.0%",
+                  "active": false
+                },
+                {
+                  "score": 4,
+                  "label": "0.0% to 10.0%",
+                  "active": true
+                },
+                {
+                  "score": 6,
+                  "label": "10.0% to 20.0%",
+                  "active": false
+                },
+                {
+                  "score": 8,
+                  "label": "20.0% to 40.0%",
+                  "active": false
+                },
+                {
+                  "score": 10,
+                  "label": ">= 40.0%",
+                  "active": false
+                }
+              ],
+              "reason": "Quarterly EPS growth is +1.7%, between 0.0% and 10.0%, so C scores 4/10."
+            },
+            "A": {
+              "metric": "epsGrowth1Y",
+              "rawValue": 0.9383,
+              "thresholds": [
+                0,
+                0.08,
+                0.15,
+                0.25
+              ],
+              "score": 10,
+              "status": "observed",
+              "legacyScore": 10,
+              "factorLabel": "Annual growth",
+              "metricLabel": "Annual EPS growth",
+              "displayValue": "+93.8%",
+              "bandLabel": ">= 25.0%",
+              "bands": [
+                {
+                  "score": 2,
+                  "label": "< 0.0%",
+                  "active": false
+                },
+                {
+                  "score": 4,
+                  "label": "0.0% to 8.0%",
+                  "active": false
+                },
+                {
+                  "score": 6,
+                  "label": "8.0% to 15.0%",
+                  "active": false
+                },
+                {
+                  "score": 8,
+                  "label": "15.0% to 25.0%",
+                  "active": false
+                },
+                {
+                  "score": 10,
+                  "label": ">= 25.0%",
+                  "active": true
+                }
+              ],
+              "reason": "Annual EPS growth is +93.8%, at or above 25.0%, so A scores 10/10."
+            },
+            "N": {
+              "metric": "nearHighPct",
+              "rawValue": 0.825,
+              "thresholds": [
+                0.7,
+                0.8,
+                0.9,
+                0.95
+              ],
+              "score": 6,
+              "status": "observed",
+              "legacyScore": 6,
+              "factorLabel": "New highs",
+              "metricLabel": "Price vs 52W high",
+              "displayValue": "82.5% of 52W high",
+              "bandLabel": "80.0% to 90.0%",
+              "bands": [
+                {
+                  "score": 2,
+                  "label": "< 70.0%",
+                  "active": false
+                },
+                {
+                  "score": 4,
+                  "label": "70.0% to 80.0%",
+                  "active": false
+                },
+                {
+                  "score": 6,
+                  "label": "80.0% to 90.0%",
+                  "active": true
+                },
+                {
+                  "score": 8,
+                  "label": "90.0% to 95.0%",
+                  "active": false
+                },
+                {
+                  "score": 10,
+                  "label": ">= 95.0%",
+                  "active": false
+                }
+              ],
+              "reason": "Price vs 52W high is 82.5% of 52W high, between 80.0% and 90.0%, so N scores 6/10."
+            },
+            "S": {
+              "metric": "volScore",
+              "rawValue": 0.53,
+              "thresholds": [
+                0.4,
+                0.7,
+                1,
+                1.5
+              ],
+              "score": 4,
+              "status": "observed",
+              "legacyScore": 4,
+              "factorLabel": "Supply / demand",
+              "metricLabel": "Volume vs avg20",
+              "displayValue": "0.53x",
+              "bandLabel": "0.40x to 0.70x",
+              "bands": [
+                {
+                  "score": 2,
+                  "label": "< 0.40x",
+                  "active": false
+                },
+                {
+                  "score": 4,
+                  "label": "0.40x to 0.70x",
+                  "active": true
+                },
+                {
+                  "score": 6,
+                  "label": "0.70x to 1.00x",
+                  "active": false
+                },
+                {
+                  "score": 8,
+                  "label": "1.00x to 1.50x",
+                  "active": false
+                },
+                {
+                  "score": 10,
+                  "label": ">= 1.50x",
+                  "active": false
+                }
+              ],
+              "reason": "Volume vs avg20 is 0.53x, between 0.40x and 0.70x, so S scores 4/10."
+            },
+            "L": {
+              "metric": "rs3m",
+              "rawValue": -0.0249,
+              "thresholds": [
+                -0.05,
+                0,
+                0.05,
+                0.15
+              ],
+              "score": 4,
+              "status": "observed",
+              "legacyScore": 4,
+              "factorLabel": "Leader / laggard",
+              "metricLabel": "3M relative strength",
+              "displayValue": "-2.5%",
+              "bandLabel": "-5.0% to 0.0%",
+              "bands": [
+                {
+                  "score": 2,
+                  "label": "< -5.0%",
+                  "active": false
+                },
+                {
+                  "score": 4,
+                  "label": "-5.0% to 0.0%",
+                  "active": true
+                },
+                {
+                  "score": 6,
+                  "label": "0.0% to 5.0%",
+                  "active": false
+                },
+                {
+                  "score": 8,
+                  "label": "5.0% to 15.0%",
+                  "active": false
+                },
+                {
+                  "score": 10,
+                  "label": ">= 15.0%",
+                  "active": false
+                }
+              ],
+              "reason": "3M relative strength is -2.5%, between -5.0% and 0.0%, so L scores 4/10."
+            },
+            "I": {
+              "metric": "institutionScore",
+              "rawValue": 1,
+              "thresholds": [
+                0.05,
+                0.1,
+                0.2,
+                0.35
+              ],
+              "score": 10,
+              "status": "observed",
+              "legacyScore": 10,
+              "factorLabel": "Institutional support",
+              "metricLabel": "Institutional ownership proxy",
+              "displayValue": "+100.0%",
+              "bandLabel": ">= 35.0%",
+              "bands": [
+                {
+                  "score": 2,
+                  "label": "< 5.0%",
+                  "active": false
+                },
+                {
+                  "score": 4,
+                  "label": "5.0% to 10.0%",
+                  "active": false
+                },
+                {
+                  "score": 6,
+                  "label": "10.0% to 20.0%",
+                  "active": false
+                },
+                {
+                  "score": 8,
+                  "label": "20.0% to 35.0%",
+                  "active": false
+                },
+                {
+                  "score": 10,
+                  "label": ">= 35.0%",
+                  "active": true
+                }
+              ],
+              "reason": "Institutional ownership proxy is +100.0%, at or above 35.0%, so I scores 10/10."
+            },
+            "M": {
+              "metric": "marketTrend",
+              "rawValue": 0.25,
+              "thresholds": [
+                0.3,
+                0.5,
+                0.6,
+                0.8
+              ],
+              "score": 2,
+              "status": "observed",
+              "legacyScore": 2,
+              "factorLabel": "Market direction",
+              "metricLabel": "Market trend score",
+              "displayValue": "0.25",
+              "bandLabel": "< 0.30",
+              "bands": [
+                {
+                  "score": 2,
+                  "label": "< 0.30",
+                  "active": true
+                },
+                {
+                  "score": 4,
+                  "label": "0.30 to 0.50",
+                  "active": false
+                },
+                {
+                  "score": 6,
+                  "label": "0.50 to 0.60",
+                  "active": false
+                },
+                {
+                  "score": 8,
+                  "label": "0.60 to 0.80",
+                  "active": false
+                },
+                {
+                  "score": 10,
+                  "label": ">= 0.80",
+                  "active": false
+                }
+              ],
+              "reason": "Market trend score is 0.25, below 0.30, so M scores 2/10."
+            }
+          },
+          "normalizedCanSlim": 40,
+          "wyckoffAction": {
+            "label": "No long entries in active markdown",
+            "summary": "Trend and structure are both hostile. The correct action is patience.",
+            "steps": [
+              "Stand aside while price stays below key moving averages and keeps making weak rebounds.",
+              "Wait for stopping action, a spring, or a new range before reconsidering any long.",
+              "Do not treat 74.200 as stable support if price is already below it.",
+              "Keep the name on a watchlist, not in a fresh long position."
+            ],
+            "shouldAvoid": [
+              "Do not catch a falling knife in Phase E markdown.",
+              "Do not set a buy just because RSI looks low without structural repair."
+            ]
+          },
+          "wyckoffEntry": {
+            "status": "avoid",
+            "summary": "Do not buy into active markdown. Wait for stopping action or a spring first.",
+            "plans": [],
+            "watch": [
+              {
+                "label": "Early repair / stop bleeding trigger",
+                "price": 82775,
+                "why": "A reclaim of 82.775 would only improve the tape from damaged to repair mode. It is not the same as a confirmed buy yet."
+              },
+              {
+                "label": "Full demand confirmation",
+                "price": 94771,
+                "why": "A decisive move through 94.771 is needed before the structure becomes a real buy setup."
+              }
+            ],
+            "invalidation": "A clean move below 73.829 keeps the structure defensive."
+          },
+          "wyckoffReasoning": [
+            {
+              "step": 1,
+              "title": "Trend Context",
+              "detail": "40-session backdrop is downtrend; price is -9.9% vs SMA50 with 1M return -16.8%."
+            },
+            {
+              "step": 2,
+              "title": "Trading Range Map",
+              "detail": "30-session support/resistance sit near 74.200 / 94.300; range width is 25.8% and the close sits at 18% of that box (lower third)."
+            },
+            {
+              "step": 3,
+              "title": "Supply / Demand Event",
+              "detail": "Recent structural signals: SOW on 2026-03-23 (1.98x vol)."
+            },
+            {
+              "step": 4,
+              "title": "Phase Decision",
+              "detail": "The structure is classified as Markdown Phase E - Active Downtrend because the stock is still below trend support and no convincing stopping or spring event has appeared yet."
+            },
+            {
+              "step": 5,
+              "title": "Wyckoff Tests",
+              "detail": "6/8 sell tests passed. Supported tests are used as a confirmation layer; unsupported P&F tests stay explicitly unscored."
+            }
+          ]
+        },
+        "entry": [],
+        "tp": [],
+        "sl": null,
+        "signal": "STRONG_SELL",
+        "confidence": 8,
+        "rawScore": 18,
+        "breakout": {
+          "state": "not_ready",
+          "score": 4,
+          "triggerPrice": 82775,
+          "distancePct": -5.89,
+          "invalidation": "A clean move below 73.829 keeps the structure defensive.",
+          "volumeSupport": "dry",
+          "reason": "Early repair / stop bleeding trigger; RS vs VNINDEX -4.3%; volume dry"
+        },
+        "executionRisk": {
+          "status": "unavailable",
+          "liquidityLabel": "trap_risk",
+          "avgValue20": 800665691990,
+          "tradedValue": 395868384000,
+          "stopDistancePct": null,
+          "stopDistanceAtr": null,
+          "riskReward1": null,
+          "riskReward2": null,
+          "pilotShares": 0,
+          "fullShares": 0,
+          "pilotNotional": 0,
+          "fullNotional": 0,
+          "reason": "No valid active buy plan with entry and stop exists yet."
+        },
+        "delta": "price +0.5%",
+        "historyMini": [
+          {
+            "timestamp": "2026-03-26T02:39:09.963Z",
+            "price": 77900,
+            "signal": "STRONG_SELL",
+            "confidence": 8,
+            "observedPct": 0.54
+          },
+          {
+            "timestamp": "2026-03-26T05:36:02.963Z",
+            "price": 77800,
+            "signal": "STRONG_SELL",
+            "confidence": 8,
+            "observedPct": 0.54
+          },
+          {
+            "timestamp": "2026-03-26T06:41:13.874Z",
+            "price": 77700,
+            "signal": "STRONG_SELL",
+            "confidence": 9,
+            "observedPct": 0.57
+          },
+          {
+            "timestamp": "2026-03-26T06:47:22.110Z",
+            "price": 77500,
+            "signal": "STRONG_SELL",
+            "confidence": 9,
+            "observedPct": 0.57
+          },
+          {
+            "timestamp": "2026-03-26T06:57:58.844Z",
+            "price": 77900,
+            "signal": "STRONG_SELL",
+            "confidence": 8,
+            "observedPct": 0.57
+          }
+        ],
+        "_scanMode": "watchlist",
+        "_scanUniverseKey": "CTG|FPT|HDB|MWG|TCB"
       }
     ],
     "meta": {
       "name": "Thế Giới Di Động",
       "sector": "RETAIL"
     },
-    "lastScan": "2026-03-26T06:47:22.124Z"
+    "lastScan": "2026-03-26T06:57:58.854Z"
   },
   "CTG": {
     "ticker": "CTG",
@@ -86390,12 +90248,973 @@
             "observedPct": 0.57
           }
         ]
+      },
+      {
+        "id": 34,
+        "timestamp": "2026-03-26T06:57:59.336Z",
+        "ticker": "CTG",
+        "name": "VietinBank",
+        "sector": "BANK",
+        "scanTime": "2026-03-26T06:57:59.326Z",
+        "scanRunId": "watchlist-mn74esaa-njk7qw",
+        "price": 33700,
+        "open": 34050,
+        "high": 34100,
+        "low": 33450,
+        "sessionChangePct": -1.03,
+        "prevCloseChangePct": 1.03,
+        "changePct": -1.03,
+        "priceDate": "2026-03-26",
+        "volume": 4270300,
+        "avgVol20": 12106390,
+        "volRatio": 0.35,
+        "tradedValue": 143781001000,
+        "avgValue20": 424281116330,
+        "sma20": 34825,
+        "sma50": 37380,
+        "sma200": 37246,
+        "rsi14": 41,
+        "macd": -1048,
+        "atr14": 1086,
+        "pe": 5.5,
+        "pb": 1.1,
+        "eps": 6441,
+        "roe": 21.1,
+        "marketCap": 261746034266900,
+        "foreignNet5d": null,
+        "canslim": {
+          "C": 6,
+          "A": 10,
+          "N": 4,
+          "S": 2,
+          "L": 6,
+          "I": 10,
+          "M": 2
+        },
+        "observedCanSlim": {
+          "C": 6,
+          "A": 10,
+          "N": 4,
+          "S": 2,
+          "L": 6,
+          "I": 10,
+          "M": 2
+        },
+        "canslimTotal": 40,
+        "observedCanSlimTotal": 40,
+        "observedCanSlimMax": 70,
+        "coveragePct": 100,
+        "strength": {
+          "score": 41,
+          "label": "Watch",
+          "canSlimRatio": 57.1,
+          "marketLeader": false
+        },
+        "volumeSignal": "DRY_UP",
+        "wyckoffPhase": "Accumulation",
+        "wyckoffStage": "Phase B",
+        "wyckoffBias": "wait",
+        "wyckoff": {
+          "phase": "Accumulation",
+          "stage": "Phase B",
+          "label": "Accumulation Phase B - Early Base Repair",
+          "code": "acc_b",
+          "confidence": 57,
+          "confidenceLabel": "low",
+          "bias": "wait",
+          "levels": {
+            "support": 32000,
+            "resistance": 39100,
+            "midpoint": 35550,
+            "rangeWidthPct": 21.07,
+            "pricePositionPct": 23.9,
+            "atr": 1086
+          },
+          "events": {
+            "spring": {
+              "active": false,
+              "name": "spring"
+            },
+            "upthrust": {
+              "active": false,
+              "name": "upthrust"
+            },
+            "sos": {
+              "active": false,
+              "name": "SOS"
+            },
+            "sow": {
+              "active": false,
+              "name": "SOW"
+            },
+            "stoppingVolume": {
+              "active": false,
+              "name": "stopping_volume"
+            },
+            "buyingClimax": {
+              "active": false,
+              "name": "buying_climax"
+            },
+            "backup": {
+              "active": false,
+              "name": "backup",
+              "date": "2026-03-26",
+              "price": 33700,
+              "support": 32000,
+              "resistance": 39100,
+              "volumeRatio": 0.35
+            },
+            "lpsy": {
+              "active": false,
+              "name": "LPSY",
+              "date": "2026-03-26",
+              "price": 33700,
+              "support": 32000,
+              "resistance": 39100,
+              "volumeRatio": 0.35
+            }
+          },
+          "tests": {
+            "activeSide": "buy",
+            "summary": "4/7 buy tests passed",
+            "active": {
+              "side": "buy",
+              "supported": 7,
+              "passed": 4,
+              "ratio": 0.57,
+              "summary": "4/7 buy tests passed"
+            },
+            "buy": {
+              "side": "buy",
+              "supported": 7,
+              "passed": 4,
+              "ratio": 0.57,
+              "summary": "4/7 buy tests passed",
+              "items": [
+                {
+                  "label": "1. Downside objective accomplished",
+                  "supported": false,
+                  "passed": null,
+                  "status": "unsupported",
+                  "detail": "Point-and-Figure downside count is not implemented yet."
+                },
+                {
+                  "label": "2. Preliminary support / selling climax / test",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "Needs visible stopping action, a spring, or a mature accumulation turn."
+                },
+                {
+                  "label": "3. Activity bullish",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "Rallies should show better effort than reactions."
+                },
+                {
+                  "label": "4. Downward stride broken",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "Price needs to stop respecting the old downtrend line or shelf."
+                },
+                {
+                  "label": "5. Higher lows",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "The base should stop printing lower lows."
+                },
+                {
+                  "label": "6. Higher highs",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "Demand should start winning the swing highs."
+                },
+                {
+                  "label": "7. Stock stronger than the market",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "Relative strength should at least hold up versus VNINDEX."
+                },
+                {
+                  "label": "8. Base forming",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "A tradable accumulation needs a box or cause to build against."
+                },
+                {
+                  "label": "9. Upside reward at least 3x risk",
+                  "supported": false,
+                  "passed": null,
+                  "status": "unsupported",
+                  "detail": "No active long trigger exists yet, so reward/risk cannot be confirmed."
+                }
+              ]
+            },
+            "sell": {
+              "side": "sell",
+              "supported": 8,
+              "passed": 4,
+              "ratio": 0.5,
+              "summary": "4/8 sell tests passed",
+              "items": [
+                {
+                  "label": "1. Upside objective accomplished",
+                  "supported": false,
+                  "passed": null,
+                  "status": "unsupported",
+                  "detail": "Point-and-Figure upside count is not implemented yet."
+                },
+                {
+                  "label": "2. Activity bearish",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "Reactions should carry more pressure than rallies."
+                },
+                {
+                  "label": "3. Preliminary supply / buying climax",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "Supply should be visible near the top or at the failed breakout."
+                },
+                {
+                  "label": "4. Stock weaker than the market",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "Relative weakness should confirm the bearish case."
+                },
+                {
+                  "label": "5. Upward stride broken",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "The prior uptrend should no longer be intact."
+                },
+                {
+                  "label": "6. Lower highs",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "Bearish structures lose altitude on rallies."
+                },
+                {
+                  "label": "7. Lower lows",
+                  "supported": true,
+                  "passed": true,
+                  "status": "pass",
+                  "detail": "Support breaks should create lower lows."
+                },
+                {
+                  "label": "8. Crown / supply range forming",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "Distribution normally leaves a lateral crown before markdown expands."
+                },
+                {
+                  "label": "9. Downside reward at least 3x risk",
+                  "supported": true,
+                  "passed": false,
+                  "status": "fail",
+                  "detail": "The damaged structure should still offer meaningful downside asymmetry."
+                }
+              ]
+            }
+          },
+          "action": {
+            "label": "Stay on watch, not on full risk",
+            "summary": "The stock is building a box. That is useful, but it is not yet a valid expansion move.",
+            "steps": [
+              "Track whether price respects the lower half of the range around 32.000.",
+              "Wait for volume to dry up on pullbacks and expand on up days.",
+              "Prepare two triggers: spring confirmation and breakout confirmation.",
+              "Keep powder dry until one of those triggers appears."
+            ],
+            "shouldAvoid": [
+              "Do not buy the middle of the range without a trigger.",
+              "Do not average down if support fails."
+            ]
+          },
+          "entry": {
+            "status": "wait",
+            "summary": "This looks more like an early base repair than a confirmed trend reversal. Stay on watch until price reclaims repair levels, then the range ceiling.",
+            "plans": [],
+            "watch": [
+              {
+                "label": "Early repair trigger",
+                "price": 34840,
+                "why": "A reclaim of 34.840 would be the first sign that sellers are losing control, but it is still not the full breakout."
+              },
+              {
+                "label": "Full demand confirmation",
+                "price": 39295,
+                "why": "A decisive move through 39.295 is still needed before this becomes a real long setup."
+              }
+            ],
+            "invalidation": "If price loses 32.000 again, the base attempt is not mature enough."
+          },
+          "reasoning": [
+            {
+              "step": 1,
+              "title": "Trend Context",
+              "detail": "40-session backdrop is downtrend; price is -9.8% vs SMA50 with 1M return -12.5%."
+            },
+            {
+              "step": 2,
+              "title": "Trading Range Map",
+              "detail": "30-session support/resistance sit near 32.000 / 39.100; range width is 21.1% and the close sits at 24% of that box (lower third)."
+            },
+            {
+              "step": 3,
+              "title": "Supply / Demand Event",
+              "detail": "No decisive spring, upthrust, SOS, or SOW is visible in the recent daily-bar window, so the read leans more on range position and trend state than on a fresh Wyckoff trigger."
+            },
+            {
+              "step": 4,
+              "title": "Phase Decision",
+              "detail": "The structure is classified as Accumulation Phase B - Early Base Repair because selling pressure is drying up, relative strength is holding better than the market, and price is trying to stabilize instead of extending the markdown."
+            },
+            {
+              "step": 5,
+              "title": "Wyckoff Tests",
+              "detail": "4/7 buy tests passed. Supported tests are used as a confirmation layer; unsupported P&F tests stay explicitly unscored."
+            }
+          ],
+          "context": {
+            "trendBias": "downtrend",
+            "volumeDry": true,
+            "priceVsSma50Pct": -9.84,
+            "ret20": -0.1247,
+            "ret40": -0.1554,
+            "distanceFromSma20Atr": -1.04,
+            "rangeLocation": "lower third"
+          },
+          "notes": [
+            "Wyckoff output is inferred from daily OHLCV, not intraday tape.",
+            "The entry plan is only active when price behavior matches the listed confirmation condition."
+          ]
+        },
+        "relative": {
+          "ret1d": -0.0103,
+          "ret1w": -0.0274,
+          "ret1m": -0.1247,
+          "ret3m": -0.0453,
+          "vsVNINDEX3m": 0.0176,
+          "vsVN303m": 0.0533,
+          "priceVsSma20Pct": -3.23,
+          "priceVsSma50Pct": -9.84
+        },
+        "market": {
+          "session": "open_pm",
+          "regime": "bearish",
+          "trendScore": 0.25,
+          "pulse": {
+            "primary": "VNINDEX",
+            "status": "correction",
+            "score": 0.25,
+            "exposure": "0-20%",
+            "distributionDays": 6,
+            "followThrough": null,
+            "note": "Distribution pressure is elevated with 6 active distribution days."
+          },
+          "indexes": {
+            "VNINDEX": {
+              "price": 1644.51,
+              "open": 1661.53,
+              "prevClose": 1658.19,
+              "sessionChangePct": -1.02,
+              "prevCloseChangePct": -0.82,
+              "changePct": -1.02,
+              "ret1m": -0.1163,
+              "ret3m": -0.0629,
+              "sma20": 1718.54,
+              "sma50": 1791.39,
+              "regime": "bearish",
+              "regimeScore": 0.25,
+              "trendScore": 0.25,
+              "pulse": {
+                "symbol": "VNINDEX",
+                "status": "correction",
+                "score": 0.25,
+                "exposure": "0-20%",
+                "distributionDays": 6,
+                "distributionDayDates": [
+                  "2026-03-02",
+                  "2026-03-09",
+                  "2026-03-13",
+                  "2026-03-19",
+                  "2026-03-20",
+                  "2026-03-23"
+                ],
+                "rallyDayCount": 3,
+                "followThrough": null,
+                "note": "Distribution pressure is elevated with 6 active distribution days."
+              },
+              "date": "2026-03-26"
+            },
+            "VN30": {
+              "price": 1794.38,
+              "open": 1813.98,
+              "prevClose": 1814.73,
+              "sessionChangePct": -1.08,
+              "prevCloseChangePct": -1.12,
+              "changePct": -1.08,
+              "ret1m": -0.1245,
+              "ret3m": -0.0986,
+              "sma20": 1871.22,
+              "sma50": 1968.44,
+              "regime": "bearish",
+              "regimeScore": 0.25,
+              "trendScore": 0.25,
+              "pulse": {
+                "symbol": "VN30",
+                "status": "correction",
+                "score": 0.25,
+                "exposure": "0-20%",
+                "distributionDays": 5,
+                "distributionDayDates": [
+                  "2026-03-02",
+                  "2026-03-09",
+                  "2026-03-18",
+                  "2026-03-19",
+                  "2026-03-23"
+                ],
+                "rallyDayCount": 3,
+                "followThrough": null,
+                "note": "Distribution pressure is elevated with 5 active distribution days."
+              },
+              "date": "2026-03-26"
+            }
+          }
+        },
+        "quality": {
+          "score": 94,
+          "label": "high",
+          "coveragePct": 100,
+          "coverageLabel": "strong",
+          "historyBars": 57,
+          "freshnessSec": 0,
+          "snapshotOverlayUsed": true,
+          "missingFactors": [],
+          "missingFields": [
+            "foreignNet5d"
+          ],
+          "sourceFlags": {
+            "price": "vps_snapshot_overlay",
+            "market": "vps_history",
+            "fundamentals": "kbs_enrichment",
+            "ownership": "kbs_profile",
+            "foreign": "unavailable",
+            "providerRoadmap": {
+              "kbs": {
+                "status": "active",
+                "role": "fundamentals_ownership_enrichment"
+              },
+              "fireant": {
+                "status": "planned",
+                "role": "fundamentals_enrichment"
+              },
+              "ssi": {
+                "status": "planned",
+                "role": "execution_metadata"
+              },
+              "fiingroup": {
+                "status": "vendor_review",
+                "role": "enterprise_datafeed"
+              },
+              "vietstock": {
+                "status": "vendor_review",
+                "role": "enterprise_datafeed"
+              },
+              "vnstock": {
+                "status": "reference_only",
+                "role": "research_prototyping"
+              }
+            }
+          },
+          "warnings": [
+            "Foreign flow unavailable"
+          ]
+        },
+        "explain": {
+          "ruleRead": "Neutral / Mixed",
+          "ruleStrength": {
+            "score": 4,
+            "label": "low conviction",
+            "rawScore": 44
+          },
+          "driversPositive": [
+            "RS vs VNINDEX 3M +1.8%",
+            "RSI 41 in healthy range"
+          ],
+          "driversNegative": [
+            "Price -9.8% vs SMA50",
+            "Volume only 0.35x avg20",
+            "Market regime bearish",
+            "Foreign flow unavailable"
+          ],
+          "factorBreakdown": {
+            "C": {
+              "metric": "epsGrowthQoQ",
+              "rawValue": 0.1239,
+              "thresholds": [
+                0,
+                0.1,
+                0.2,
+                0.4
+              ],
+              "score": 6,
+              "status": "observed",
+              "legacyScore": 6,
+              "factorLabel": "Current earnings",
+              "metricLabel": "Quarterly EPS growth",
+              "displayValue": "+12.4%",
+              "bandLabel": "10.0% to 20.0%",
+              "bands": [
+                {
+                  "score": 2,
+                  "label": "< 0.0%",
+                  "active": false
+                },
+                {
+                  "score": 4,
+                  "label": "0.0% to 10.0%",
+                  "active": false
+                },
+                {
+                  "score": 6,
+                  "label": "10.0% to 20.0%",
+                  "active": true
+                },
+                {
+                  "score": 8,
+                  "label": "20.0% to 40.0%",
+                  "active": false
+                },
+                {
+                  "score": 10,
+                  "label": ">= 40.0%",
+                  "active": false
+                }
+              ],
+              "reason": "Quarterly EPS growth is +12.4%, between 10.0% and 20.0%, so C scores 6/10."
+            },
+            "A": {
+              "metric": "epsGrowth1Y",
+              "rawValue": 0.3683,
+              "thresholds": [
+                0,
+                0.08,
+                0.15,
+                0.25
+              ],
+              "score": 10,
+              "status": "observed",
+              "legacyScore": 10,
+              "factorLabel": "Annual growth",
+              "metricLabel": "Annual EPS growth",
+              "displayValue": "+36.8%",
+              "bandLabel": ">= 25.0%",
+              "bands": [
+                {
+                  "score": 2,
+                  "label": "< 0.0%",
+                  "active": false
+                },
+                {
+                  "score": 4,
+                  "label": "0.0% to 8.0%",
+                  "active": false
+                },
+                {
+                  "score": 6,
+                  "label": "8.0% to 15.0%",
+                  "active": false
+                },
+                {
+                  "score": 8,
+                  "label": "15.0% to 25.0%",
+                  "active": false
+                },
+                {
+                  "score": 10,
+                  "label": ">= 25.0%",
+                  "active": true
+                }
+              ],
+              "reason": "Annual EPS growth is +36.8%, at or above 25.0%, so A scores 10/10."
+            },
+            "N": {
+              "metric": "nearHighPct",
+              "rawValue": 0.775,
+              "thresholds": [
+                0.7,
+                0.8,
+                0.9,
+                0.95
+              ],
+              "score": 4,
+              "status": "observed",
+              "legacyScore": 4,
+              "factorLabel": "New highs",
+              "metricLabel": "Price vs 52W high",
+              "displayValue": "77.5% of 52W high",
+              "bandLabel": "70.0% to 80.0%",
+              "bands": [
+                {
+                  "score": 2,
+                  "label": "< 70.0%",
+                  "active": false
+                },
+                {
+                  "score": 4,
+                  "label": "70.0% to 80.0%",
+                  "active": true
+                },
+                {
+                  "score": 6,
+                  "label": "80.0% to 90.0%",
+                  "active": false
+                },
+                {
+                  "score": 8,
+                  "label": "90.0% to 95.0%",
+                  "active": false
+                },
+                {
+                  "score": 10,
+                  "label": ">= 95.0%",
+                  "active": false
+                }
+              ],
+              "reason": "Price vs 52W high is 77.5% of 52W high, between 70.0% and 80.0%, so N scores 4/10."
+            },
+            "S": {
+              "metric": "volScore",
+              "rawValue": 0.35,
+              "thresholds": [
+                0.4,
+                0.7,
+                1,
+                1.5
+              ],
+              "score": 2,
+              "status": "observed",
+              "legacyScore": 2,
+              "factorLabel": "Supply / demand",
+              "metricLabel": "Volume vs avg20",
+              "displayValue": "0.35x",
+              "bandLabel": "< 0.40x",
+              "bands": [
+                {
+                  "score": 2,
+                  "label": "< 0.40x",
+                  "active": true
+                },
+                {
+                  "score": 4,
+                  "label": "0.40x to 0.70x",
+                  "active": false
+                },
+                {
+                  "score": 6,
+                  "label": "0.70x to 1.00x",
+                  "active": false
+                },
+                {
+                  "score": 8,
+                  "label": "1.00x to 1.50x",
+                  "active": false
+                },
+                {
+                  "score": 10,
+                  "label": ">= 1.50x",
+                  "active": false
+                }
+              ],
+              "reason": "Volume vs avg20 is 0.35x, below 0.40x, so S scores 2/10."
+            },
+            "L": {
+              "metric": "rs3m",
+              "rawValue": 0.0354,
+              "thresholds": [
+                -0.05,
+                0,
+                0.05,
+                0.15
+              ],
+              "score": 6,
+              "status": "observed",
+              "legacyScore": 6,
+              "factorLabel": "Leader / laggard",
+              "metricLabel": "3M relative strength",
+              "displayValue": "+3.5%",
+              "bandLabel": "0.0% to 5.0%",
+              "bands": [
+                {
+                  "score": 2,
+                  "label": "< -5.0%",
+                  "active": false
+                },
+                {
+                  "score": 4,
+                  "label": "-5.0% to 0.0%",
+                  "active": false
+                },
+                {
+                  "score": 6,
+                  "label": "0.0% to 5.0%",
+                  "active": true
+                },
+                {
+                  "score": 8,
+                  "label": "5.0% to 15.0%",
+                  "active": false
+                },
+                {
+                  "score": 10,
+                  "label": ">= 15.0%",
+                  "active": false
+                }
+              ],
+              "reason": "3M relative strength is +3.5%, between 0.0% and 5.0%, so L scores 6/10."
+            },
+            "I": {
+              "metric": "institutionScore",
+              "rawValue": 0.9994,
+              "thresholds": [
+                0.05,
+                0.1,
+                0.2,
+                0.35
+              ],
+              "score": 10,
+              "status": "observed",
+              "legacyScore": 10,
+              "factorLabel": "Institutional support",
+              "metricLabel": "Institutional ownership proxy",
+              "displayValue": "+99.9%",
+              "bandLabel": ">= 35.0%",
+              "bands": [
+                {
+                  "score": 2,
+                  "label": "< 5.0%",
+                  "active": false
+                },
+                {
+                  "score": 4,
+                  "label": "5.0% to 10.0%",
+                  "active": false
+                },
+                {
+                  "score": 6,
+                  "label": "10.0% to 20.0%",
+                  "active": false
+                },
+                {
+                  "score": 8,
+                  "label": "20.0% to 35.0%",
+                  "active": false
+                },
+                {
+                  "score": 10,
+                  "label": ">= 35.0%",
+                  "active": true
+                }
+              ],
+              "reason": "Institutional ownership proxy is +99.9%, at or above 35.0%, so I scores 10/10."
+            },
+            "M": {
+              "metric": "marketTrend",
+              "rawValue": 0.25,
+              "thresholds": [
+                0.3,
+                0.5,
+                0.6,
+                0.8
+              ],
+              "score": 2,
+              "status": "observed",
+              "legacyScore": 2,
+              "factorLabel": "Market direction",
+              "metricLabel": "Market trend score",
+              "displayValue": "0.25",
+              "bandLabel": "< 0.30",
+              "bands": [
+                {
+                  "score": 2,
+                  "label": "< 0.30",
+                  "active": true
+                },
+                {
+                  "score": 4,
+                  "label": "0.30 to 0.50",
+                  "active": false
+                },
+                {
+                  "score": 6,
+                  "label": "0.50 to 0.60",
+                  "active": false
+                },
+                {
+                  "score": 8,
+                  "label": "0.60 to 0.80",
+                  "active": false
+                },
+                {
+                  "score": 10,
+                  "label": ">= 0.80",
+                  "active": false
+                }
+              ],
+              "reason": "Market trend score is 0.25, below 0.30, so M scores 2/10."
+            }
+          },
+          "normalizedCanSlim": 40,
+          "wyckoffAction": {
+            "label": "Stay on watch, not on full risk",
+            "summary": "The stock is building a box. That is useful, but it is not yet a valid expansion move.",
+            "steps": [
+              "Track whether price respects the lower half of the range around 32.000.",
+              "Wait for volume to dry up on pullbacks and expand on up days.",
+              "Prepare two triggers: spring confirmation and breakout confirmation.",
+              "Keep powder dry until one of those triggers appears."
+            ],
+            "shouldAvoid": [
+              "Do not buy the middle of the range without a trigger.",
+              "Do not average down if support fails."
+            ]
+          },
+          "wyckoffEntry": {
+            "status": "wait",
+            "summary": "This looks more like an early base repair than a confirmed trend reversal. Stay on watch until price reclaims repair levels, then the range ceiling.",
+            "plans": [],
+            "watch": [
+              {
+                "label": "Early repair trigger",
+                "price": 34840,
+                "why": "A reclaim of 34.840 would be the first sign that sellers are losing control, but it is still not the full breakout."
+              },
+              {
+                "label": "Full demand confirmation",
+                "price": 39295,
+                "why": "A decisive move through 39.295 is still needed before this becomes a real long setup."
+              }
+            ],
+            "invalidation": "If price loses 32.000 again, the base attempt is not mature enough."
+          },
+          "wyckoffReasoning": [
+            {
+              "step": 1,
+              "title": "Trend Context",
+              "detail": "40-session backdrop is downtrend; price is -9.8% vs SMA50 with 1M return -12.5%."
+            },
+            {
+              "step": 2,
+              "title": "Trading Range Map",
+              "detail": "30-session support/resistance sit near 32.000 / 39.100; range width is 21.1% and the close sits at 24% of that box (lower third)."
+            },
+            {
+              "step": 3,
+              "title": "Supply / Demand Event",
+              "detail": "No decisive spring, upthrust, SOS, or SOW is visible in the recent daily-bar window, so the read leans more on range position and trend state than on a fresh Wyckoff trigger."
+            },
+            {
+              "step": 4,
+              "title": "Phase Decision",
+              "detail": "The structure is classified as Accumulation Phase B - Early Base Repair because selling pressure is drying up, relative strength is holding better than the market, and price is trying to stabilize instead of extending the markdown."
+            },
+            {
+              "step": 5,
+              "title": "Wyckoff Tests",
+              "detail": "4/7 buy tests passed. Supported tests are used as a confirmation layer; unsupported P&F tests stay explicitly unscored."
+            }
+          ]
+        },
+        "entry": [],
+        "tp": [],
+        "sl": null,
+        "signal": "HOLD",
+        "confidence": 4,
+        "rawScore": 44,
+        "breakout": {
+          "state": "arming",
+          "score": 39,
+          "triggerPrice": 34840,
+          "distancePct": -3.27,
+          "invalidation": "If price loses 32.000 again, the base attempt is not mature enough.",
+          "volumeSupport": "dry",
+          "reason": "Early repair trigger; RS vs VNINDEX +1.8%; volume dry"
+        },
+        "executionRisk": {
+          "status": "unavailable",
+          "liquidityLabel": "trap_risk",
+          "avgValue20": 424281116330,
+          "tradedValue": 143781001000,
+          "stopDistancePct": null,
+          "stopDistanceAtr": null,
+          "riskReward1": null,
+          "riskReward2": null,
+          "pilotShares": 0,
+          "fullShares": 0,
+          "pilotNotional": 0,
+          "fullNotional": 0,
+          "reason": "No valid active buy plan with entry and stop exists yet."
+        },
+        "delta": "price +0.1%",
+        "historyMini": [
+          {
+            "timestamp": "2026-03-26T02:39:11.944Z",
+            "price": 33750,
+            "signal": "HOLD",
+            "confidence": 4,
+            "observedPct": 0.57
+          },
+          {
+            "timestamp": "2026-03-26T05:36:03.344Z",
+            "price": 33600,
+            "signal": "HOLD",
+            "confidence": 4,
+            "observedPct": 0.57
+          },
+          {
+            "timestamp": "2026-03-26T06:41:14.287Z",
+            "price": 33600,
+            "signal": "HOLD",
+            "confidence": 4,
+            "observedPct": 0.57
+          },
+          {
+            "timestamp": "2026-03-26T06:47:22.430Z",
+            "price": 33650,
+            "signal": "HOLD",
+            "confidence": 4,
+            "observedPct": 0.57
+          },
+          {
+            "timestamp": "2026-03-26T06:57:59.326Z",
+            "price": 33700,
+            "signal": "HOLD",
+            "confidence": 4,
+            "observedPct": 0.57
+          }
+        ],
+        "_scanMode": "watchlist",
+        "_scanUniverseKey": "CTG|FPT|HDB|MWG|TCB"
       }
     ],
     "meta": {
       "name": "VietinBank",
       "sector": "BANK"
     },
-    "lastScan": "2026-03-26T06:47:22.446Z"
+    "lastScan": "2026-03-26T06:57:59.336Z"
   }
 }

@@ -35,17 +35,70 @@ function createUniverseKey(stocks) {
     .join("|");
 }
 
+function normalizeLookbackDays(value) {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed)) return null;
+  return Math.max(7, Math.min(365, Math.round(parsed)));
+}
+
 async function scanOne(stockInfo, options = {}) {
   const { ticker } = stockInfo;
-  const raw = await fetcher.fetchAll(ticker, { marketBundle: options.marketBundle });
-  const metrics = computeMetrics(raw.ohlcv, raw.overview, raw.foreign, raw.market, raw.meta);
-  const scores = applyRules(metrics);
+  const defaultLookbackDays = normalizeLookbackDays(options.ohlcvDays) || normalizeLookbackDays(config.sources.ohlcvDays) || 90;
+  const autoPopulateWyckoffRange = options.autoPopulateWyckoffRange !== false;
+  const repopulateMinDeltaDays = Math.max(1, Number(config.wyckoff?.repopulateMinDeltaDays) || 5);
+
+  let usedLookbackDays = defaultLookbackDays;
+  let fetchPasses = 1;
+
+  let raw = await fetcher.fetchAll(ticker, {
+    marketBundle: options.marketBundle,
+    ohlcvDays: usedLookbackDays,
+  });
+  let metrics = computeMetrics(raw.ohlcv, raw.overview, raw.foreign, raw.market, raw.meta);
+  let scores = applyRules(metrics);
+  const initialWyckoffDataProfile = metrics.wyckoff?.dataProfile
+    ? { ...metrics.wyckoff.dataProfile }
+    : null;
+
+  const initialRecommendedLookbackDays = normalizeLookbackDays(metrics.wyckoff?.dataProfile?.recommendedLookbackDays);
+  const initialRecommendationReason = metrics.wyckoff?.dataProfile?.reason || null;
+  const shouldRepopulate = autoPopulateWyckoffRange &&
+    initialRecommendedLookbackDays != null &&
+    Math.abs(initialRecommendedLookbackDays - usedLookbackDays) >= repopulateMinDeltaDays;
+
+  if (shouldRepopulate) {
+    usedLookbackDays = initialRecommendedLookbackDays;
+    raw = await fetcher.fetchAll(ticker, {
+      marketBundle: options.marketBundle,
+      ohlcvDays: usedLookbackDays,
+    });
+    metrics = computeMetrics(raw.ohlcv, raw.overview, raw.foreign, raw.market, raw.meta);
+    if (initialWyckoffDataProfile && metrics.wyckoff) {
+      metrics.wyckoff.dataProfile = {
+        ...metrics.wyckoff.dataProfile,
+        ...initialWyckoffDataProfile,
+      };
+    }
+    scores = applyRules(metrics);
+    fetchPasses = 2;
+  }
 
   const historyEntry = store.getTicker(ticker);
   const prevScan = historyEntry?.scans?.length ? historyEntry.scans[historyEntry.scans.length - 1] : null;
   const history = historyEntry?.scans || [];
 
   const snapshot = tickerSnapshot(ticker, stockInfo, metrics, scores, prevScan, history);
+  const finalRecommendedLookbackDays = normalizeLookbackDays(metrics.wyckoff?.dataProfile?.recommendedLookbackDays);
+  snapshot.dataRange = {
+    defaultLookbackDays,
+    initialRecommendedLookbackDays,
+    finalRecommendedLookbackDays,
+    recommendedLookbackDays: initialRecommendedLookbackDays ?? finalRecommendedLookbackDays,
+    usedLookbackDays: metrics.meta?.requestedOhlcvDays || usedLookbackDays,
+    repopulated: fetchPasses > 1,
+    fetchPasses,
+    reason: initialRecommendationReason || metrics.wyckoff?.dataProfile?.reason || null,
+  };
   snapshot.scanRunId = options.scanRunId || null;
   if (options.persist !== false) {
     store.addScan(ticker, {
@@ -94,6 +147,8 @@ async function scanAll(options = {}) {
         scanMode,
         scanRunId,
         scanUniverseKey,
+        ohlcvDays: options.ohlcvDays,
+        autoPopulateWyckoffRange: options.autoPopulateWyckoffRange,
       });
       results.push(snapshot);
       if (options.onProgress) {

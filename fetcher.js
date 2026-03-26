@@ -13,6 +13,7 @@ const SNAPSHOT_BASE = config.sources.vpsSnapshot;
 const HISTORY_BASE = config.sources.vpsHistory;
 const MARKET_BENCHMARKS = config.sources.marketBenchmarks || ["VNINDEX", "VN30"];
 const MARKET_TZ = config.sources.marketTimeZone || "Asia/Ho_Chi_Minh";
+const DEFAULT_OHLCV_DAYS = Number(config.sources.ohlcvDays) || 90;
 
 if (typeof globalThis.fetch !== "function") {
   console.error("Node 18+ required. Current:", process.version);
@@ -69,6 +70,12 @@ function normalizeTicker(value) {
     .replace(/[^A-Z0-9]/g, "");
 }
 
+function normalizeHistoryDays(days) {
+  const parsed = Number(days);
+  if (!Number.isFinite(parsed)) return DEFAULT_OHLCV_DAYS;
+  return Math.max(7, Math.min(365, Math.round(parsed)));
+}
+
 function marketDate(date = new Date()) {
   const parts = new Intl.DateTimeFormat("en-US", {
     timeZone: MARKET_TZ,
@@ -99,19 +106,26 @@ function minFinite(...values) {
   return valid.length ? Math.min(...valid) : null;
 }
 
-function buildHistoryUrl(ticker) {
+function buildHistoryRequest(ticker, days = DEFAULT_OHLCV_DAYS) {
+  const normalizedDays = normalizeHistoryDays(days);
   const to = Math.floor(Date.now() / 1000);
-  const from = to - config.sources.ohlcvDays * 86400;
-  return `${HISTORY_BASE}/tradingview/history?symbol=${encodeURIComponent(ticker)}&resolution=D&from=${from}&to=${to}`;
+  const from = to - normalizedDays * 86400;
+  return {
+    url: `${HISTORY_BASE}/tradingview/history?symbol=${encodeURIComponent(ticker)}&resolution=D&from=${from}&to=${to}`,
+    from,
+    to,
+    days: normalizedDays,
+  };
 }
 
-async function fetchHistory(ticker) {
-  const data = await get(buildHistoryUrl(ticker));
+async function fetchHistory(ticker, options = {}) {
+  const request = buildHistoryRequest(ticker, options.days);
+  const data = await get(request.url);
   if (data.s === "no_data" || !Array.isArray(data.t) || data.t.length === 0) {
     throw new Error(`No OHLCV for ${ticker}`);
   }
 
-  return data.t
+  const bars = data.t
     .map((ts, i) => ({
       date: isoDateFromUnix(ts),
       open: num(data.o?.[i]),
@@ -128,6 +142,8 @@ async function fetchHistory(ticker) {
       Number.isFinite(bar.low) &&
       Number.isFinite(bar.close)
     );
+
+  return { bars, request };
 }
 
 async function fetchSnapshot(ticker) {
@@ -191,9 +207,10 @@ function overlaySnapshot(historyBars, snapshot) {
   return { bars, snapshotOverlayUsed: true, snapshotFailed: false };
 }
 
-async function fetchOhlcvBundle(ticker) {
+async function fetchOhlcvBundle(ticker, options = {}) {
   const fetchedAt = new Date().toISOString();
-  const historyBars = await fetchHistory(ticker);
+  const history = await fetchHistory(ticker, { days: options.days });
+  const historyBars = history.bars;
 
   let snapshot = null;
   let snapshotError = null;
@@ -209,6 +226,11 @@ async function fetchOhlcvBundle(ticker) {
     bars: merged.bars,
     meta: {
       fetchedAt,
+      requestedDays: history.request.days,
+      fromUnix: history.request.from,
+      toUnix: history.request.to,
+      fromDate: isoDateFromUnix(history.request.from),
+      toDate: isoDateFromUnix(history.request.to),
       historyBars: historyBars.length,
       totalBars: merged.bars.length,
       snapshotOverlayUsed: merged.snapshotOverlayUsed,
@@ -225,7 +247,8 @@ async function fetchMarketBundle() {
   const rows = await Promise.all(
     MARKET_BENCHMARKS.map(async (symbol) => {
       try {
-        return [symbol, await fetchHistory(symbol)];
+        const bundle = await fetchHistory(symbol);
+        return [symbol, bundle.bars];
       } catch (_) {
         return [symbol, null];
       }
@@ -322,7 +345,7 @@ async function foreign(ticker) {
 
 async function fetchAll(ticker, options = {}) {
   const [ohlcvBundle, overviewData, foreignData] = await Promise.all([
-    fetchOhlcvBundle(ticker),
+    fetchOhlcvBundle(ticker, { days: options.ohlcvDays }),
     overview(ticker),
     foreign(ticker),
   ]);

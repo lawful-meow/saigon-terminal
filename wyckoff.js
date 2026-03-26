@@ -873,6 +873,26 @@ function classify(context, events, metrics) {
   };
 }
 
+function recommendLookbackDays(classification) {
+  let recommendedLookbackDays = 30;
+  let reason = "Range and phase mapping are more stable with roughly 30 daily bars.";
+
+  if (classification.code === "markup" || classification.code === "markdown") {
+    recommendedLookbackDays = 7;
+    reason = "Active trend phases should prioritize the most recent week of tape behavior.";
+  } else if (classification.code === "acc_c" || classification.code === "acc_d" || classification.code === "dist_c" || classification.code === "dist_d") {
+    recommendedLookbackDays = 14;
+    reason = "Transition phases usually need about 2 weeks to confirm spring/SOS or upthrust/SOW behavior.";
+  }
+
+  return {
+    recommendedLookbackDays: clamp(recommendedLookbackDays, 7, 90),
+    minLookbackDays: 7,
+    maxLookbackDays: 90,
+    reason,
+  };
+}
+
 function analyzeWyckoff(bars, metrics) {
   const settings = config.wyckoff || {};
   const latest = bars[bars.length - 1];
@@ -1003,6 +1023,7 @@ function analyzeWyckoff(bars, metrics) {
     confidence += Math.round((activeTests.ratio - 0.5) * 18);
   }
   confidence = clamp(confidence, 35, 92);
+  const dataProfile = recommendLookbackDays(classification);
 
   const reasoning = buildReasoning(context, events, classification, activeTests);
   const levelMap = {
@@ -1027,6 +1048,7 @@ function analyzeWyckoff(bars, metrics) {
     tests,
     action,
     entry,
+    dataProfile,
     reasoning,
     context: {
       trendBias: context.trendBias,

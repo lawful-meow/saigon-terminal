@@ -566,6 +566,9 @@ function computeMetrics(rawOhlcv, rawOverview, rawForeign, rawMarket, rawMeta = 
   const metricMeta = {
     fetchedAt: rawMeta?.fetchedAt || rawMeta?.ohlcv?.fetchedAt || new Date().toISOString(),
     freshnessSec: freshnessSec(rawMeta),
+    requestedOhlcvDays: rawMeta?.ohlcv?.requestedDays || null,
+    historyFromDate: rawMeta?.ohlcv?.fromDate || null,
+    historyToDate: rawMeta?.ohlcv?.toDate || null,
     historyBars: rawMeta?.ohlcv?.historyBars || bars.length,
     totalBars: rawMeta?.ohlcv?.totalBars || bars.length,
     snapshotOverlayUsed: !!rawMeta?.ohlcv?.snapshotOverlayUsed,

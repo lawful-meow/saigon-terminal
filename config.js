@@ -101,6 +101,7 @@ module.exports = {
     stopBufferAtr: 0.6,
     testWindow: 12,
     minTestRiskReward: 3,
+    repopulateMinDeltaDays: 5,
   },
   risk: {
     accountSizeVnd: 1_000_000_000,

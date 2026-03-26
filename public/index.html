@@ -2598,6 +2598,9 @@ function renderDetail() {
     <div class="section">
       <h3>Quality and Sources</h3>
       <div class="kv-grid">
+        <div class="kv"><div class="k">OHLCV lookback</div><div class="v">${stock.quality.requestedOhlcvDays == null ? "N/A" : `${stock.quality.requestedOhlcvDays}d`}${stock.dataRange?.recommendedLookbackDays ? ` · Wyckoff rec ${stock.dataRange.recommendedLookbackDays}d` : ""}</div></div>
+        <div class="kv"><div class="k">History window</div><div class="v">${stock.quality.historyFromDate || "N/A"} → ${stock.quality.historyToDate || "N/A"}</div></div>
+        <div class="kv"><div class="k">Data repopulate</div><div class="v">${stock.dataRange?.repopulated ? `yes · ${stock.dataRange.fetchPasses} passes` : "no"}</div></div>
         <div class="kv"><div class="k">Freshness</div><div class="v">${stock.quality.freshnessSec == null ? "N/A" : stock.quality.freshnessSec + " sec"}</div></div>
         <div class="kv"><div class="k">Snapshot overlay</div><div class="v">${stock.quality.snapshotOverlayUsed ? "yes" : "history only"}</div></div>
         <div class="kv"><div class="k">Missing factors</div><div class="v">${stock.quality.missingFactors.join(", ") || "none"}</div></div>

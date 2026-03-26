@@ -13,6 +13,7 @@ const { claudePrompt } = require("./formatter");
 const publisher = require("./publisher");
 const store = require("./store");
 const watchlist = require("./watchlist");
+const { parseCommand, PRESETS, buildHelpText } = require("./commands");
 
 const PORT = config.server.port;
 
@@ -128,6 +129,30 @@ const server = http.createServer(async (req, res) => {
         inputCount: tickers.length,
         topN,
         delayMs,
+      });
+    }
+
+    // ── POST /api/command/parse — parse a command-palette action ──
+    if (p === "/api/command/parse" && req.method === "POST") {
+      const body = await readBody(req);
+      let payload = {};
+      if (body) {
+        try {
+          payload = JSON.parse(body);
+        } catch (error) {
+          return json(res, 400, { error: `Invalid JSON body: ${error.message}` });
+        }
+      }
+
+      const result = parseCommand(payload.command, {
+        topN: payload.topN,
+        delayMs: payload.delayMs,
+      });
+
+      return json(res, 200, {
+        result,
+        presets: PRESETS,
+        help: result.help || buildHelpText(),
       });
     }
 

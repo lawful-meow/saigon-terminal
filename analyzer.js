@@ -70,6 +70,11 @@ function normalizePrice(value, mode = "auto") {
   return n > 1000 ? n : n * 1000;
 }
 
+function pctChangeFromBase(current, base, digits = 2) {
+  if (!Number.isFinite(current) || !Number.isFinite(base) || base === 0) return null;
+  return +(((current / base) - 1) * 100).toFixed(digits);
+}
+
 function normalizeBars(rawBars, mode = "auto") {
   return (rawBars || [])
     .map((bar) => {
@@ -333,7 +338,12 @@ function benchmarkDetails(marketBars) {
 
       return [symbol, {
         price: latest.c,
-        changePct: prev ? +((latest.c / prev.c - 1) * 100).toFixed(2) : null,
+        open: latest.o,
+        prevClose: prev?.c || null,
+        sessionChangePct: pctChangeFromBase(latest.c, latest.o),
+        prevCloseChangePct: pctChangeFromBase(latest.c, prev?.c),
+        // Deprecated alias kept for compatibility with existing consumers.
+        changePct: pctChangeFromBase(latest.c, latest.o),
         ret1m: trailingReturn(bars, 22),
         ret3m: trailingReturn(bars, 61),
         sma20: sma(closes, 20) ? +sma(closes, 20).toFixed(2) : null,
@@ -571,15 +581,21 @@ function computeMetrics(rawOhlcv, rawOverview, rawForeign, rawMarket, rawMeta = 
     }),
   };
 
+  const sessionChangePct = pctChangeFromBase(latest.c, latest.o);
+  const prevCloseChangePct = Number.isFinite(latest.pctChange)
+    ? +latest.pctChange.toFixed(2)
+    : pctChangeFromBase(latest.c, prev?.c);
+
   const baseMetrics = {
     price: latest.c,
     open: latest.o,
     high: latest.h,
     low: latest.l,
     prevClose: prev?.c || null,
-    changePct: Number.isFinite(latest.pctChange)
-      ? +latest.pctChange.toFixed(2)
-      : (prev ? +((latest.c / prev.c - 1) * 100).toFixed(2) : null),
+    sessionChangePct,
+    prevCloseChangePct,
+    // Deprecated alias kept for compatibility with existing consumers.
+    changePct: sessionChangePct,
     priceDate: latest.date,
     high52w,
     low52w,

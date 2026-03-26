@@ -263,6 +263,39 @@ function fPct(n, scale = 1, digits = 1) {
   return \`\${value >= 0 ? "+" : ""}\${value.toFixed(digits)}%\`;
 }
 
+function fSignedPct(n, digits = 2) {
+  if (n == null || !Number.isFinite(Number(n))) return "—";
+  const value = Number(n);
+  return \`\${value >= 0 ? "+" : ""}\${value.toFixed(digits)}%\`;
+}
+
+function stockSessionChange(stock) {
+  if (stock?.sessionChangePct != null && Number.isFinite(Number(stock.sessionChangePct))) return Number(stock.sessionChangePct);
+  if (stock?.changePct != null && Number.isFinite(Number(stock.changePct))) return Number(stock.changePct);
+  return null;
+}
+
+function stockPrevCloseChange(stock) {
+  if (stock?.prevCloseChangePct != null && Number.isFinite(Number(stock.prevCloseChangePct))) return Number(stock.prevCloseChangePct);
+  return null;
+}
+
+function indexSessionChange(index) {
+  if (index?.sessionChangePct != null && Number.isFinite(Number(index.sessionChangePct))) return Number(index.sessionChangePct);
+  if (index?.changePct != null && Number.isFinite(Number(index.changePct))) return Number(index.changePct);
+  return null;
+}
+
+function indexPrevCloseChange(index) {
+  if (index?.prevCloseChangePct != null && Number.isFinite(Number(index.prevCloseChangePct))) return Number(index.prevCloseChangePct);
+  return null;
+}
+
+function toneByChange(value) {
+  if (value == null || !Number.isFinite(Number(value))) return "";
+  return Number(value) >= 0 ? "tone-good" : "tone-bad";
+}
+
 function signalLabel(signal) {
   return SIGNAL_LABELS[signal] || String(signal || "UNKNOWN").replace(/_/g, " ");
 }
@@ -365,12 +398,14 @@ function renderMarket() {
   const cards = ["VNINDEX", "VN30"].map((symbol) => {
     const index = market.indexes[symbol];
     if (!index) return "";
-    const tone = (index.changePct || 0) >= 0 ? "tone-good" : "tone-bad";
+    const sessionPct = indexSessionChange(index);
+    const prevClosePct = indexPrevCloseChange(index);
+    const tone = toneByChange(sessionPct);
     return \`
       <div class="market-card">
         <div class="market-k">\${symbol}</div>
         <div class="market-v mono">\${fNum(index.price)}</div>
-        <div class="market-s \${tone}">\${index.changePct >= 0 ? "+" : ""}\${index.changePct}% · \${index.regime}</div>
+        <div class="market-s \${tone}">Session \${fSignedPct(sessionPct)} · Prev close \${fSignedPct(prevClosePct)} · \${index.regime}</div>
         <div class="chip-row">
           <span class="chip">1M \${fPct(index.ret1m, 100)}</span>
           <span class="chip">3M \${fPct(index.ret3m, 100)}</span>
@@ -423,7 +458,7 @@ function renderBoard() {
           <th>Ticker</th>
           <th>Sector</th>
           <th>Last</th>
-          <th>Chg%</th>
+          <th>Session%</th>
           <th>Value</th>
           <th>Vol x Avg</th>
           <th>RS vs VNINDEX</th>
@@ -447,7 +482,7 @@ function renderBoard() {
               <td><strong>\${stock.ticker}</strong><div style="color:var(--muted);font-size:12px;margin-top:4px">\${stock.name}</div></td>
               <td>\${stock.sector}</td>
               <td class="mono">\${fNum(stock.price)}</td>
-              <td class="\${(stock.changePct || 0) >= 0 ? "tone-good" : "tone-bad"}">\${stock.changePct >= 0 ? "+" : ""}\${stock.changePct}%</td>
+              <td class="\${toneByChange(stockSessionChange(stock))}">\${fSignedPct(stockSessionChange(stock))}</td>
               <td class="mono">\${fK(stock.tradedValue)}</td>
               <td class="mono">\${stock.volRatio}x</td>
               <td class="\${stock.relative?.vsVNINDEX3m >= 0 ? "tone-good" : "tone-bad"}">\${fPct(stock.relative?.vsVNINDEX3m, 100)}</td>
@@ -477,7 +512,7 @@ function renderFocus() {
   const tickerNav = state.snapshot.stocks.map((item) => \`
     <button class="sheet-tab \${item.ticker === stock.ticker ? "active" : ""}" data-sheet-nav="\${item.ticker}">
       <div class="sheet-tab-ticker">\${item.ticker}</div>
-      <div class="sheet-tab-meta">\${item.changePct >= 0 ? "+" : ""}\${item.changePct}% · \${item.confidence}/10</div>
+      <div class="sheet-tab-meta">\${fSignedPct(stockSessionChange(item))} · \${item.confidence}/10</div>
     </button>
   \`).join("");
   const positives = stock.explain.driversPositive.length
@@ -550,7 +585,7 @@ function renderFocus() {
     <div class="focus-hero">
       <div class="hero-slab">
         <div class="hero-price mono">\${fNum(stock.price)}</div>
-        <div class="\${stock.changePct >= 0 ? "tone-good" : "tone-bad"}">\${stock.changePct >= 0 ? "+" : ""}\${stock.changePct}% · \${fK(stock.tradedValue)} traded · \${fNum(stock.volume)} volume</div>
+        <div class="\${toneByChange(stockSessionChange(stock))}">Session \${fSignedPct(stockSessionChange(stock))} · Prev close \${fSignedPct(stockPrevCloseChange(stock))} · \${fK(stock.tradedValue)} traded · \${fNum(stock.volume)} volume</div>
         <div class="chip-row" style="margin-top:12px">
           <span class="signal-chip" data-signal="\${stock.signal}">\${signalLabel(stock.signal)}</span>
           <span class="chip">Strength \${stock.strength?.score == null ? "N/A" : \`\${stock.strength.score}/100\`}</span>

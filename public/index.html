@@ -288,10 +288,38 @@ textarea.control{
   gap:8px;
   flex-wrap:wrap;
 }
+.preset-pills{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
 .sort-pills button{
   padding:8px 12px;
   min-height:auto;
   border-radius:999px;
+}
+.preset-pill{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  min-height:34px;
+  padding:0 12px;
+  border-radius:999px;
+  border:1px solid rgba(40,69,81,.8);
+  background:rgba(9,18,24,.92);
+  color:var(--muted);
+  font-size:12px;
+  font-weight:700;
+}
+.preset-pill.active{
+  border-color:rgba(92,225,184,.34);
+  background:rgba(92,225,184,.10);
+  color:#ddfff3;
+}
+.preset-pill-count{
+  color:var(--subtle);
+  font-size:11px;
+  letter-spacing:.04em;
 }
 .board-panel{
   overflow:hidden;
@@ -594,6 +622,66 @@ td{
   font-size:13px;
   line-height:1.5;
 }
+.alert-card{
+  cursor:pointer;
+}
+.alert-card[data-level="critical"],
+.alert-card[data-level="high"]{
+  border-color:rgba(255,133,115,.32);
+}
+.alert-card[data-level="medium"]{
+  border-color:rgba(255,200,105,.28);
+}
+.alert-card-head{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  align-items:flex-start;
+}
+.alert-card-title{
+  font-size:13px;
+  font-weight:800;
+}
+.alert-card-meta{
+  margin-top:8px;
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.alert-card-copy{
+  margin-top:6px;
+  color:var(--muted);
+}
+.command-input{
+  width:100%;
+  font:inherit;
+}
+.command-stack{
+  display:grid;
+  gap:12px;
+}
+.command-note{
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.6;
+}
+.command-shortcuts{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.kbd{
+  display:inline-flex;
+  align-items:center;
+  min-height:24px;
+  padding:0 8px;
+  border-radius:8px;
+  border:1px solid rgba(40,69,81,.82);
+  background:rgba(10,18,24,.95);
+  color:#dbe7ec;
+  font-family:"IBM Plex Mono","SFMono-Regular","Menlo",monospace;
+  font-size:11px;
+}
 .factor-grid{
   display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
@@ -821,6 +909,7 @@ td{
       <button class="btn btn-warn" id="btnTest">Test Feed</button>
       <button class="btn btn-primary" id="btnScan">Scan Universe</button>
       <button class="btn" id="btnPublish">Publish</button>
+      <button class="btn" id="btnCommand">Command Bar</button>
       <button class="btn" id="btnPrompt">Prompt Drawer</button>
     </div>
   </header>
@@ -858,6 +947,10 @@ td{
             <button class="btn" data-quick-sort="ruleStrength">Rule Strength</button>
             <button class="btn" data-quick-sort="coverage">Low Coverage</button>
           </div>
+        </div>
+        <div class="toolbar-row">
+          <div class="preset-pills" id="presetPills"></div>
+          <div class="tool-note" id="presetMeta">Smart lenses load after a scan.</div>
         </div>
         <div class="toolbar-row">
           <select class="control" id="watchlistSelect"></select>
@@ -907,6 +1000,17 @@ td{
         <div class="market-grid" id="marketGrid"></div>
       </section>
 
+      <section class="panel">
+        <div class="panel-head">
+          <div>
+            <div class="eyebrow">Alert Center</div>
+            <div class="panel-title">What needs attention now</div>
+          </div>
+          <div class="panel-copy" id="alertMeta">No active alerts yet.</div>
+        </div>
+        <div class="driver-list" id="alertList"></div>
+      </section>
+
       <section class="panel utility-panel">
         <div class="panel-head">
           <div>
@@ -950,6 +1054,31 @@ td{
   </div>
 </aside>
 
+<aside class="drawer" id="commandDrawer">
+  <div class="drawer-head">
+    <div>
+      <div class="eyebrow">Command Palette</div>
+      <div class="panel-copy" id="commandMeta">Use `Cmd/Ctrl + K` or type `help`.</div>
+    </div>
+    <div class="status-line">
+      <button class="btn btn-primary" id="runCommand">Run</button>
+      <button class="btn" id="closeCommand">Close</button>
+    </div>
+  </div>
+  <div class="drawer-body">
+    <div class="command-stack">
+      <input class="search command-input" id="commandInput" type="text" placeholder='Try: help, preset leaders, batch FPT CTG MWG, add DGC "Duc Giang" CHEM'>
+      <div class="command-shortcuts">
+        <span class="kbd">Cmd/Ctrl + K</span>
+        <span class="kbd">/</span>
+        <span class="kbd">Esc</span>
+      </div>
+      <div class="command-note" id="commandHint">Commands can scan, switch presets, open a ticker, or mutate the watchlist without leaving the board.</div>
+      <div class="prompt-box" id="commandOutput">Type `help` to list commands and preset ids.</div>
+    </div>
+  </div>
+</aside>
+
 <script>
 const STORAGE_KEY = "saigon-terminal-pins";
 const SIGNAL_LABELS = {
@@ -959,6 +1088,32 @@ const SIGNAL_LABELS = {
   SELL: "Bearish Bias",
   STRONG_SELL: "Strong Bearish Bias",
 };
+const DEFAULT_PRESET_CATALOG = [
+  { id: "all", label: "All Rows", description: "Current full terminal board" },
+  { id: "leaders", label: "Leadership", description: "Strongest CAN SLIM names" },
+  { id: "near_entry", label: "Near Entry", description: "Names close to a live Wyckoff trigger" },
+  { id: "repair_watch", label: "Repair Watch", description: "Early base repair and reclaim setups" },
+  { id: "breakdown_risk", label: "Breakdown Risk", description: "Markdown and structural damage" },
+  { id: "short_candidates", label: "Short Candidates", description: "Weakest names when the tape is soft" },
+  { id: "quality_names", label: "Quality Names", description: "Highest-coverage snapshots" },
+];
+const PRESET_ALIASES = {
+  all: "all",
+  leaders: "leaders",
+  leader: "leaders",
+  entry: "near_entry",
+  near_entry: "near_entry",
+  near: "near_entry",
+  repair: "repair_watch",
+  repair_watch: "repair_watch",
+  risk: "breakdown_risk",
+  breakdown_risk: "breakdown_risk",
+  shorts: "short_candidates",
+  short_candidates: "short_candidates",
+  quality: "quality_names",
+  quality_names: "quality_names",
+  longs: "near_entry",
+};
 
 const state = {
   snapshot: null,
@@ -967,6 +1122,7 @@ const state = {
   publishInfo: null,
   watchlist: [],
   watchEditTicker: null,
+  presetId: "all",
   sortKey: "strengthScore",
   sortDir: "desc",
   sector: "ALL",
@@ -974,6 +1130,8 @@ const state = {
   pinnedOnly: false,
   groupBy: "none",
   pins: loadPins(),
+  paletteOpen: false,
+  commandHistory: [],
 };
 
 function loadPins() {
@@ -1008,6 +1166,39 @@ function fPct(n, scale = 1, digits = 1) {
   return `${value >= 0 ? "+" : ""}${value.toFixed(digits)}%`;
 }
 
+function fSignedPct(n, digits = 2) {
+  if (n == null || !Number.isFinite(Number(n))) return "—";
+  const value = Number(n);
+  return `${value >= 0 ? "+" : ""}${value.toFixed(digits)}%`;
+}
+
+function stockSessionChange(stock) {
+  if (stock?.sessionChangePct != null && Number.isFinite(Number(stock.sessionChangePct))) return Number(stock.sessionChangePct);
+  if (stock?.changePct != null && Number.isFinite(Number(stock.changePct))) return Number(stock.changePct);
+  return null;
+}
+
+function stockPrevCloseChange(stock) {
+  if (stock?.prevCloseChangePct != null && Number.isFinite(Number(stock.prevCloseChangePct))) return Number(stock.prevCloseChangePct);
+  return null;
+}
+
+function indexSessionChange(index) {
+  if (index?.sessionChangePct != null && Number.isFinite(Number(index.sessionChangePct))) return Number(index.sessionChangePct);
+  if (index?.changePct != null && Number.isFinite(Number(index.changePct))) return Number(index.changePct);
+  return null;
+}
+
+function indexPrevCloseChange(index) {
+  if (index?.prevCloseChangePct != null && Number.isFinite(Number(index.prevCloseChangePct))) return Number(index.prevCloseChangePct);
+  return null;
+}
+
+function toneByChange(value) {
+  if (value == null || !Number.isFinite(Number(value))) return "";
+  return Number(value) >= 0 ? "tone-good" : "tone-bad";
+}
+
 function signalLabel(signal) {
   return SIGNAL_LABELS[signal] || String(signal || "UNKNOWN").replace(/_/g, " ");
 }
@@ -1027,7 +1218,122 @@ function setStatus(message, tone = "ok") {
   el.dataset.tone = tone;
 }
 
+function normalizePresetId(value) {
+  const raw = String(value || "").trim().toLowerCase().replace(/[^a-z0-9_:-]/g, "");
+  return PRESET_ALIASES[raw] || raw || "all";
+}
+
+function presetCatalog(snapshot = state.snapshot) {
+  const dynamic = snapshot?.smartLists?.presets || DEFAULT_PRESET_CATALOG.slice(1);
+  return [DEFAULT_PRESET_CATALOG[0]].concat(dynamic);
+}
+
+function activeSmartList(snapshot = state.snapshot) {
+  const presetId = normalizePresetId(state.presetId);
+  if (presetId === "all") return null;
+  return snapshot?.smartLists?.byId?.[presetId] || null;
+}
+
+function activePresetTickerSet(snapshot = state.snapshot) {
+  const list = activeSmartList(snapshot);
+  return list?.tickers?.length ? new Set(list.tickers) : null;
+}
+
+function renderPresetPills(snapshot = state.snapshot) {
+  const root = document.getElementById("presetPills");
+  const meta = document.getElementById("presetMeta");
+  const catalog = presetCatalog(snapshot);
+  const listMap = snapshot?.smartLists?.byId || {};
+  const normalizedId = normalizePresetId(state.presetId);
+  const activeId = catalog.some((preset) => preset.id === normalizedId) ? normalizedId : "all";
+  state.presetId = activeId;
+
+  root.innerHTML = catalog.map((preset) => {
+    const count = preset.id === "all"
+      ? (snapshot?.stocks?.length ?? 0)
+      : (listMap[preset.id]?.count ?? 0);
+    return `
+      <button class="preset-pill ${activeId === preset.id ? "active" : ""}" data-preset="${preset.id}" title="${preset.description || ""}">
+        <span>${preset.label}</span>
+        <span class="preset-pill-count">${count}</span>
+      </button>
+    `;
+  }).join("");
+
+  const activePreset = catalog.find((preset) => preset.id === activeId) || catalog[0];
+  const activeList = activeId === "all" ? null : listMap[activeId];
+  meta.textContent = snapshot
+    ? `${activePreset.label}${activeList?.meta?.topTicker ? ` · lead ${activeList.meta.topTicker}` : ""}${activeList?.description ? ` · ${activeList.description}` : activePreset.description ? ` · ${activePreset.description}` : ""}`
+    : "Smart lenses load after a scan.";
+
+  root.querySelectorAll("[data-preset]").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.presetId = normalizePresetId(button.dataset.preset);
+      renderAll();
+    });
+  });
+}
+
+function renderAlerts(snapshot = state.snapshot) {
+  const meta = document.getElementById("alertMeta");
+  const root = document.getElementById("alertList");
+  const alerts = snapshot?.alerts;
+
+  if (!alerts?.items?.length) {
+    meta.textContent = snapshot ? "No active alerts in this snapshot." : "No active alerts yet.";
+    root.innerHTML = `<div class="driver">Run a scan to populate the alert center.</div>`;
+    return;
+  }
+
+  meta.textContent = `${alerts.total} alerts · top ${alerts.topAlert?.level || "info"}${alerts.market?.exposure ? ` · exposure ${alerts.market.exposure}` : ""}`;
+  root.innerHTML = alerts.items.slice(0, 8).map((alert) => `
+    <div class="driver alert-card" data-alert-open="${alert.ticker || ""}" data-level="${alert.level}">
+      <div class="alert-card-head">
+        <div>
+          <div class="alert-card-title">${alert.title}</div>
+          <div class="alert-card-copy">${alert.summary || "No alert summary."}</div>
+        </div>
+        <span class="mini-chip">${alert.level}</span>
+      </div>
+      <div class="alert-card-meta">
+        <span class="mini-chip">${alert.categoryLabel}</span>
+        ${alert.ticker ? `<span class="mini-chip">${alert.ticker}</span>` : ""}
+        <span class="mini-chip">Severity ${alert.severity}</span>
+      </div>
+      ${alert.reasons?.length ? `<div class="alert-card-copy">${alert.reasons.slice(0, 2).join(" · ")}</div>` : ""}
+    </div>
+  `).join("");
+
+  root.querySelectorAll("[data-alert-open]").forEach((node) => {
+    node.addEventListener("click", async () => {
+      const ticker = node.dataset.alertOpen;
+      if (!ticker) return;
+      const visible = state.snapshot?.stocks?.some((stock) => stock.ticker === ticker);
+      state.presetId = "all";
+      if (visible) {
+        state.selectedTicker = ticker;
+        renderAll();
+        return;
+      }
+      document.getElementById("batchTickerInput").value = ticker;
+      document.getElementById("batchTopN").value = 1;
+      document.getElementById("batchDelayMs").value = 250;
+      await batchScanTopStrength();
+    });
+  });
+}
+
+function setCommandOutput(text) {
+  document.getElementById("commandOutput").textContent = text;
+}
+
 function buildPrompt(snapshot) {
+  const topAlerts = (snapshot.alerts?.items || []).slice(0, 3);
+  const smartListSummary = (snapshot.smartLists?.lists || [])
+    .filter((list) => list.count > 0)
+    .slice(0, 4)
+    .map((list) => `${list.label} ${list.count}`)
+    .join(" | ");
   const stocks = snapshot.stocks.map((stock) => {
     const factors = Object.entries(stock.explain.factorBreakdown)
       .map(([factor, detail]) => `${factor}:${detail.score == null ? "?" : detail.score}`)
@@ -1043,7 +1349,7 @@ function buildPrompt(snapshot) {
       : `  Planned levels: Entry ${stock.entry.map(fNum).join("/")} | TP ${stock.tp.map(fNum).join("/")} | SL ${fNum(stock.sl)}`;
     return [
       `▸ ${stock.ticker} (${stock.name}, ${stock.sector})`,
-      `  Price: ${fNum(stock.price)} (${stock.changePct >= 0 ? "+" : ""}${stock.changePct}%) | Value: ${fK(stock.tradedValue)} | Vol ${fK(stock.volume)} (${stock.volRatio}x avg)`,
+      `  Price: ${fNum(stock.price)} (Session ${fSignedPct(stockSessionChange(stock))} | Vs prev close ${fSignedPct(stockPrevCloseChange(stock))}) | Value: ${fK(stock.tradedValue)} | Vol ${fK(stock.volume)} (${stock.volRatio}x avg)`,
       `  Strength: ${stock.strength?.label || "n/a"}${stock.strength?.score == null ? "" : ` ${stock.strength.score}/100`} ${stock.strength?.rank ? `| Rank #${stock.strength.rank}` : ""}`.trim(),
       `  Relative: 1W ${fPct(stock.relative.ret1w, 100)} | 1M ${fPct(stock.relative.ret1m, 100)} | 3M ${fPct(stock.relative.ret3m, 100)} | vs VNINDEX ${fPct(stock.relative.vsVNINDEX3m, 100)} | vs VN30 ${fPct(stock.relative.vsVN303m, 100)}`,
       `  Market pulse: ${snapshot.market.pulse?.status || "unknown"} | Exposure ${snapshot.market.pulse?.exposure || "n/a"} | Dist days ${snapshot.market.pulse?.distributionDays ?? "n/a"}${snapshot.market.pulse?.followThrough?.date ? ` | FTD ${snapshot.market.pulse.followThrough.date}` : ""}`,
@@ -1074,6 +1380,8 @@ Market:
 - Pulse: ${snapshot.market.pulse?.status || "unknown"} | Exposure ${snapshot.market.pulse?.exposure || "n/a"} | Dist days ${snapshot.market.pulse?.distributionDays ?? "n/a"}${snapshot.market.pulse?.followThrough?.date ? ` | Follow-through ${snapshot.market.pulse.followThrough.date}` : ""}
 - Breadth: ${snapshot.market.breadth.advancers} up / ${snapshot.market.breadth.decliners} down / ${snapshot.market.breadth.unchanged} flat
 - Turnover: ${fK(snapshot.market.turnover)}
+${topAlerts.length ? `- Alert center: ${topAlerts.map((alert) => `${alert.title} [${alert.level}]`).join(" | ")}` : "- Alert center: none"}
+${smartListSummary ? `- Smart lists: ${smartListSummary}` : "- Smart lists: none"}
 
 Please validate the rule reads, flag weak data coverage, and identify the strongest and weakest setups.
 
@@ -1156,12 +1464,14 @@ function renderMarket(snapshot) {
     if (!index) {
       return `<div class="market-card"><div class="market-k">${symbol}</div><div class="market-v">N/A</div><div class="market-s">No benchmark data</div></div>`;
     }
-    const tone = (index.changePct || 0) >= 0 ? "tone-good" : "tone-bad";
+    const sessionPct = indexSessionChange(index);
+    const prevClosePct = indexPrevCloseChange(index);
+    const tone = toneByChange(sessionPct);
     return `
       <div class="market-card">
         <div class="market-k">${symbol}</div>
         <div class="market-v mono">${fNum(index.price)}</div>
-        <div class="market-s ${tone}">${index.changePct >= 0 ? "+" : ""}${index.changePct}% · ${index.regime}</div>
+        <div class="market-s ${tone}">Session ${fSignedPct(sessionPct)} · Prev close ${fSignedPct(prevClosePct)} · ${index.regime}</div>
         <div class="market-mini">
           <span class="mini-chip">1M ${fPct(index.ret1m, 100)}</span>
           <span class="mini-chip">3M ${fPct(index.ret3m, 100)}</span>
@@ -1224,7 +1534,9 @@ function renderMarket(snapshot) {
 
 function filteredStocks() {
   const stocks = state.snapshot?.stocks || [];
+  const presetTickers = activePresetTickerSet();
   return stocks.filter((stock) => {
+    if (presetTickers && !presetTickers.has(stock.ticker)) return false;
     if (state.sector !== "ALL" && stock.sector !== state.sector) return false;
     if (state.pinnedOnly && !state.pins.has(stock.ticker)) return false;
     if (!state.query) return true;
@@ -1245,7 +1557,7 @@ function sortValue(stock, key) {
     case "last": return stock.price;
     case "strengthScore": return stock.strength?.score;
     case "strengthRank": return stock.strength?.rank == null ? null : -stock.strength.rank;
-    case "changePct": return stock.changePct;
+    case "changePct": return stockSessionChange(stock);
     case "tradedValue":
     case "value": return stock.tradedValue;
     case "volRatio":
@@ -1451,13 +1763,13 @@ async function saveWatchTicker() {
   }
 }
 
-async function deleteWatchTicker() {
-  const ticker = state.watchEditTicker || document.getElementById("watchlistSelect").value;
+async function deleteWatchTicker(options = {}) {
+  const ticker = options.ticker || state.watchEditTicker || document.getElementById("watchlistSelect").value;
   if (!ticker) {
     setStatus("Pick a watchlist ticker first", "warn");
     return;
   }
-  if (!window.confirm(`Delete ${ticker} from watchlist?`)) return;
+  if (!options.skipConfirm && !window.confirm(`Delete ${ticker} from watchlist?`)) return;
 
   const button = document.getElementById("btnWatchDelete");
   button.disabled = true;
@@ -1514,6 +1826,155 @@ async function batchScanTopStrength() {
   }
 }
 
+function toggleCommandPalette(open) {
+  state.paletteOpen = open;
+  const drawer = document.getElementById("commandDrawer");
+  drawer.classList.toggle("open", open);
+  if (!open) return;
+  const input = document.getElementById("commandInput");
+  window.setTimeout(() => {
+    input.focus();
+    input.select();
+  }, 20);
+}
+
+async function executeCommandAction(action) {
+  if (!action) return;
+
+  switch (action.type) {
+    case "scan":
+      toggleCommandPalette(false);
+      await scanUniverse();
+      return;
+
+    case "scan.one":
+      document.getElementById("batchTickerInput").value = action.ticker;
+      document.getElementById("batchTopN").value = 1;
+      document.getElementById("batchDelayMs").value = 250;
+      toggleCommandPalette(false);
+      await batchScanTopStrength();
+      return;
+
+    case "batch.scan":
+      document.getElementById("batchTickerInput").value = action.tickers.join(" ");
+      document.getElementById("batchTopN").value = action.topN;
+      document.getElementById("batchDelayMs").value = action.delayMs;
+      toggleCommandPalette(false);
+      await batchScanTopStrength();
+      return;
+
+    case "open.ticker": {
+      const inSnapshot = state.snapshot?.stocks?.some((stock) => stock.ticker === action.ticker);
+      state.presetId = "all";
+      if (inSnapshot) {
+        state.selectedTicker = action.ticker;
+        toggleCommandPalette(false);
+        renderAll();
+        setStatus(`Opened ${action.ticker}`, "ok");
+        return;
+      }
+      document.getElementById("batchTickerInput").value = action.ticker;
+      document.getElementById("batchTopN").value = 1;
+      document.getElementById("batchDelayMs").value = 250;
+      toggleCommandPalette(false);
+      await batchScanTopStrength();
+      return;
+    }
+
+    case "watchlist.add":
+      fillWatchForm(action.stock);
+      state.watchEditTicker = null;
+      toggleCommandPalette(false);
+      await saveWatchTicker();
+      return;
+
+    case "watchlist.update":
+      fillWatchForm({
+        ticker: action.patch.ticker,
+        name: action.patch.name,
+        sector: action.patch.sector,
+      });
+      state.watchEditTicker = action.ticker;
+      toggleCommandPalette(false);
+      await saveWatchTicker();
+      return;
+
+    case "watchlist.remove":
+      toggleCommandPalette(false);
+      await deleteWatchTicker({ ticker: action.ticker, skipConfirm: true });
+      return;
+
+    case "preset.load":
+      state.presetId = normalizePresetId(action.presetId);
+      toggleCommandPalette(false);
+      renderAll();
+      setStatus(`Preset ${state.presetId} loaded`, "ok");
+      return;
+
+    case "prompt.open":
+      toggleCommandPalette(false);
+      togglePrompt(true);
+      return;
+
+    case "publish.snapshot":
+      toggleCommandPalette(false);
+      await publishSnapshot();
+      return;
+
+    default:
+      setStatus(`Unsupported command action: ${action.type}`, "warn");
+  }
+}
+
+async function runCommandPalette() {
+  const input = document.getElementById("commandInput");
+  const raw = input.value.trim();
+  if (!raw) {
+    setCommandOutput("Type `help` to list commands and preset ids.");
+    setStatus("Command is empty", "warn");
+    return;
+  }
+  try {
+    const response = await fetch("/api/command/parse", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        command: raw,
+        topN: Number(document.getElementById("batchTopN").value) || 10,
+        delayMs: Number(document.getElementById("batchDelayMs").value) || 450,
+      }),
+    });
+    const data = await response.json();
+    if (!response.ok || data.error) throw new Error(data.error || "Command parse failed");
+
+    const result = data.result;
+    const preview = [
+      `> ${raw}`,
+      result?.command ? `Command: ${result.command}` : "Command: n/a",
+      result?.action?.type ? `Action: ${result.action.type}` : "Action: none",
+      result?.warnings?.length ? `Warnings: ${result.warnings.join(" | ")}` : null,
+      result?.error ? `Error: ${result.error}` : null,
+      data.help || result?.help || "",
+    ].filter(Boolean).join("\n\n");
+
+    setCommandOutput(preview);
+    state.commandHistory = [raw, ...state.commandHistory.filter((item) => item !== raw)].slice(0, 8);
+    document.getElementById("commandHint").textContent = state.commandHistory.length
+      ? `Recent: ${state.commandHistory.join(" · ")}`
+      : "Commands can scan, switch presets, open a ticker, or mutate the watchlist without leaving the board.";
+
+    if (!result?.ok || result.kind === "help" || result.kind === "empty") {
+      setStatus(result?.error || "Command help ready", result?.error ? "warn" : "ok");
+      return;
+    }
+
+    await executeCommandAction(result.action);
+  } catch (error) {
+    setCommandOutput(`> ${raw}\n\nError: ${error.message}`);
+    setStatus(error.message, "danger");
+  }
+}
+
 function boardRows(stocks) {
   const groups = state.groupBy === "sector"
     ? Array.from(stocks.reduce((map, stock) => {
@@ -1527,7 +1988,8 @@ function boardRows(stocks) {
     const groupHeader = label ? `<tr class="group-row"><td colspan="15">${label}</td></tr>` : "";
     const stockRows = rows.map((stock) => {
       const selected = state.selectedTicker === stock.ticker ? "active" : "";
-      const changeClass = (stock.changePct || 0) >= 0 ? "tone-good" : "tone-bad";
+      const sessionPct = stockSessionChange(stock);
+      const changeClass = toneByChange(sessionPct);
       const pinned = state.pins.has(stock.ticker);
       const observedPct = stock.observedCanSlimMax > 0
         ? `${stock.observedCanSlimTotal}/${stock.observedCanSlimMax} · ${stock.coveragePct}%`
@@ -1549,7 +2011,7 @@ function boardRows(stocks) {
           </td>
           <td>${stock.sector}</td>
           <td class="mono">${fNum(stock.price)}</td>
-          <td class="mono ${changeClass}">${stock.changePct >= 0 ? "+" : ""}${stock.changePct}%</td>
+          <td class="mono ${changeClass}">${fSignedPct(sessionPct)}</td>
           <td class="mono">${fK(stock.tradedValue)}</td>
           <td class="mono">${stock.volRatio}x</td>
           <td class="mono">${stock.rsi14 ?? "—"}</td>
@@ -1581,6 +2043,7 @@ function boardRows(stocks) {
 function renderBoard() {
   const root = document.getElementById("boardWrap");
   const stocks = sortStocks(filteredStocks());
+  let selectionChanged = false;
 
   if (!stocks.length) {
     root.innerHTML = `
@@ -1597,6 +2060,7 @@ function renderBoard() {
 
   if (!state.selectedTicker || !stocks.some((stock) => stock.ticker === state.selectedTicker)) {
     state.selectedTicker = stocks[0].ticker;
+    selectionChanged = true;
   }
 
   root.innerHTML = `
@@ -1606,7 +2070,7 @@ function renderBoard() {
           <th><button data-sort="ticker">Ticker</button></th>
           <th><button data-sort="sector">Sector</button></th>
           <th><button data-sort="last">Last</button></th>
-          <th><button data-sort="changePct">Chg%</button></th>
+          <th><button data-sort="changePct">Session%</button></th>
           <th><button data-sort="tradedValue">Value</button></th>
           <th><button data-sort="volRatio">Vol x Avg</button></th>
           <th><button data-sort="rsi14">RSI14</button></th>
@@ -1657,6 +2121,8 @@ function renderBoard() {
       renderBoard();
     });
   });
+
+  if (selectionChanged) renderDetail();
 }
 
 function renderDetail() {
@@ -1680,7 +2146,7 @@ function renderDetail() {
   const tickerNav = navUniverse.map((item) => `
     <button class="sheet-tab ${item.ticker === stock.ticker ? "active" : ""}" data-sheet-nav="${item.ticker}">
       <div class="sheet-tab-ticker">${item.ticker}</div>
-      <div class="sheet-tab-meta">${item.changePct >= 0 ? "+" : ""}${item.changePct}% · ${item.confidence}/10</div>
+      <div class="sheet-tab-meta">${fSignedPct(stockSessionChange(item))} · ${item.confidence}/10</div>
     </button>
   `).join("");
 
@@ -1729,7 +2195,7 @@ function renderDetail() {
   const indexes = Object.entries(stock.market.indexes || {}).map(([symbol, detail]) => `
     <div class="kv">
       <div class="k">${symbol}</div>
-      <div class="v">${detail ? `${fNum(detail.price)} · ${detail.changePct >= 0 ? "+" : ""}${detail.changePct}% · ${detail.regime}` : "N/A"}</div>
+      <div class="v">${detail ? `${fNum(detail.price)} · Session ${fSignedPct(indexSessionChange(detail))} · Prev close ${fSignedPct(indexPrevCloseChange(detail))} · ${detail.regime}` : "N/A"}</div>
     </div>
   `).join("");
 
@@ -1768,7 +2234,7 @@ function renderDetail() {
         <div class="hero-slab">
           <div class="eyebrow">Main Sheet</div>
           <div class="hero-price mono">${fNum(stock.price)}</div>
-          <div class="${stock.changePct >= 0 ? "tone-good" : "tone-bad"}">${stock.changePct >= 0 ? "+" : ""}${stock.changePct}% · ${fNum(stock.volume)} shares · ${fK(stock.tradedValue)} traded</div>
+          <div class="${toneByChange(stockSessionChange(stock))}">Session ${fSignedPct(stockSessionChange(stock))} · Prev close ${fSignedPct(stockPrevCloseChange(stock))} · ${fNum(stock.volume)} shares · ${fK(stock.tradedValue)} traded</div>
           <div class="hero-meta">
             <span class="score-chip">Strength ${stock.strength?.score == null ? "N/A" : `${stock.strength.score}/100`}</span>
             <span class="mini-chip">${stock.strength?.label || "n/a"}${stock.strength?.rank ? ` · #${stock.strength.rank}` : ""}</span>
@@ -1934,15 +2400,18 @@ function renderDetail() {
 
 function renderAll() {
   renderMarket(state.snapshot);
+  renderAlerts(state.snapshot);
   renderUtility();
   sectorOptions(state.snapshot);
+  renderPresetPills(state.snapshot);
   renderWatchlistManager();
   renderBoard();
   renderDetail();
   updatePrompt(state.snapshot);
   const footer = document.getElementById("footerMeta");
+  const activePreset = normalizePresetId(state.presetId);
   footer.textContent = state.snapshot
-    ? `Snapshot ${new Date(state.snapshot.generated).toLocaleString("vi-VN")} · ${state.snapshot.count} tickers${state.snapshot.scanMode === "batch_top_strength" ? ` · top ${state.snapshot.count} of ${state.snapshot.requestedCount || state.snapshot.universeCount}${state.snapshot.errorCount ? ` · ${state.snapshot.errorCount} errors` : ""}` : ""}`
+    ? `Snapshot ${new Date(state.snapshot.generated).toLocaleString("vi-VN")} · ${state.snapshot.count} tickers${state.snapshot.scanMode === "batch_top_strength" ? ` · top ${state.snapshot.count} of ${state.snapshot.requestedCount || state.snapshot.universeCount}${state.snapshot.errorCount ? ` · ${state.snapshot.errorCount} errors` : ""}` : ""}${activePreset !== "all" ? ` · preset ${activePreset}` : ""}`
     : "Local snapshot terminal";
 }
 
@@ -2040,9 +2509,18 @@ async function copyPrompt() {
 document.getElementById("btnScan").addEventListener("click", scanUniverse);
 document.getElementById("btnTest").addEventListener("click", testFeed);
 document.getElementById("btnPublish").addEventListener("click", publishSnapshot);
+document.getElementById("btnCommand").addEventListener("click", () => toggleCommandPalette(true));
 document.getElementById("btnPrompt").addEventListener("click", () => togglePrompt(true));
 document.getElementById("closePrompt").addEventListener("click", () => togglePrompt(false));
 document.getElementById("copyPrompt").addEventListener("click", copyPrompt);
+document.getElementById("runCommand").addEventListener("click", runCommandPalette);
+document.getElementById("closeCommand").addEventListener("click", () => toggleCommandPalette(false));
+document.getElementById("commandInput").addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    runCommandPalette();
+  }
+});
 document.getElementById("btnWatchLoad").addEventListener("click", syncWatchFormFromSelection);
 document.getElementById("btnWatchSave").addEventListener("click", saveWatchTicker);
 document.getElementById("btnWatchDelete").addEventListener("click", deleteWatchTicker);
@@ -2073,9 +2551,32 @@ document.querySelectorAll("[data-quick-sort]").forEach((button) => {
     renderBoard();
   });
 });
+document.addEventListener("keydown", (event) => {
+  const target = event.target;
+  const typing = target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.tagName === "SELECT" || target.isContentEditable);
+
+  if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+    event.preventDefault();
+    toggleCommandPalette(!state.paletteOpen);
+    return;
+  }
+
+  if (!typing && event.key === "/") {
+    event.preventDefault();
+    toggleCommandPalette(true);
+    return;
+  }
+
+  if (event.key === "Escape") {
+    togglePrompt(false);
+    toggleCommandPalette(false);
+  }
+});
 
 renderMarket(null);
+renderAlerts(null);
 renderUtility();
+renderPresetPills(null);
 renderWatchlistManager();
 loadWatchlist().catch((error) => {
   document.getElementById("watchlistMeta").textContent = error.message;

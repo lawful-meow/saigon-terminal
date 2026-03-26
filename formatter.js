@@ -4,6 +4,8 @@
 // ────────────────────────────────────────────────────────────────────────────────
 
 const config = require("./config");
+const { buildAlertCenter } = require("./alerts");
+const { buildSmartLists } = require("./smartlists");
 
 function fmtK(n) {
   if (n == null) return "—";
@@ -18,6 +20,12 @@ function fmtPct(n, scale = 100, digits = 1) {
   if (n == null) return "—";
   const value = typeof n === "number" ? n * scale : n;
   return `${value >= 0 ? "+" : ""}${Number(value).toFixed(digits)}%`;
+}
+
+function fmtSignedPct(value, digits = 2) {
+  if (value == null || !Number.isFinite(Number(value))) return "—";
+  const n = Number(value);
+  return `${n >= 0 ? "+" : ""}${n.toFixed(digits)}%`;
 }
 
 const SIGNAL_LABELS = {
@@ -316,7 +324,10 @@ function tickerSnapshot(ticker, stockInfo, metrics, scores, prevScan, history = 
     open: metrics.open,
     high: metrics.high,
     low: metrics.low,
-    changePct: metrics.changePct,
+    sessionChangePct: metrics.sessionChangePct,
+    prevCloseChangePct: metrics.prevCloseChangePct,
+    // Deprecated alias kept short-term for compatibility.
+    changePct: metrics.sessionChangePct,
     priceDate: metrics.priceDate,
 
     volume: metrics.volume,
@@ -404,8 +415,8 @@ function tickerSnapshot(ticker, stockInfo, metrics, scores, prevScan, history = 
 }
 
 function breadthSummary(results) {
-  const advancers = results.filter((stock) => (stock.changePct || 0) > 0).length;
-  const decliners = results.filter((stock) => (stock.changePct || 0) < 0).length;
+  const advancers = results.filter((stock) => (stock.sessionChangePct || 0) > 0).length;
+  const decliners = results.filter((stock) => (stock.sessionChangePct || 0) < 0).length;
   const unchanged = results.length - advancers - decliners;
   return { advancers, decliners, unchanged };
 }
@@ -419,7 +430,7 @@ function sectorSummary(results) {
     const row = map.get(stock.sector);
     row.count += 1;
     row.turnover += stock.tradedValue || 0;
-    if (stock.changePct != null) row.changeValues.push(stock.changePct);
+    if (stock.sessionChangePct != null) row.changeValues.push(stock.sessionChangePct);
     if (stock.observedCanSlimMax > 0) row.scoreValues.push(stock.observedCanSlimTotal / stock.observedCanSlimMax);
   }
 
@@ -468,7 +479,7 @@ function fullSnapshot(results, meta = {}) {
     .filter(([, detail]) => detail?.status === "active")
     .map(([provider]) => provider);
 
-  return {
+  const snapshot = {
     generated: new Date().toISOString(),
     engine: "Saigon Terminal v2.0",
     dataSource: "VPS + KBS",
@@ -488,6 +499,10 @@ function fullSnapshot(results, meta = {}) {
     },
     stocks: results,
   };
+
+  snapshot.alerts = buildAlertCenter(snapshot, { limit: 18 });
+  snapshot.smartLists = buildSmartLists(snapshot, { limit: 12 });
+  return snapshot;
 }
 
 function factorPromptLine(stock) {
@@ -509,10 +524,16 @@ function promptLevelsLine(stock) {
 }
 
 function claudePrompt(snapshot) {
+  const topAlerts = (snapshot.alerts?.items || []).slice(0, 3);
+  const smartListSummary = (snapshot.smartLists?.lists || [])
+    .filter((list) => list.count > 0)
+    .slice(0, 4)
+    .map((list) => `${list.label} ${list.count}`)
+    .join(" | ");
   const stockSummaries = snapshot.stocks
     .map((stock) => [
       `▸ ${stock.ticker} (${stock.name}, ${stock.sector})`,
-      `  Price: ${stock.price.toLocaleString("vi-VN")} (${stock.changePct >= 0 ? "+" : ""}${stock.changePct}%) | Value: ${fmtK(stock.tradedValue)} | Vol: ${fmtK(stock.volume)} (${stock.volRatio}x avg)`,
+      `  Price: ${stock.price.toLocaleString("vi-VN")} (Session ${fmtSignedPct(stock.sessionChangePct)} | Vs prev close ${fmtSignedPct(stock.prevCloseChangePct)}) | Value: ${fmtK(stock.tradedValue)} | Vol: ${fmtK(stock.volume)} (${stock.volRatio}x avg)`,
       `  Strength: ${stock.strength?.label || "n/a"}${stock.strength?.score == null ? "" : ` ${stock.strength.score}/100`}${stock.strength?.rank ? ` | Rank #${stock.strength.rank}` : ""}`,
       `  Relative: 1W ${fmtPct(stock.relative.ret1w)} | 1M ${fmtPct(stock.relative.ret1m)} | 3M ${fmtPct(stock.relative.ret3m)} | vs VNINDEX ${fmtPct(stock.relative.vsVNINDEX3m)} | vs VN30 ${fmtPct(stock.relative.vsVN303m)}`,
       `  Technical: SMA20 ${fmtK(stock.sma20)} | SMA50 ${fmtK(stock.sma50)} | RSI ${stock.rsi14 ?? "—"} | MACD ${fmtK(stock.macd)}`,
@@ -545,6 +566,8 @@ Market header:
 - Pulse: ${snapshot.market.pulse?.status || "unknown"} | Exposure ${snapshot.market.pulse?.exposure || "n/a"} | Dist days ${snapshot.market.pulse?.distributionDays ?? "n/a"}${snapshot.market.pulse?.followThrough?.date ? ` | Follow-through ${snapshot.market.pulse.followThrough.date}` : ""}
 - Breadth: ${snapshot.market.breadth.advancers} up / ${snapshot.market.breadth.decliners} down / ${snapshot.market.breadth.unchanged} flat
 - Turnover (scan universe): ${fmtK(snapshot.market.turnover)}
+${topAlerts.length ? `- Alert center: ${topAlerts.map((alert) => `${alert.title} [${alert.level}]`).join(" | ")}` : "- Alert center: none"}
+${smartListSummary ? `- Smart lists: ${smartListSummary}` : "- Smart lists: none"}
 
 Please:
 1. Validate whether the rule reads make sense.

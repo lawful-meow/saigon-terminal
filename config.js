@@ -116,7 +116,34 @@ module.exports = {
   store: {
     path: "./data/scans.json",
     watchlistPath: "./data/watchlist.json",
+    workspacePath: "./data/workspace.json",
+    playbooksPath: "./data/playbooks.json",
+    tasksPath: "./data/tasks.json",
+    taskLogPath: "./data/task-log.jsonl",
+    researchPath: "./data/research.jsonl",
+    journalPath: "./data/journal.jsonl",
     maxScansPerTicker: 50,
+  },
+
+  research: {
+    defaultWindow: "7d",
+    remoteAdaptersEnabled: false,
+    remoteAdapters: {
+      alphaVantageNews: {
+        enabled: false,
+        limit: 12,
+      },
+      fredMacro: {
+        enabled: false,
+      },
+    },
+    sourcePriority: {
+      market_snapshot: 100,
+      operator_note: 96,
+      briefing_template: 88,
+      alpha_vantage_news: 74,
+      fred_macro: 68,
+    },
   },
 
   // ── Server ──

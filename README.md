@@ -31,6 +31,19 @@ If you are still jumping between broker tabs, spreadsheets, and half-broken scre
 - Static publish flow for GitHub Pages
 - Clear source separation between market data, enrichment data, and local scoring
 
+## War Hub VNext
+
+The app now also exposes a local-first war-room layer on top of the existing board engine.
+
+- `Overview`: market pulse, sector rotation, alert concentration, and smart-list density
+- `Board`: ranked rows with saved lenses and keyboard-first focus switching
+- `Research`: deterministic evidence timeline from market events, operator notes, and saved briefings
+- `Playbook`: explicit thesis, entry ladder, stop, targets, invalidation, and next action
+- `Journal`: local trade memory and review log
+- `Publish`: read-only snapshot export of the active workspace
+
+The core remains deterministic and AI-free. Remote research adapters are optional and disabled by default.
+
 ## Quick Start
 
 ### Requirements
@@ -44,6 +57,22 @@ node server.js
 ```
 
 Open [http://localhost:3000](http://localhost:3000)
+
+### Local Hot Reload (Recommended For Coding)
+
+```bash
+node dev.js
+```
+
+This starts:
+
+- App server at `http://localhost:3000`
+- Live reload channel at `http://localhost:3001/events`
+
+Behavior:
+
+- Change files under `public/` or `docs/` -> browser auto refresh
+- Change backend code (`*.js`, `*.json`, etc.) -> server auto restart + browser refresh
 
 There is no `package.json` because this repo uses Node's built-in modules plus native `fetch` from Node 18+.
 
@@ -112,6 +141,18 @@ Commit `docs/` and enable GitHub Pages from that directory.
 
 | Method | Path | Purpose |
 | --- | --- | --- |
+| `GET` | `/api/workspace` | Return the normalized workspace snapshot for overview, board, research, playbook, or journal views |
+| `POST` | `/api/tasks/scan` | Start a watchlist, batch, or VN30 scan task with progress tracking |
+| `POST` | `/api/tasks/research-refresh` | Refresh research evidence and save a deterministic briefing |
+| `POST` | `/api/tasks/publish` | Publish the latest workspace snapshot asynchronously |
+| `GET` | `/api/tasks/:id` | Poll a task snapshot |
+| `GET` | `/api/tasks/:id/events` | Stream task progress over SSE |
+| `GET` | `/api/research` | Return normalized evidence timeline for a ticker and window |
+| `POST` | `/api/research/notes` | Save an operator note into the research memory store |
+| `GET` | `/api/playbooks/:ticker` | Return the current playbook for a ticker |
+| `POST` | `/api/playbooks/:ticker` | Save an explicit playbook state for a ticker |
+| `GET` | `/api/journal` | Return journal entries for a given day |
+| `POST` | `/api/journal` | Save a journal entry |
 | `POST` | `/api/scan` | Scan the configured universe and return a full snapshot |
 | `POST` | `/api/scan/batch` | Throttled scan of a pasted ticker list and return the top CAN SLIM names |
 | `POST` | `/api/publish` | Generate static output for GitHub Pages |

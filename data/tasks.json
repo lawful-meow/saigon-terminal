@@ -1,0 +1,187 @@
+{
+  "task:2d963f7d-f26c-4e36-9272-32cc90d2c238": {
+    "id": "task:2d963f7d-f26c-4e36-9272-32cc90d2c238",
+    "type": "scan",
+    "status": "completed",
+    "startedAt": "2026-03-27T04:50:29.595Z",
+    "updatedAt": "2026-03-27T04:50:57.638Z",
+    "progressPct": 100,
+    "currentStep": "completed",
+    "warnings": [],
+    "resultRef": {
+      "type": "snapshot",
+      "selectedTicker": null
+    },
+    "error": null,
+    "meta": {
+      "mode": "vn30",
+      "payload": {
+        "mode": "vn30"
+      }
+    }
+  },
+  "task:13b2e391-9e1f-4097-886d-cf6aadceacb4": {
+    "id": "task:13b2e391-9e1f-4097-886d-cf6aadceacb4",
+    "type": "scan",
+    "status": "completed",
+    "startedAt": "2026-03-27T04:51:15.151Z",
+    "updatedAt": "2026-03-27T04:51:16.622Z",
+    "progressPct": 100,
+    "currentStep": "completed",
+    "warnings": [],
+    "resultRef": {
+      "type": "snapshot",
+      "selectedTicker": null
+    },
+    "error": null,
+    "meta": {
+      "mode": "watchlist",
+      "payload": {
+        "mode": "watchlist"
+      }
+    }
+  },
+  "task:06762d9b-08e0-431e-8d3a-a641f9798ec1": {
+    "id": "task:06762d9b-08e0-431e-8d3a-a641f9798ec1",
+    "type": "research-refresh",
+    "status": "failed",
+    "startedAt": "2026-03-27T04:52:31.495Z",
+    "updatedAt": "2026-03-27T04:52:31.503Z",
+    "progressPct": 2,
+    "currentStep": "failed",
+    "warnings": [],
+    "resultRef": null,
+    "error": "No workspace snapshot is available for research refresh",
+    "meta": {
+      "payload": {
+        "ticker": "FPT",
+        "window": "7d"
+      }
+    }
+  },
+  "task:d7ae5a48-cc52-42a6-924a-e868bd1f60d9": {
+    "id": "task:d7ae5a48-cc52-42a6-924a-e868bd1f60d9",
+    "type": "scan",
+    "status": "completed",
+    "startedAt": "2026-03-27T04:52:45.050Z",
+    "updatedAt": "2026-03-27T04:52:46.343Z",
+    "progressPct": 100,
+    "currentStep": "completed",
+    "warnings": [],
+    "resultRef": {
+      "type": "snapshot",
+      "selectedTicker": null
+    },
+    "error": null,
+    "meta": {
+      "mode": "watchlist",
+      "payload": {
+        "mode": "watchlist"
+      }
+    }
+  },
+  "task:d08f9d5c-c5ee-4cbf-939d-012114239d04": {
+    "id": "task:d08f9d5c-c5ee-4cbf-939d-012114239d04",
+    "type": "scan",
+    "status": "completed",
+    "startedAt": "2026-03-27T05:54:17.708Z",
+    "updatedAt": "2026-03-27T05:54:45.808Z",
+    "progressPct": 100,
+    "currentStep": "completed",
+    "warnings": [],
+    "resultRef": {
+      "type": "snapshot",
+      "selectedTicker": "VPB"
+    },
+    "error": null,
+    "meta": {
+      "mode": "vn30",
+      "payload": {
+        "mode": "vn30"
+      }
+    }
+  },
+  "task:9f68c458-ed57-41ea-9fd6-ca081662602a": {
+    "id": "task:9f68c458-ed57-41ea-9fd6-ca081662602a",
+    "type": "scan",
+    "status": "completed",
+    "startedAt": "2026-03-27T05:55:54.707Z",
+    "updatedAt": "2026-03-27T05:55:56.407Z",
+    "progressPct": 100,
+    "currentStep": "completed",
+    "warnings": [],
+    "resultRef": {
+      "type": "snapshot",
+      "selectedTicker": "HDB"
+    },
+    "error": null,
+    "meta": {
+      "mode": "watchlist",
+      "payload": {
+        "mode": "watchlist"
+      }
+    }
+  },
+  "task:22c2e70d-7b1f-4507-9d8b-ae7810aff631": {
+    "id": "task:22c2e70d-7b1f-4507-9d8b-ae7810aff631",
+    "type": "publish",
+    "status": "completed",
+    "startedAt": "2026-03-27T06:32:54.632Z",
+    "updatedAt": "2026-03-27T06:32:54.697Z",
+    "progressPct": 100,
+    "currentStep": "completed",
+    "warnings": [],
+    "resultRef": {
+      "type": "publish",
+      "previewPath": "/docs/"
+    },
+    "error": null,
+    "meta": {
+      "payload": {
+        "selectedTicker": "MBB"
+      }
+    }
+  },
+  "task:4ceeeaf4-4bab-4c7c-8188-bc786e362b18": {
+    "id": "task:4ceeeaf4-4bab-4c7c-8188-bc786e362b18",
+    "type": "research-refresh",
+    "status": "completed",
+    "startedAt": "2026-03-27T06:33:57.211Z",
+    "updatedAt": "2026-03-27T06:33:57.225Z",
+    "progressPct": 100,
+    "currentStep": "completed",
+    "warnings": [],
+    "resultRef": {
+      "type": "research",
+      "ticker": "TCB"
+    },
+    "error": null,
+    "meta": {
+      "payload": {
+        "ticker": "TCB",
+        "window": "7d"
+      }
+    }
+  },
+  "task:a457f946-821a-4948-8670-b9422217e43d": {
+    "id": "task:a457f946-821a-4948-8670-b9422217e43d",
+    "type": "research-refresh",
+    "status": "completed",
+    "startedAt": "2026-03-27T06:34:03.464Z",
+    "updatedAt": "2026-03-27T06:34:03.471Z",
+    "progressPct": 100,
+    "currentStep": "completed",
+    "warnings": [],
+    "resultRef": {
+      "type": "research",
+      "ticker": "TCB"
+    },
+    "error": null,
+    "meta": {
+      "payload": {
+        "ticker": "TCB",
+        "window": "30d"
+      }
+    }
+  }
+}

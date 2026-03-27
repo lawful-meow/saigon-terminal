@@ -6,6 +6,7 @@
 const config = require("./config");
 const { buildAlertCenter } = require("./alerts");
 const { buildSmartLists } = require("./smartlists");
+const { normalizeLanguage, t } = require("./i18n");
 
 function fmtK(n) {
   if (n == null) return "—";
@@ -28,48 +29,41 @@ function fmtSignedPct(value, digits = 2) {
   return `${n >= 0 ? "+" : ""}${n.toFixed(digits)}%`;
 }
 
-const SIGNAL_LABELS = {
-  STRONG_BUY: "Strong Bullish Bias",
-  BUY: "Bullish Bias",
-  HOLD: "Neutral / Mixed",
-  SELL: "Bearish Bias",
-  STRONG_SELL: "Strong Bearish Bias",
-};
-
-const FACTOR_META = {
-  C: { label: "Current earnings" },
-  A: { label: "Annual growth" },
-  N: { label: "New highs" },
-  S: { label: "Supply / demand" },
-  L: { label: "Leader / laggard" },
-  I: { label: "Institutional support" },
-  M: { label: "Market direction" },
-};
-
+const FACTOR_KEYS = ["C", "A", "N", "S", "L", "I", "M"];
 const METRIC_META = {
-  epsGrowthQoQ: { label: "Quarterly EPS growth", kind: "pct" },
-  epsGrowth1Y: { label: "Annual EPS growth", kind: "pct" },
-  nearHighPct: { label: "Price vs 52W high", kind: "pct_of_high" },
-  volScore: { label: "Volume vs avg20", kind: "multiple" },
-  rs3m: { label: "3M relative strength", kind: "pct" },
-  institutionScore: { label: "Institutional ownership proxy", kind: "pct" },
-  marketTrend: { label: "Market trend score", kind: "score" },
+  epsGrowthQoQ: { key: "metric.epsGrowthQoQ", kind: "pct" },
+  epsGrowth1Y: { key: "metric.epsGrowth1Y", kind: "pct" },
+  nearHighPct: { key: "metric.nearHighPct", kind: "pct_of_high" },
+  volScore: { key: "metric.volScore", kind: "multiple" },
+  rs3m: { key: "metric.rs3m", kind: "pct" },
+  institutionScore: { key: "metric.institutionScore", kind: "pct" },
+  marketTrend: { key: "metric.marketTrend", kind: "score" },
 };
 
-function signalLabel(signal) {
-  return SIGNAL_LABELS[signal] || String(signal || "UNKNOWN").replace(/_/g, " ");
+function signalLabel(signal, language = "en") {
+  return t(language, `signal.${signal}`) || String(signal || "UNKNOWN").replace(/_/g, " ");
 }
 
-function confidenceLabel(confidence) {
-  if (confidence >= 8) return "high conviction";
-  if (confidence >= 5) return "moderate conviction";
-  return "low conviction";
+function confidenceLabel(confidence, language = "en") {
+  if (confidence >= 8) return t(language, "confidence.high");
+  if (confidence >= 5) return t(language, "confidence.medium");
+  return t(language, "confidence.low");
 }
 
-function summarizeCoverage(coveragePct) {
-  if (coveragePct >= 85) return "strong";
-  if (coveragePct >= 60) return "usable";
-  return "thin";
+function summarizeCoverage(coveragePct, language = "en") {
+  if (coveragePct >= 85) return t(language, "coverage.strong");
+  if (coveragePct >= 60) return t(language, "coverage.usable");
+  return t(language, "coverage.thin");
+}
+
+function factorLabel(factor, language = "en") {
+  return t(language, `factor.${factor}`);
+}
+
+function metricLabel(metric, language = "en") {
+  const meta = METRIC_META[metric];
+  if (!meta?.key) return String(metric || "");
+  return t(language, meta.key);
 }
 
 function qualityScore(metrics, scores) {
@@ -86,8 +80,9 @@ function qualityScore(metrics, scores) {
   if (metrics.wyckoff?.confidence != null && metrics.wyckoff.confidence < 70) {
     score -= Math.max(2, Math.round((70 - metrics.wyckoff.confidence) / 6));
   }
-  if ((metrics.meta.overviewWarnings || []).length) {
-    score -= Math.min(6, metrics.meta.overviewWarnings.length * 2);
+  const overviewWarnings = actionableOverviewWarnings(metrics);
+  if (overviewWarnings.length) {
+    score -= Math.min(6, overviewWarnings.length * 2);
   }
   return Math.max(0, Math.min(100, score));
 }
@@ -98,22 +93,32 @@ function qualityLabel(score) {
   return "low";
 }
 
-function buildWarnings(metrics, scores) {
+function actionableOverviewWarnings(metrics) {
+  return (metrics.meta.overviewWarnings || []).filter((warning) => !/quarantined/i.test(String(warning || "")));
+}
+
+function buildWarnings(metrics, scores, language = "en") {
   const warnings = [];
+  const warningKeys = [];
+  const pushWarning = (key, vars = {}) => {
+    warningKeys.push({ key, vars });
+    warnings.push(t(language, key, vars));
+  };
+
   const missingFactors = Object.entries(scores.factorBreakdown)
     .filter(([, factor]) => factor.status === "unknown")
     .map(([factor]) => factor);
 
-  if (missingFactors.length) warnings.push(`Missing CAN SLIM factors: ${missingFactors.join("/")}`);
-  if (String(metrics.meta.sourceFlags.fundamentals).includes("unavailable")) warnings.push("Fundamentals unavailable");
-  if (String(metrics.meta.sourceFlags.ownership).includes("unavailable")) warnings.push("Ownership enrichment unavailable");
-  if (metrics.meta.sourceFlags.foreign === "unavailable") warnings.push("Foreign flow unavailable");
-  if (!metrics.meta.snapshotOverlayUsed) warnings.push("Price is history-only fallback");
-  if (metrics.meta.snapshotFailed && metrics.meta.snapshotError) warnings.push(`Snapshot fallback: ${metrics.meta.snapshotError}`);
-  if (metrics.meta.freshnessSec != null && metrics.meta.freshnessSec > 180) warnings.push("Snapshot is stale");
-  if (metrics.wyckoff?.confidence != null && metrics.wyckoff.confidence < 55) warnings.push("Wyckoff read is low-confidence");
-  warnings.push(...(metrics.meta.overviewWarnings || []));
-  return warnings;
+  if (missingFactors.length) pushWarning("warning.missing_factors", { factors: missingFactors.join("/") });
+  if (String(metrics.meta.sourceFlags.fundamentals).includes("unavailable")) pushWarning("warning.fundamentals_unavailable");
+  if (String(metrics.meta.sourceFlags.ownership).includes("unavailable")) pushWarning("warning.ownership_unavailable");
+  if (metrics.meta.sourceFlags.foreign === "unavailable") pushWarning("warning.foreign_unavailable");
+  if (!metrics.meta.snapshotOverlayUsed) pushWarning("warning.price_history_only");
+  if (metrics.meta.snapshotFailed && metrics.meta.snapshotError) pushWarning("warning.snapshot_fallback", { error: metrics.meta.snapshotError });
+  if (metrics.meta.freshnessSec != null && metrics.meta.freshnessSec > 180) pushWarning("warning.snapshot_stale");
+  if (metrics.wyckoff?.confidence != null && metrics.wyckoff.confidence < 55) pushWarning("warning.wyckoff_low_confidence");
+  warnings.push(...actionableOverviewWarnings(metrics));
+  return { warnings, warningKeys };
 }
 
 function missingFields(metrics) {
@@ -134,15 +139,15 @@ function fmtPctPlain(n, digits = 1) {
   return `${(Number(n) * 100).toFixed(digits)}%`;
 }
 
-function metricFormat(metric, value, { threshold = false } = {}) {
-  if (value == null) return "unknown";
+function metricFormat(metric, value, { threshold = false, language = "en" } = {}) {
+  if (value == null) return t(language, "metric.unknown");
   const meta = METRIC_META[metric] || { kind: "raw" };
 
   switch (meta.kind) {
     case "pct":
       return threshold ? fmtPctPlain(value, 1) : fmtPct(value, 100, 1);
     case "pct_of_high":
-      return threshold ? fmtPctPlain(value, 1) : `${fmtPctPlain(value, 1)} of 52W high`;
+      return threshold ? fmtPctPlain(value, 1) : t(language, "metric.of_52w_high", { value: fmtPctPlain(value, 1) });
     case "multiple":
       return `${Number(value).toFixed(2)}x`;
     case "score":
@@ -163,11 +168,14 @@ function thresholdBand(score, thresholds) {
   };
 }
 
-function bandLabel(metric, lower, upper) {
-  if (lower == null && upper == null) return "Unknown";
-  if (lower == null) return `< ${metricFormat(metric, upper, { threshold: true })}`;
-  if (upper == null) return `>= ${metricFormat(metric, lower, { threshold: true })}`;
-  return `${metricFormat(metric, lower, { threshold: true })} to ${metricFormat(metric, upper, { threshold: true })}`;
+function bandLabel(metric, lower, upper, language = "en") {
+  if (lower == null && upper == null) return t(language, "band.unknown");
+  if (lower == null) return t(language, "band.lt", { value: metricFormat(metric, upper, { threshold: true, language }) });
+  if (upper == null) return t(language, "band.gte", { value: metricFormat(metric, lower, { threshold: true, language }) });
+  return t(language, "band.range", {
+    lower: metricFormat(metric, lower, { threshold: true, language }),
+    upper: metricFormat(metric, upper, { threshold: true, language }),
+  });
 }
 
 function breakoutVolumeSupport(volRatio) {
@@ -182,7 +190,11 @@ function breakoutReason(parts) {
   return parts.filter(Boolean).join("; ");
 }
 
-function buildBreakout(metrics) {
+function breakoutVolumeSupportLabel(value, language = "en") {
+  return t(language, `breakout.volume.${value || "unknown"}`);
+}
+
+function buildBreakout(metrics, language = "en") {
   const entry = metrics.wyckoff?.entry || {};
   const primaryPlan = (entry.plans || []).find((plan) =>
     Number.isFinite(plan.price) && (plan.kind === "buy" || plan.kind === "wait")
@@ -244,11 +256,11 @@ function buildBreakout(metrics) {
     invalidation,
     volumeSupport: volSupport,
     reason: breakoutReason([
-      primaryPlan ? primaryPlan.label : watchTrigger?.label || "No active trigger",
-      relVsIndex == null ? null : `RS vs VNINDEX ${fmtPct(relVsIndex, 100, 1)}`,
-      metrics.nearHigh ? "near 52W highs" : null,
-      metrics.rangeCompression ? "range compressed" : null,
-      `volume ${volSupport}`,
+      primaryPlan ? primaryPlan.label : watchTrigger?.label || t(language, "breakout.no_active_trigger"),
+      relVsIndex == null ? null : t(language, "breakout.rs_vs_vnindex", { value: fmtPct(relVsIndex, 100, 1) }),
+      metrics.nearHigh ? t(language, "breakout.near_52w_highs") : null,
+      metrics.rangeCompression ? t(language, "breakout.range_compressed") : null,
+      t(language, "breakout.volume", { state: breakoutVolumeSupportLabel(volSupport, language) }),
     ]),
   };
 }
@@ -330,22 +342,22 @@ function buildExecutionRisk(metrics) {
 }
 
 function factorReason(factor, detail) {
-  const factorLabel = FACTOR_META[factor]?.label || factor;
-  const metricLabel = METRIC_META[detail.metric]?.label || detail.metric;
+  const factorName = factorLabel(factor);
+  const metricName = metricLabel(detail.metric);
 
   if (detail.rawValue == null) {
-    return `No ${metricLabel.toLowerCase()} value is available, so ${factorLabel.toLowerCase()} stays unknown and is excluded from observed CAN SLIM.`;
+    return `No ${metricName.toLowerCase()} value is available, so ${factorName.toLowerCase()} stays unknown and is excluded from observed CAN SLIM.`;
   }
 
   const band = thresholdBand(detail.score, detail.thresholds);
   const value = metricFormat(detail.metric, detail.rawValue);
   if (band.lower == null) {
-    return `${metricLabel} is ${value}, below ${metricFormat(detail.metric, band.upper, { threshold: true })}, so ${factor} scores ${detail.score}/10.`;
+    return `${metricName} is ${value}, below ${metricFormat(detail.metric, band.upper, { threshold: true })}, so ${factor} scores ${detail.score}/10.`;
   }
   if (band.upper == null) {
-    return `${metricLabel} is ${value}, at or above ${metricFormat(detail.metric, band.lower, { threshold: true })}, so ${factor} scores ${detail.score}/10.`;
+    return `${metricName} is ${value}, at or above ${metricFormat(detail.metric, band.lower, { threshold: true })}, so ${factor} scores ${detail.score}/10.`;
   }
-  return `${metricLabel} is ${value}, between ${metricFormat(detail.metric, band.lower, { threshold: true })} and ${metricFormat(detail.metric, band.upper, { threshold: true })}, so ${factor} scores ${detail.score}/10.`;
+  return `${metricName} is ${value}, between ${metricFormat(detail.metric, band.lower, { threshold: true })} and ${metricFormat(detail.metric, band.upper, { threshold: true })}, so ${factor} scores ${detail.score}/10.`;
 }
 
 function buildBands(metric, thresholds, activeScore) {
@@ -364,8 +376,8 @@ function factorBreakdown(scores) {
       const band = thresholdBand(detail.score, detail.thresholds);
       return [factor, {
         ...detail,
-        factorLabel: FACTOR_META[factor]?.label || factor,
-        metricLabel: METRIC_META[detail.metric]?.label || detail.metric,
+        factorLabel: factorLabel(factor),
+        metricLabel: metricLabel(detail.metric),
         displayValue: metricFormat(detail.metric, detail.rawValue),
         bandLabel: detail.score == null ? "Unknown" : bandLabel(detail.metric, band.lower, band.upper),
         bands: buildBands(detail.metric, detail.thresholds, detail.score),
@@ -469,7 +481,8 @@ function describeDelta(metrics, scores, prev) {
 }
 
 function tickerSnapshot(ticker, stockInfo, metrics, scores, prevScan, history = []) {
-  const warnings = buildWarnings(metrics, scores);
+  const warningState = buildWarnings(metrics, scores);
+  const warnings = warningState.warnings;
   const drivers = driverText(metrics, scores, warnings);
   const qScore = qualityScore(metrics, scores);
   const breakout = buildBreakout(metrics);
@@ -546,6 +559,7 @@ function tickerSnapshot(ticker, stockInfo, metrics, scores, prevScan, history = 
         .map(([factor]) => factor),
       missingFields: missingFields(metrics),
       sourceFlags: metrics.meta.sourceFlags,
+      sourceHealth: metrics.meta.sourceHealth || [],
       warnings,
     },
 
@@ -737,8 +751,8 @@ function fullSnapshot(results, meta = {}) {
   const snapshot = {
     generated: new Date().toISOString(),
     engine: "Saigon Terminal v2.0",
-    dataSource: "VPS + KBS",
-    note: "Board data is VPS-first. KBS enriches fundamentals and ownership when available. CAN SLIM is the ticker-strength layer, while Wyckoff handles timing and entry logic. Market direction now includes an IBD-style pulse proxy and Wyckoff output includes a test checklist.",
+    dataSource: "VPS with optional KBS enrichment",
+    note: "Board data is VPS-first. KBS enriches finance fields when reachable, while profile ownership is quarantined until a verified endpoint exists. CAN SLIM is the ticker-strength layer, while Wyckoff handles timing and entry logic. Market direction includes an IBD-style pulse proxy and Wyckoff output includes a test checklist.",
     count: results.length,
     universeCount: meta.universeCount ?? results.length,
     requestedCount: meta.requestedCount ?? results.length,

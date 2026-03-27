@@ -1,8 +1,3 @@
-// publisher.js
-// Export a static snapshot page that can be hosted on GitHub Pages.
-// Output is self-contained: one HTML file with embedded snapshot data.
-//
-
 const fs = require("fs");
 const path = require("path");
 
@@ -14,18 +9,82 @@ function ensureDocsDir() {
   fs.mkdirSync(docsDir(), { recursive: true });
 }
 
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 function safeJson(value) {
   return JSON.stringify(value).replace(/</g, "\\u003c");
 }
 
-function buildPage(snapshot, options = {}) {
-  const prompt = options.prompt || "";
+function fmtNumber(value) {
+  if (value == null || !Number.isFinite(Number(value))) return "—";
+  return Number(value).toLocaleString("vi-VN");
+}
+
+function fmtCompact(value) {
+  if (value == null || !Number.isFinite(Number(value))) return "—";
+  const n = Number(value);
+  if (Math.abs(n) >= 1e12) return `${(n / 1e12).toFixed(1)}T`;
+  if (Math.abs(n) >= 1e9) return `${(n / 1e9).toFixed(1)}B`;
+  if (Math.abs(n) >= 1e6) return `${(n / 1e6).toFixed(1)}M`;
+  if (Math.abs(n) >= 1e3) return `${(n / 1e3).toFixed(1)}K`;
+  return String(n);
+}
+
+function fmtPct(value, digits = 2) {
+  if (value == null || !Number.isFinite(Number(value))) return "—";
+  const n = Number(value);
+  return `${n >= 0 ? "+" : ""}${n.toFixed(digits)}%`;
+}
+
+function fmtDateTime(value) {
+  if (!value) return "—";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "—";
+  return date.toLocaleString("vi-VN");
+}
+
+function resolveFocusStock(snapshot, selectedTicker) {
+  const stock = snapshot?.stocks?.find((item) => item.ticker === selectedTicker) || snapshot?.stocks?.[0] || null;
+  return stock;
+}
+
+function buildWorkspaceFallback(snapshot, options = {}) {
   const selectedTicker = options.selectedTicker || snapshot?.stocks?.[0]?.ticker || null;
-  const data = {
-    snapshot,
-    prompt,
-    selectedTicker,
+  const focusStock = resolveFocusStock(snapshot, selectedTicker);
+
+  return {
+    focusTicker: focusStock?.ticker || null,
+    focusStock,
+    market: snapshot?.market || null,
+    boardRows: snapshot?.stocks || [],
+    alerts: snapshot?.alerts?.items || [],
+    playbook: null,
+    research: {
+      latestBriefing: null,
+    },
+    snapshotMeta: {
+      generated: snapshot?.generated || null,
+      savedAt: snapshot?.generated || null,
+      count: snapshot?.count || 0,
+      scanMode: snapshot?.scanMode || null,
+    },
   };
+}
+
+function buildPage(snapshot, options = {}) {
+  const workspace = options.workspace || buildWorkspaceFallback(snapshot, options);
+  const focusStock = workspace.focusStock || resolveFocusStock(snapshot, options.selectedTicker);
+  const playbook = workspace.playbook;
+  const alerts = workspace.alerts || [];
+  const leaders = workspace.market?.sectors?.leaders || [];
+  const laggards = workspace.market?.sectors?.laggards || [];
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -35,173 +94,70 @@ function buildPage(snapshot, options = {}) {
 <title>Saigon Terminal Snapshot</title>
 <style>
 :root{
-  --bg:#071014;
-  --bg-2:#0c161c;
-  --panel:#101d24;
-  --panel-2:#14252f;
-  --line:#27414d;
-  --text:#f3f0e9;
-  --muted:#b9c7ce;
-  --subtle:#7e939d;
-  --accent:#5ce1b8;
-  --accent-2:#7fd0ff;
-  --good:#57df94;
-  --bad:#ff8573;
-  --warn:#ffc869;
-  --shadow:0 24px 60px rgba(0,0,0,.28);
+  --bg:#081219;
+  --panel:#101c25;
+  --panel-2:#132331;
+  --line:#264253;
+  --text:#eef4f7;
+  --muted:#aac0cb;
+  --subtle:#7c95a3;
+  --accent:#6fdcb6;
+  --good:#59dc93;
+  --warn:#ffcb72;
+  --bad:#ff8b79;
 }
-*{box-sizing:border-box;margin:0;padding:0}
+*{box-sizing:border-box}
 body{
-  font-family:"IBM Plex Sans","Avenir Next","Segoe UI",sans-serif;
+  margin:0;
+  font-family:"IBM Plex Sans","Segoe UI",sans-serif;
   color:var(--text);
   background:
-    radial-gradient(circle at top left, rgba(92,225,184,.11), transparent 24%),
-    radial-gradient(circle at 88% 0%, rgba(127,208,255,.10), transparent 22%),
-    linear-gradient(180deg, #061014 0%, #081117 38%, #071014 100%);
+    radial-gradient(circle at 0% 0%, rgba(111,220,182,.14), transparent 24%),
+    radial-gradient(circle at 100% 0%, rgba(136,200,255,.12), transparent 22%),
+    linear-gradient(180deg, #071119 0%, #081219 100%);
 }
-a{color:#d9fff1;text-decoration:none}
-.app{max-width:1500px;margin:0 auto;padding:24px}
-.topbar{
-  display:flex;justify-content:space-between;align-items:flex-start;gap:18px;flex-wrap:wrap;
-  padding:18px 20px;border:1px solid var(--line);border-radius:24px;
-  background:rgba(7,16,20,.84);backdrop-filter:blur(18px);box-shadow:var(--shadow);
+.app{max-width:1480px;margin:0 auto;padding:20px}
+.topbar,.panel{
+  border:1px solid var(--line);border-radius:24px;background:rgba(11,21,28,.92)
 }
-.brand-title{font-size:28px;font-weight:900;letter-spacing:.12em;text-transform:uppercase}
+.topbar{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:20px}
+.brand-title{font-size:28px;font-weight:900;letter-spacing:.14em;text-transform:uppercase}
 .brand-title span:last-child{color:var(--accent)}
-.brand-sub,.meta-copy{color:var(--muted);font-size:13px;line-height:1.6}
-.pill{
-  display:inline-flex;align-items:center;min-height:34px;padding:0 12px;border-radius:999px;
-  border:1px solid rgba(92,225,184,.28);background:rgba(92,225,184,.10);color:#d9fff0;
-  font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+.brand-copy{margin-top:6px;color:var(--muted);font-size:13px;line-height:1.6}
+.chip{
+  display:inline-flex;align-items:center;min-height:32px;padding:0 12px;border:1px solid var(--line);
+  border-radius:999px;background:rgba(18,36,48,.9);font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase
 }
-.layout{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:18px;margin-top:18px;align-items:start}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:18px;margin-top:18px;align-items:start}
 .stack,.rail{display:grid;gap:16px}
-.panel{
-  border:1px solid var(--line);border-radius:24px;padding:18px;
-  background:linear-gradient(180deg, rgba(16,29,36,.96), rgba(12,22,28,.96));
-  box-shadow:var(--shadow);
-}
-.eyebrow{font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#d2fff0}
-.panel-title{font-size:22px;font-weight:800;margin-top:6px}
-.sheet-nav-wrap{display:grid;gap:10px}
-.sheet-nav-label{font-size:11px;color:var(--subtle);text-transform:uppercase;letter-spacing:.16em}
-.sheet-nav{display:flex;gap:8px;overflow:auto;padding-bottom:2px}
-.sheet-nav::-webkit-scrollbar{height:8px}
-.sheet-nav::-webkit-scrollbar-thumb{background:rgba(40,69,81,.8);border-radius:999px}
-.sheet-tab{
-  min-width:132px;padding:10px 12px;border-radius:16px;border:1px solid rgba(40,69,81,.82);
-  background:rgba(10,18,24,.92);color:var(--text);text-align:left;display:grid;gap:4px;flex:0 0 auto;
-}
-.sheet-tab.active{
-  border-color:rgba(92,225,184,.38);background:rgba(92,225,184,.10);box-shadow:inset 0 0 0 1px rgba(92,225,184,.14);
-}
-.sheet-tab-ticker{font-size:13px;font-weight:800;letter-spacing:.04em}
-.sheet-tab-meta{font-size:11px;color:var(--muted);line-height:1.4}
-.focus-hero{
-  display:grid;grid-template-columns:minmax(0,1.3fr) minmax(260px,.7fr);gap:14px;margin-top:14px;
-}
-.hero-slab{
-  padding:16px;border-radius:20px;border:1px solid rgba(40,69,81,.82);
-  background:
-    radial-gradient(circle at 0% 0%, rgba(92,225,184,.12), transparent 28%),
-    radial-gradient(circle at 100% 100%, rgba(127,208,255,.12), transparent 30%),
-    rgba(11,20,26,.92);
-}
-.hero-price{font-size:42px;font-weight:900;line-height:1;letter-spacing:-.03em;margin:8px 0 10px}
-.mono{font-family:"IBM Plex Mono","SFMono-Regular","Menlo",monospace;font-variant-numeric:tabular-nums}
-.chip-row,.market-grid,.kv-grid,.history-strip{display:flex;gap:8px;flex-wrap:wrap}
-.chip,.signal-chip,.quality-chip,.breakout-chip,.execution-chip{
-  display:inline-flex;align-items:center;min-height:30px;padding:0 10px;border-radius:999px;
-  border:1px solid rgba(40,69,81,.8);font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
-}
-.chip{background:rgba(127,208,255,.08);color:#e3f6ff}
-.signal-chip[data-signal="STRONG_BUY"],.signal-chip[data-signal="BUY"]{background:rgba(92,225,184,.10);color:#ddfff3}
-.signal-chip[data-signal="HOLD"]{background:rgba(127,208,255,.10);color:#e3f6ff}
-.signal-chip[data-signal="SELL"],.signal-chip[data-signal="STRONG_SELL"]{background:rgba(255,133,115,.12);color:#ffd4ce}
-.quality-chip[data-tone="high"]{background:rgba(92,225,184,.10);color:#ddfff3}
-.quality-chip[data-tone="medium"]{background:rgba(255,200,105,.10);color:#ffecc7}
-.quality-chip[data-tone="low"]{background:rgba(255,133,115,.12);color:#ffd4ce}
-.breakout-chip[data-state="triggered"]{background:rgba(92,225,184,.12);color:#ddfff3}
-.breakout-chip[data-state="near_trigger"]{background:rgba(127,208,255,.12);color:#e3f6ff}
-.breakout-chip[data-state="arming"]{background:rgba(255,200,105,.12);color:#ffecc7}
-.breakout-chip[data-state="extended"]{background:rgba(255,133,115,.12);color:#ffd4ce}
-.breakout-chip[data-state="not_ready"]{background:rgba(143,167,181,.12);color:#dbe6ec}
-.execution-chip[data-risk="tradeable"]{background:rgba(92,225,184,.12);color:#ddfff3}
-.execution-chip[data-risk="caution"]{background:rgba(255,200,105,.12);color:#ffecc7}
-.execution-chip[data-risk="trap_risk"]{background:rgba(255,133,115,.12);color:#ffd4ce}
+.panel{padding:18px}
+.eyebrow{font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#d8fff0}
+.panel-title{margin-top:8px;font-size:21px;font-weight:800}
+.panel-copy{margin-top:8px;color:var(--muted);font-size:13px;line-height:1.6}
+.metric-grid,.detail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.metric-card,.item{padding:14px;border:1px solid var(--line);border-radius:18px;background:rgba(12,22,29,.86)}
+.metric-k{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--subtle)}
+.metric-v{margin-top:8px;font-size:28px;font-weight:900;line-height:1}
+.metric-copy,.item p{margin-top:8px;color:var(--muted);font-size:13px;line-height:1.55}
+.hero{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.hero-card{padding:16px;border:1px solid var(--line);border-radius:20px;background:rgba(11,20,26,.88)}
+.hero-price{margin-top:10px;font-size:40px;font-weight:900;line-height:1}
+.hero-copy{margin-top:8px;color:var(--muted);font-size:13px;line-height:1.55}
+.mono{font-family:"IBM Plex Mono","Menlo",monospace;font-variant-numeric:tabular-nums}
 .tone-good{color:var(--good)}
 .tone-bad{color:var(--bad)}
-.detail-grid,.kv-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}
-.stat-card,.section-card{
-  padding:12px;border-radius:16px;border:1px solid rgba(40,69,81,.78);background:rgba(11,20,26,.88);
-}
-.stat-k,.kv .k{font-size:11px;color:var(--subtle);text-transform:uppercase;letter-spacing:.12em;margin-bottom:6px}
-.stat-v{font-size:20px;font-weight:800}
-.kv{display:grid;gap:4px}
-.kv .v{font-size:14px;line-height:1.45}
-.list{display:grid;gap:8px}
-.item{
-  padding:10px 12px;border-radius:14px;background:rgba(20,37,47,.9);
-  border:1px solid rgba(40,69,81,.7);font-size:13px;line-height:1.5;
-}
-.factor-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.factor-card{
-  padding:12px;border-radius:16px;border:1px solid rgba(40,69,81,.82);background:rgba(15,26,33,.92);display:grid;gap:10px;
-}
-.factor-card[data-status="unknown"]{border-color:rgba(255,200,105,.28);background:rgba(45,34,18,.20)}
-.factor-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
-.factor-name{font-size:13px;font-weight:800;letter-spacing:.03em}
-.factor-metric{margin-top:4px;color:var(--muted);font-size:12px;line-height:1.4}
-.factor-score{
-  min-width:62px;padding:8px 10px;border-radius:14px;border:1px solid rgba(40,69,81,.8);
-  background:rgba(9,18,24,.9);font-size:13px;font-weight:800;text-align:center;
-}
-.factor-score[data-tone="strong"]{border-color:rgba(92,225,184,.34);color:#ddfff3}
-.factor-score[data-tone="weak"]{border-color:rgba(255,133,115,.34);color:#ffd4ce}
-.factor-score[data-tone="unknown"]{border-color:rgba(255,200,105,.34);color:#ffecc7}
-.factor-meta,.factor-bands{display:flex;gap:8px;flex-wrap:wrap}
-.factor-reason{font-size:13px;color:var(--text);line-height:1.55}
-.factor-band{
-  display:inline-flex;align-items:center;min-height:26px;padding:0 8px;border-radius:999px;
-  border:1px solid rgba(40,69,81,.8);color:var(--muted);font-size:11px;letter-spacing:.04em;
-}
-.factor-band.active{border-color:rgba(92,225,184,.34);background:rgba(92,225,184,.10);color:#ddfff3}
-.board-table{width:100%;border-collapse:collapse;margin-top:14px;min-width:1000px}
-.board-wrap{overflow:auto}
-.board-table th,.board-table td{padding:12px 10px;border-bottom:1px solid rgba(38,64,76,.7);text-align:left;font-size:13px}
-.board-table th{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#d9e8ee}
-.board-table tr.active{background:rgba(92,225,184,.08)}
-.market-grid{display:grid;grid-template-columns:1fr;gap:12px;margin-top:14px}
-.market-card{padding:14px;border-radius:18px;border:1px solid rgba(40,69,81,.7);background:linear-gradient(180deg, rgba(21,37,47,.96), rgba(13,24,31,.96))}
-.market-k{font-size:11px;color:var(--subtle);text-transform:uppercase;letter-spacing:.12em;margin-bottom:8px}
-.market-v{font-size:24px;font-weight:800;line-height:1.05}
-.market-s{margin-top:8px;color:var(--muted);font-size:13px;line-height:1.5}
-.sector-card{
-  padding:12px;border-radius:16px;border:1px solid rgba(40,69,81,.78);background:rgba(11,20,26,.88);
-  color:var(--text);text-align:left;width:100%;appearance:none;cursor:pointer;
-}
-.sector-card.active{
-  border-color:rgba(92,225,184,.38);background:rgba(92,225,184,.10);box-shadow:inset 0 0 0 1px rgba(92,225,184,.14);
-}
-.history-chip{min-width:88px;padding:8px 10px;border-radius:14px;background:rgba(20,37,47,.9);border:1px solid rgba(40,69,81,.7)}
-.history-chip .ts{color:var(--subtle);font-size:10px;margin-bottom:5px;text-transform:uppercase;letter-spacing:.1em}
-.history-chip .sv{font-size:12px;line-height:1.5}
-details{margin-top:14px}
-summary{cursor:pointer;color:#d9fff1;font-weight:700}
-pre{
-  margin-top:10px;padding:16px;border-radius:18px;border:1px solid rgba(40,69,81,.8);
-  background:rgba(11,20,26,.92);color:#dbe7ec;font-family:"IBM Plex Mono","SFMono-Regular","Menlo",monospace;
-  font-size:12px;white-space:pre-wrap;line-height:1.7
-}
-@media (max-width:1100px){
+.timeline{display:grid;gap:10px;margin-top:16px}
+.timeline-item{padding:14px;border-left:3px solid rgba(111,220,182,.36);border-radius:16px;background:rgba(10,18,24,.9);border:1px solid rgba(38,66,83,.75)}
+.timeline-meta{margin-top:6px;color:var(--subtle);font-size:12px}
+.timeline-copy{margin-top:8px;color:var(--muted);font-size:13px;line-height:1.6;white-space:pre-wrap}
+.table-wrap{overflow:auto}
+table{width:100%;border-collapse:collapse;min-width:900px}
+th,td{padding:12px 10px;border-bottom:1px solid rgba(38,66,83,.55);text-align:left}
+th{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#d9e8ef}
+td{font-size:13px}
+@media (max-width:1040px){
   .layout{grid-template-columns:1fr}
-  .focus-hero{grid-template-columns:1fr}
-  .market-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-}
-@media (max-width:760px){
-  .app{padding:12px}
-  .detail-grid,.kv-grid,.market-grid,.factor-grid{grid-template-columns:1fr}
-  .hero-price{font-size:34px}
+  .metric-grid,.detail-grid,.hero{grid-template-columns:1fr}
 }
 </style>
 </head>
@@ -210,667 +166,142 @@ pre{
   <header class="topbar">
     <div>
       <div class="brand-title"><span>SAIGON</span> <span>TERMINAL</span></div>
-      <div class="brand-sub">Published market snapshot</div>
+      <div class="brand-copy">Published read-only war-room snapshot. Local editing stays in the live workspace.</div>
     </div>
-    <div>
-      <span class="pill">Snapshot</span>
-      <div class="meta-copy" id="headerMeta"></div>
+    <div style="display:grid;gap:8px">
+      <span class="chip">${escapeHtml(workspace.market?.pulse?.status || "snapshot")}</span>
+      <div class="brand-copy">Generated ${escapeHtml(fmtDateTime(snapshot?.generated))} · Rows ${escapeHtml(String(snapshot?.count || 0))}</div>
     </div>
   </header>
 
   <main class="layout">
     <div class="stack">
-      <section class="panel" id="focusPanel"></section>
       <section class="panel">
-        <div class="eyebrow">Ranked Board</div>
+        <div class="eyebrow">Overview</div>
+        <div class="panel-title">Board-first market read</div>
+        <div class="metric-grid" style="margin-top:14px">
+          <div class="metric-card">
+            <div class="metric-k">Market pulse</div>
+            <div class="metric-v">${escapeHtml(workspace.market?.pulse?.status || "unknown")}</div>
+            <div class="metric-copy">${escapeHtml(workspace.market?.pulse?.note || "No pulse note.")}</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-k">Breadth</div>
+            <div class="metric-v">${escapeHtml(String(workspace.market?.breadth?.advancers ?? "—"))} / ${escapeHtml(String(workspace.market?.breadth?.decliners ?? "—"))}</div>
+            <div class="metric-copy">${escapeHtml(String(workspace.market?.breadth?.unchanged ?? "—"))} unchanged in snapshot universe.</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-k">Turnover</div>
+            <div class="metric-v mono">${escapeHtml(fmtCompact(workspace.market?.turnover))}</div>
+            <div class="metric-copy">Universe turnover across current display rows.</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-k">Sector leaders</div>
+            <div class="metric-v">${escapeHtml(leaders[0]?.sector || "—")}</div>
+            <div class="metric-copy">${escapeHtml(leaders.map((row) => `${row.sector} #${row.rank}`).join(" · ") || "No sector leaders.")}</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="eyebrow">Focus</div>
+        <div class="panel-title">${escapeHtml(focusStock?.ticker || "No focus ticker")}</div>
+        <div class="hero" style="margin-top:14px">
+          <div class="hero-card">
+            <div class="metric-k">${escapeHtml(focusStock?.sector || "—")}</div>
+            <div class="hero-price mono">${escapeHtml(fmtNumber(focusStock?.price))}</div>
+            <div class="hero-copy ${focusStock?.sessionChangePct >= 0 ? "tone-good" : "tone-bad"}">
+              Session ${escapeHtml(fmtPct(focusStock?.sessionChangePct, 2))} · Signal ${escapeHtml(focusStock?.signal || "—")} · Breakout ${escapeHtml(focusStock?.breakout?.state || "—")}
+            </div>
+          </div>
+          <div class="hero-card">
+            <div class="metric-k">Selected playbook</div>
+            <div class="hero-copy">${escapeHtml(playbook?.thesis || "No saved playbook thesis. Publish view still carries the board and selected ticker context.")}</div>
+            <div class="hero-copy">Next action: ${escapeHtml(playbook?.nextAction?.label || focusStock?.breakout?.reason || "No next action saved.")}</div>
+          </div>
+        </div>
+        <div class="timeline">
+          <div class="timeline-item">
+            <strong>Latest briefing</strong>
+            <div class="timeline-copy">${escapeHtml(workspace.research?.latestBriefing?.note || "No saved briefing included in this snapshot.")}</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="eyebrow">Board</div>
         <div class="panel-title">Published universe</div>
-        <div class="board-wrap" id="boardWrap"></div>
+        <div class="table-wrap" style="margin-top:14px">
+          <table>
+            <thead>
+              <tr>
+                <th>Ticker</th>
+                <th>Sector</th>
+                <th>Price</th>
+                <th>Session</th>
+                <th>Strength</th>
+                <th>Breakout</th>
+                <th>Quality</th>
+                <th>Signal</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${(workspace.boardRows || []).map((row) => `
+                <tr>
+                  <td><strong>${escapeHtml(row.ticker)}</strong><br><span style="color:var(--muted)">${escapeHtml(row.name || row.ticker)}</span></td>
+                  <td>${escapeHtml(row.sector || "—")}</td>
+                  <td class="mono">${escapeHtml(fmtNumber(row.price))}</td>
+                  <td class="${row.sessionChangePct >= 0 ? "tone-good" : "tone-bad"}">${escapeHtml(fmtPct(row.sessionChangePct, 2))}</td>
+                  <td>${escapeHtml(row.strength?.label || "—")} ${row.strength?.score != null ? `· ${escapeHtml(String(row.strength.score))}` : ""}</td>
+                  <td>${escapeHtml(row.breakout?.state || "—")}</td>
+                  <td>${escapeHtml(row.quality?.label || "—")} · ${escapeHtml(String(row.coveragePct ?? "—"))}%</td>
+                  <td>${escapeHtml(row.signal || "—")}</td>
+                </tr>
+              `).join("")}
+            </tbody>
+          </table>
+        </div>
       </section>
     </div>
 
     <aside class="rail">
       <section class="panel">
-        <div class="eyebrow">Market Rail</div>
-        <div class="panel-title">Benchmarks and breadth</div>
-        <div class="market-grid" id="marketGrid"></div>
+        <div class="eyebrow">Alerts</div>
+        <div class="panel-title">What needs attention</div>
+        <div class="timeline">
+          ${alerts.length ? alerts.slice(0, 6).map((alert) => `
+            <div class="timeline-item">
+              <strong>${escapeHtml(alert.title)}</strong>
+              <div class="timeline-meta">${escapeHtml((alert.ticker ? `${alert.ticker} · ` : "") + (alert.level || "info"))}</div>
+              <div class="timeline-copy">${escapeHtml(alert.summary || (alert.reasons || []).join("; ") || "No detail")}</div>
+            </div>
+          `).join("") : `<div class="item"><p>No alerts in this publish payload.</p></div>`}
+        </div>
       </section>
 
       <section class="panel">
         <div class="eyebrow">Sector Rotation</div>
-        <div class="panel-title">Ranked sector matrix</div>
-        <div class="detail-grid" id="sectorPanel"></div>
-      </section>
-
-      <section class="panel">
-        <div class="eyebrow">Snapshot</div>
-        <div class="panel-title">Publish details</div>
-        <div class="detail-grid" id="publishStats"></div>
+        <div class="panel-title">Leader / laggard strip</div>
+        <div class="detail-grid" style="margin-top:14px">
+          <div class="item">
+            <strong>Leaders</strong>
+            <p>${escapeHtml(leaders.map((row) => `${row.sector} (#${row.rank}, rot ${row.rotationScore})`).join(" · ") || "No leader rows")}</p>
+          </div>
+          <div class="item">
+            <strong>Laggards</strong>
+            <p>${escapeHtml(laggards.map((row) => `${row.sector} (#${row.rank}, rot ${row.rotationScore})`).join(" · ") || "No laggard rows")}</p>
+          </div>
+        </div>
       </section>
     </aside>
   </main>
 </div>
-
 <script>
-const DATA = ${safeJson(data)};
-const SIGNAL_LABELS = {
-  STRONG_BUY: "Strong Bullish Bias",
-  BUY: "Bullish Bias",
-  HOLD: "Neutral / Mixed",
-  SELL: "Bearish Bias",
-  STRONG_SELL: "Strong Bearish Bias",
-};
-
-const state = {
-  snapshot: DATA.snapshot,
-  prompt: DATA.prompt || "",
-  selectedTicker: DATA.selectedTicker || DATA.snapshot?.stocks?.[0]?.ticker || null,
-  sector: "ALL",
-};
-
-function fNum(n) {
-  if (n == null) return "n/a";
-  return Number(n).toLocaleString("vi-VN");
-}
-
-function fK(n) {
-  if (n == null) return "n/a";
-  if (Math.abs(n) >= 1e12) return (n / 1e12).toFixed(1) + "T";
-  if (Math.abs(n) >= 1e9) return (n / 1e9).toFixed(1) + "B";
-  if (Math.abs(n) >= 1e6) return (n / 1e6).toFixed(1) + "M";
-  if (Math.abs(n) >= 1e3) return (n / 1e3).toFixed(1) + "K";
-  return String(n);
-}
-
-function fPct(n, scale = 1, digits = 1) {
-  if (n == null) return "n/a";
-  const value = Number(n) * scale;
-  return \`\${value >= 0 ? "+" : ""}\${value.toFixed(digits)}%\`;
-}
-
-function fSignedPct(n, digits = 2) {
-  if (n == null || !Number.isFinite(Number(n))) return "—";
-  const value = Number(n);
-  return \`\${value >= 0 ? "+" : ""}\${value.toFixed(digits)}%\`;
-}
-
-function stockSessionChange(stock) {
-  if (stock?.sessionChangePct != null && Number.isFinite(Number(stock.sessionChangePct))) return Number(stock.sessionChangePct);
-  if (stock?.changePct != null && Number.isFinite(Number(stock.changePct))) return Number(stock.changePct);
-  return null;
-}
-
-function stockPrevCloseChange(stock) {
-  if (stock?.prevCloseChangePct != null && Number.isFinite(Number(stock.prevCloseChangePct))) return Number(stock.prevCloseChangePct);
-  return null;
-}
-
-function indexSessionChange(index) {
-  if (index?.sessionChangePct != null && Number.isFinite(Number(index.sessionChangePct))) return Number(index.sessionChangePct);
-  if (index?.changePct != null && Number.isFinite(Number(index.changePct))) return Number(index.changePct);
-  return null;
-}
-
-function indexPrevCloseChange(index) {
-  if (index?.prevCloseChangePct != null && Number.isFinite(Number(index.prevCloseChangePct))) return Number(index.prevCloseChangePct);
-  return null;
-}
-
-function toneByChange(value) {
-  if (value == null || !Number.isFinite(Number(value))) return "";
-  return Number(value) >= 0 ? "tone-good" : "tone-bad";
-}
-
-function signalLabel(signal) {
-  return SIGNAL_LABELS[signal] || String(signal || "UNKNOWN").replace(/_/g, " ");
-}
-
-function qualityTone(label) {
-  return label === "high" ? "high" : (label === "medium" ? "medium" : "low");
-}
-
-function breakoutLabel(state) {
-  return String(state || "not_ready")
-    .split("_")
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(" ");
-}
-
-function executionLabel(label) {
-  return String(label || "trap_risk")
-    .split("_")
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(" ");
-}
-
-function rankDeltaLabel(rankDelta) {
-  if (rankDelta == null) return "Drift unavailable";
-  if (rankDelta > 0) return \`Up \${rankDelta}\`;
-  if (rankDelta < 0) return \`Down \${Math.abs(rankDelta)}\`;
-  return "Flat";
-}
-
-function sectorState(sectorName) {
-  return state.snapshot?.market?.sectors?.all?.find((sector) => sector.sector === sectorName) || null;
-}
-
-function filteredStocks() {
-  const stocks = state.snapshot?.stocks || [];
-  if (state.sector === "ALL") return stocks;
-  return stocks.filter((stock) => stock.sector === state.sector);
-}
-
-function bankBasketSummary(snapshot) {
-  const banks = (snapshot?.stocks || []).filter((stock) => stock.sector === "BANK");
-  if (!banks.length) return null;
-
-  const avgChangePct = banks.reduce((sum, stock) => sum + (stock.changePct || 0), 0) / banks.length;
-  const avgRsVsVNINDEX3m = banks.reduce((sum, stock) => sum + (stock.relative?.vsVNINDEX3m || 0), 0) / banks.length;
-  const advancers = banks.filter((stock) => (stock.changePct || 0) > 0).length;
-  const decliners = banks.filter((stock) => (stock.changePct || 0) < 0).length;
-  const leader = banks.slice().sort((a, b) => (b.relative?.vsVNINDEX3m || -999) - (a.relative?.vsVNINDEX3m || -999))[0] || null;
-  const laggard = banks.slice().sort((a, b) => (a.relative?.vsVNINDEX3m || 999) - (b.relative?.vsVNINDEX3m || 999))[0] || null;
-
-  return {
-    advancers,
-    decliners,
-    avgChangePct: +avgChangePct.toFixed(2),
-    avgRsVsVNINDEX3m: +avgRsVsVNINDEX3m.toFixed(4),
-    leader,
-    laggard,
-  };
-}
-
-function factorScoreTone(detail) {
-  if (detail.score == null) return "unknown";
-  return detail.score >= 8 ? "strong" : "weak";
-}
-
-function warningSummary(stock) {
-  const missing = stock.quality?.missingFactors?.length ? \`Missing \${stock.quality.missingFactors.join("/")}\` : null;
-  const firstWarning = (stock.quality?.warnings || []).find((warning) =>
-    !missing || !warning.includes("Missing CAN SLIM factors")
-  ) || null;
-  return [missing, firstWarning].filter(Boolean).join(" | ") || "Clean";
-}
-
-function fRR(value) {
-  if (value == null) return "n/a";
-  return \`\${Number(value).toFixed(2)}R\`;
-}
-
-function activeWyckoffEvents(wyckoff) {
-  return Object.values(wyckoff?.events || {}).filter((event) => event && event.active);
-}
-
-function renderWyckoffPlans(wyckoff) {
-  const plans = wyckoff?.entry?.plans || [];
-  if (!plans.length) {
-    return \`<div class="item">\${wyckoff?.entry?.summary || "No active long entry."}</div>\`;
-  }
-
-  return plans.map((plan) => \`
-    <div class="factor-card">
-      <div class="factor-head">
-        <div>
-          <div class="factor-name">\${plan.label}</div>
-          <div class="factor-metric">\${plan.why || "No rationale provided."}</div>
-        </div>
-        <div class="factor-score" data-tone="\${plan.kind === "buy" ? "strong" : "unknown"}">\${plan.kind === "buy" ? "BUY" : "WAIT"}</div>
-      </div>
-      <div class="factor-meta">
-        <span class="chip">Entry \${fNum(plan.price)}</span>
-        <span class="chip">Stop \${fNum(plan.stop)}</span>
-        <span class="chip">T1 \${fNum(plan.target1)}</span>
-        <span class="chip">T2 \${fNum(plan.target2)}</span>
-      </div>
-      <div class="factor-reason">Risk / reward: \${fRR(plan.riskReward1)} to T1, \${fRR(plan.riskReward2)} to T2.</div>
-    </div>
-  \`).join("");
-}
-
-function renderWyckoffWatch(wyckoff) {
-  const watch = wyckoff?.entry?.watch || [];
-  if (!watch.length) {
-    return \`<div class="item">\${wyckoff?.entry?.invalidation || "No watch trigger defined."}</div>\`;
-  }
-
-  return watch.map((item) => \`
-    <div class="item">
-      <strong>\${item.label}</strong><br>
-      \${item.price != null ? \`Trigger \${fNum(item.price)}. \` : ""}\${item.why || ""}
-    </div>
-  \`).join("");
-}
-
-function renderWyckoffReasoning(wyckoff) {
-  const reasoning = wyckoff?.reasoning || [];
-  return reasoning.map((item) => \`
-    <div class="item">
-      <strong>Step \${item.step}. \${item.title}</strong><br>
-      \${item.detail}
-    </div>
-  \`).join("") || \`<div class="item">No reasoning available.</div>\`;
-}
-
-function renderActionItems(items, emptyCopy) {
-  if (!items?.length) return \`<div class="item">\${emptyCopy}</div>\`;
-  return items.map((item) => \`<div class="item">\${item}</div>\`).join("");
-}
-
-function renderWyckoffTests(wyckoff) {
-  const active = wyckoff?.tests?.activeSide === "sell" ? wyckoff?.tests?.sell?.items : wyckoff?.tests?.buy?.items;
-  if (!active?.length) return \`<div class="item">No Wyckoff tests recorded.</div>\`;
-  return active.map((test) => \`<div class="item \${test.status === "pass" ? "tone-good" : test.status === "fail" ? "tone-bad" : ""}"><strong>\${test.label}</strong><br>\${test.detail}</div>\`).join("");
-}
-
-function renderHeader() {
-  const meta = document.getElementById("headerMeta");
-  meta.textContent = \`\${new Date(state.snapshot.generated).toLocaleString("vi-VN")} | \${state.snapshot.count} tickers\`;
-}
-
-function renderMarket() {
-  const market = state.snapshot.market;
-  const grid = document.getElementById("marketGrid");
-  const cards = ["VNINDEX", "VN30"].map((symbol) => {
-    const index = market.indexes[symbol];
-    if (!index) return "";
-    const sessionPct = indexSessionChange(index);
-    const prevClosePct = indexPrevCloseChange(index);
-    const tone = toneByChange(sessionPct);
-    return \`
-      <div class="market-card">
-        <div class="market-k">\${symbol}</div>
-        <div class="market-v mono">\${fNum(index.price)}</div>
-        <div class="market-s \${tone}">Session \${fSignedPct(sessionPct)} · Prev close \${fSignedPct(prevClosePct)} · \${index.regime}</div>
-        <div class="chip-row">
-          <span class="chip">1M \${fPct(index.ret1m, 100)}</span>
-          <span class="chip">3M \${fPct(index.ret3m, 100)}</span>
-        </div>
-      </div>
-    \`;
-  }).join("");
-
-  grid.innerHTML = cards + \`
-    <div class="market-card">
-      <div class="market-k">Market Pulse</div>
-      <div class="market-v">\${market.pulse?.status || "unknown"}</div>
-      <div class="market-s">\${market.pulse?.note || "No pulse note available."}</div>
-      <div class="chip-row">
-        <span class="chip">Exposure \${market.pulse?.exposure || "n/a"}</span>
-        <span class="chip">Dist \${market.pulse?.distributionDays ?? "n/a"}</span>
-        \${market.pulse?.followThrough?.date ? \`<span class="chip">FTD \${market.pulse.followThrough.date}</span>\` : ""}
-      </div>
-    </div>
-    <div class="market-card">
-      <div class="market-k">Breadth</div>
-      <div class="market-v mono">\${market.breadth.advancers} / \${market.breadth.decliners}</div>
-      <div class="market-s">\${market.breadth.unchanged} unchanged | session \${market.session.replace(/_/g, " ")}</div>
-    </div>
-    <div class="market-card">
-      <div class="market-k">Turnover</div>
-      <div class="market-v mono">\${fK(market.turnover)}</div>
-      <div class="market-s">Universe turnover in this snapshot</div>
-    </div>
-  \`;
-}
-
-function renderSectorPanel() {
-  const root = document.getElementById("sectorPanel");
-  const sectors = state.snapshot?.market?.sectors?.all || [];
-
-  if (!sectors.length) {
-    root.innerHTML = \`<div class="sector-card">Sector rotation unavailable for this snapshot.</div>\`;
-    return;
-  }
-
-  root.innerHTML = sectors.map((sector) => \`
-    <button class="sector-card \${state.sector === sector.sector ? "active" : ""}" data-sector-focus="\${sector.sector}">
-      <div class="stat-k">#\${sector.rank} | \${sector.sector}</div>
-      <div class="stat-v mono">\${sector.rotationScore}/100</div>
-      <div>\${sector.advancers}/\${sector.decliners} adv/dec | 1M \${fPct(sector.avgRet1m, 100)}</div>
-      <div class="meta-copy">RS \${fPct(sector.avgRsVsVNINDEX3m, 100)} | Strength \${sector.avgStrengthScore ?? "n/a"} | \${sector.prevRank == null ? "Drift unavailable" : \`Prev #\${sector.prevRank} | \${rankDeltaLabel(sector.rankDelta)}\`}</div>
-    </button>
-  \`).join("");
-
-  root.querySelectorAll("[data-sector-focus]").forEach((button) => {
-    button.addEventListener("click", () => {
-      state.sector = state.sector === button.dataset.sectorFocus ? "ALL" : button.dataset.sectorFocus;
-      renderSectorPanel();
-      renderBoard();
-      renderFocus();
-      renderPublishStats();
-    });
-  });
-}
-
-function renderPublishStats() {
-  const root = document.getElementById("publishStats");
-  const visibleStocks = filteredStocks();
-  const selected = visibleStocks.find((stock) => stock.ticker === state.selectedTicker) || visibleStocks[0] || state.snapshot.stocks[0];
-  root.innerHTML = [
-    \`<div class="stat-card"><div class="stat-k">Focus</div><div class="stat-v">\${selected?.ticker || "n/a"}</div><div>\${selected ? selected.explain.ruleRead : "n/a"}</div></div>\`,
-    \`<div class="stat-card"><div class="stat-k">Universe</div><div class="stat-v mono">\${visibleStocks.length}</div><div>\${state.sector === "ALL" ? "Tickers in this published snapshot" : \`Focused on \${state.sector}\`}</div></div>\`,
-    \`<div class="stat-card"><div class="stat-k">Published</div><div class="stat-v mono">\${new Date(state.snapshot.generated).toLocaleString("vi-VN")}</div><div>Snapshot timestamp</div></div>\`,
-    \`<div class="stat-card"><div class="stat-k">Strength</div><div class="stat-v mono">\${selected?.strength?.score == null ? "n/a" : \`\${selected.strength.score}/100\`}</div><div>\${selected?.strength?.label || "No strength label"}\${selected?.strength?.rank ? \` | Rank #\${selected.strength.rank}\` : ""}</div></div>\`,
-  ].join("");
-}
-
-function renderBoard() {
-  const root = document.getElementById("boardWrap");
-  const visibleStocks = filteredStocks();
-
-  if (!visibleStocks.length) {
-    root.innerHTML = \`<div class="sector-card">No rows match the current sector focus.</div>\`;
-    return;
-  }
-
-  if (!visibleStocks.some((stock) => stock.ticker === state.selectedTicker)) {
-    state.selectedTicker = visibleStocks[0]?.ticker || null;
-  }
-
-  root.innerHTML = \`
-    <table class="board-table">
-      <thead>
-        <tr>
-          <th>Ticker</th>
-          <th>Sector</th>
-          <th>Last</th>
-          <th>Session%</th>
-          <th>Value</th>
-          <th>Vol x Avg</th>
-          <th>RS vs VNINDEX</th>
-          <th>Breakout</th>
-          <th>Strength</th>
-          <th>Observed CAN SLIM</th>
-          <th>Rule Read</th>
-          <th>Quality</th>
-        </tr>
-      </thead>
-      <tbody>
-        \${visibleStocks.map((stock) => {
-          const selected = stock.ticker === state.selectedTicker ? "active" : "";
-          const sector = sectorState(stock.sector);
-          const observedPct = stock.observedCanSlimMax > 0
-            ? \`\${stock.observedCanSlimTotal}/\${stock.observedCanSlimMax} | \${stock.coveragePct}%\`
-            : \`N/A | \${stock.coveragePct}%\`;
-          const strengthText = stock.strength?.score == null
-            ? "N/A"
-            : \`\${stock.strength.score}/100 ? #\${stock.strength?.rank || "n/a"}\`;
-          return \`
-            <tr class="\${selected}" data-ticker="\${stock.ticker}">
-              <td><strong>\${stock.ticker}</strong><div style="color:var(--muted);font-size:12px;margin-top:4px">\${stock.name}</div></td>
-              <td>\${stock.sector}<div style="color:var(--muted);font-size:12px;margin-top:4px">\${sector ? \`#\${sector.rank} | \${sector.rotationScore}/100\` : "Rotation n/a"}</div></td>
-              <td class="mono">\${fNum(stock.price)}</td>
-              <td class="\${toneByChange(stockSessionChange(stock))}">\${fSignedPct(stockSessionChange(stock))}</td>
-              <td class="mono">\${fK(stock.tradedValue)}</td>
-              <td class="mono">\${stock.volRatio}x</td>
-              <td class="\${stock.relative?.vsVNINDEX3m >= 0 ? "tone-good" : "tone-bad"}">\${fPct(stock.relative?.vsVNINDEX3m, 100)}</td>
-              <td><span class="breakout-chip" data-state="\${stock.breakout?.state || "not_ready"}">\${breakoutLabel(stock.breakout?.state)}</span><div style="color:var(--muted);font-size:12px;margin-top:5px">\${stock.breakout?.distancePct == null ? "No trigger" : \`\${stock.breakout.distancePct >= 0 ? "+" : ""}\${stock.breakout.distancePct}%\`}</div></td>
-              <td><span class="chip">\${strengthText}</span><div style="color:var(--muted);font-size:12px;margin-top:5px">\${stock.strength?.label || "n/a"}</div></td>
-              <td><span class="chip">\${observedPct}</span></td>
-              <td><span class="signal-chip" data-signal="\${stock.signal}">\${signalLabel(stock.signal)}</span></td>
-              <td><span class="quality-chip" data-tone="\${qualityTone(stock.quality.label)}">\${stock.quality.label}</span><div style="margin-top:5px"><span class="execution-chip" data-risk="\${stock.executionRisk?.liquidityLabel || "trap_risk"}">Exec \${executionLabel(stock.executionRisk?.liquidityLabel)}</span></div><div style="color:var(--muted);font-size:12px;margin-top:5px">\${warningSummary(stock)}</div></td>
-            </tr>
-          \`;
-        }).join("")}
-      </tbody>
-    </table>
-  \`;
-
-  root.querySelectorAll("[data-ticker]").forEach((row) => {
-    row.addEventListener("click", () => {
-      state.selectedTicker = row.dataset.ticker;
-      renderBoard();
-      renderFocus();
-      renderPublishStats();
-    });
-  });
-}
-
-function renderFocus() {
-  const visibleStocks = filteredStocks();
-  const focusStocks = visibleStocks.length ? visibleStocks : state.snapshot.stocks;
-  const stock = focusStocks.find((item) => item.ticker === state.selectedTicker) || focusStocks[0];
-  const tickerNav = focusStocks.map((item) => \`
-    <button class="sheet-tab \${item.ticker === stock.ticker ? "active" : ""}" data-sheet-nav="\${item.ticker}">
-      <div class="sheet-tab-ticker">\${item.ticker}</div>
-      <div class="sheet-tab-meta">\${fSignedPct(stockSessionChange(item))} · \${item.confidence}/10</div>
-    </button>
-  \`).join("");
-  const positives = stock.explain.driversPositive.length
-    ? stock.explain.driversPositive.map((line) => \`<div class="item tone-good">\${line}</div>\`).join("")
-    : \`<div class="item">No strong positive drivers.</div>\`;
-  const negatives = stock.explain.driversNegative.length
-    ? stock.explain.driversNegative.map((line) => \`<div class="item tone-bad">\${line}</div>\`).join("")
-    : \`<div class="item">No major negative drivers.</div>\`;
-  const warnings = stock.quality.warnings.length
-    ? stock.quality.warnings.map((line) => \`<div class="item">\${line}</div>\`).join("")
-    : \`<div class="item">No active warnings.</div>\`;
-  const factors = Object.entries(stock.explain.factorBreakdown).map(([factor, detail]) =>
-    \`
-      <div class="factor-card" data-status="\${detail.status}">
-        <div class="factor-head">
-          <div>
-            <div class="factor-name">\${factor} | \${detail.factorLabel}</div>
-            <div class="factor-metric">\${detail.metricLabel}</div>
-          </div>
-          <div class="factor-score" data-tone="\${factorScoreTone(detail)}">\${detail.score == null ? "?" : \`\${detail.score}/10\`}</div>
-        </div>
-        <div class="factor-meta">
-          <span class="chip">\${detail.status}</span>
-          <span class="chip">Raw \${detail.displayValue}</span>
-          <span class="chip">\${detail.bandLabel}</span>
-        </div>
-        <div class="factor-reason">\${detail.reason}</div>
-        <div class="factor-bands">
-          \${detail.bands.map((band) => \`<span class="factor-band \${band.active ? "active" : ""}">\${band.score} | \${band.label}</span>\`).join("")}
-        </div>
-      </div>
-    \`
-  ).join("");
-  const history = (stock.historyMini || []).map((entry) => \`
-    <div class="history-chip">
-      <div class="ts">\${new Date(entry.timestamp).toLocaleString("vi-VN", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" })}</div>
-      <div class="sv mono">\${fNum(entry.price)}</div>
-      <div class="sv">\${signalLabel(entry.signal)}</div>
-      <div class="sv">\${entry.confidence}/10</div>
-    </div>
-  \`).join("");
-
-  const wyckoff = stock.wyckoff || {};
-  const activeEvents = activeWyckoffEvents(wyckoff);
-  const eventChips = activeEvents.length
-    ? activeEvents.map((event) => \`<span class="chip">\${event.name} \${event.volumeRatio != null ? \`\${event.volumeRatio}x\` : ""}</span>\`).join("")
-    : \`<span class="chip">No fresh Wyckoff trigger</span>\`;
-  const primaryPlan = wyckoff.entry?.plans?.[0] || null;
-  const primaryPlanText = primaryPlan
-    ? \`Entry \${fNum(primaryPlan.price)} | Stop \${fNum(primaryPlan.stop)}\`
-    : (wyckoff.entry?.summary || "No active long entry.");
-  const invalidationText = wyckoff.entry?.invalidation || "No invalidation level recorded.";
-  const reasoning = renderWyckoffReasoning(wyckoff);
-  const planCards = renderWyckoffPlans(wyckoff);
-  const watchItems = renderWyckoffWatch(wyckoff);
-  const actionSteps = renderActionItems(wyckoff.action?.steps, "No action steps recorded.");
-  const avoidSteps = renderActionItems(wyckoff.action?.shouldAvoid, "No avoid list recorded.");
-  const testItems = renderWyckoffTests(wyckoff);
-  const bankBasket = stock.sector === "BANK" ? bankBasketSummary(state.snapshot) : null;
-  const sectorRankState = sectorState(stock.sector);
-
-  document.getElementById("focusPanel").innerHTML = \`
-    <div class="sheet-nav-wrap">
-      <div class="sheet-nav-label">Quick Ticker Nav</div>
-      <div class="sheet-nav">\${tickerNav}</div>
-    </div>
-
-    <div class="eyebrow">Main Sheet</div>
-    <div class="panel-title">\${stock.ticker} | \${stock.name}</div>
-    <div class="meta-copy">\${stock.sector} | \${new Date(stock.scanTime).toLocaleString("vi-VN")} | \${stock.market.session.replace(/_/g, " ")} market</div>
-
-    \${bankBasket ? \`
-    <div class="detail-grid" style="margin-top:14px">
-      <div class="stat-card"><div class="stat-k">BANK Basket</div><div class="stat-v mono">\${bankBasket.advancers} / \${bankBasket.decliners}</div><div>Advancers / decliners in current bank basket</div></div>
-      <div class="stat-card"><div class="stat-k">BANK Avg Change</div><div class="stat-v mono">\${bankBasket.avgChangePct >= 0 ? "+" : ""}\${bankBasket.avgChangePct}%</div><div>Average change across bank names</div></div>
-      <div class="stat-card"><div class="stat-k">BANK Avg RS</div><div class="stat-v mono">\${fPct(bankBasket.avgRsVsVNINDEX3m, 100)}</div><div>Average RS vs VNINDEX</div></div>
-      <div class="stat-card"><div class="stat-k">Leader / Laggard</div><div>\${bankBasket.leader?.ticker || "n/a"} / \${bankBasket.laggard?.ticker || "n/a"}</div><div>\${bankBasket.leader ? \`\${fPct(bankBasket.leader.relative?.vsVNINDEX3m, 100)} vs \${fPct(bankBasket.laggard?.relative?.vsVNINDEX3m, 100)}\` : "Current bank basket leadership"}</div></div>
-    </div>\` : ""}
-
-    <div class="focus-hero">
-      <div class="hero-slab">
-        <div class="hero-price mono">\${fNum(stock.price)}</div>
-        <div class="\${toneByChange(stockSessionChange(stock))}">Session \${fSignedPct(stockSessionChange(stock))} · Prev close \${fSignedPct(stockPrevCloseChange(stock))} · \${fK(stock.tradedValue)} traded · \${fNum(stock.volume)} volume</div>
-        <div class="chip-row" style="margin-top:12px">
-          <span class="signal-chip" data-signal="\${stock.signal}">\${signalLabel(stock.signal)}</span>
-          <span class="chip">Strength \${stock.strength?.score == null ? "N/A" : \`\${stock.strength.score}/100\`}</span>
-          <span class="chip">\${stock.strength?.label || "n/a"}\${stock.strength?.rank ? \` | #\${stock.strength.rank}\` : ""}</span>
-          <span class="quality-chip" data-tone="\${qualityTone(stock.quality.label)}">\${stock.quality.label} | \${stock.coveragePct}%</span>
-          <span class="chip">Observed \${stock.observedCanSlimTotal}/\${stock.observedCanSlimMax || 0}</span>
-          <span class="breakout-chip" data-state="\${stock.breakout?.state || "not_ready"}">\${breakoutLabel(stock.breakout?.state)}</span>
-          <span class="execution-chip" data-risk="\${stock.executionRisk?.liquidityLabel || "trap_risk"}">Exec \${executionLabel(stock.executionRisk?.liquidityLabel)}</span>
-          <span class="chip">RS vs VNINDEX \${fPct(stock.relative.vsVNINDEX3m, 100)}</span>
-          <span class="chip">\${sectorRankState ? \`Sector #\${sectorRankState.rank} | \${rankDeltaLabel(sectorRankState.rankDelta)}\` : "Sector drift unavailable"}</span>
-          <span class="chip">\${wyckoff.stage || stock.wyckoffStage || stock.wyckoffPhase || "Wyckoff n/a"}</span>
-          <span class="chip">Wyckoff \${wyckoff.confidence || "n/a"}/100</span>
-        </div>
-      </div>
-      <div class="stack" style="gap:12px">
-        <div class="stat-card"><div class="stat-k">Rule Strength</div><div class="stat-v mono">\${stock.confidence}/10</div><div>\${stock.explain.ruleStrength.label}</div></div>
-        <div class="stat-card"><div class="stat-k">CAN SLIM Strength</div><div class="stat-v mono">\${stock.strength?.score == null ? "n/a" : \`\${stock.strength.score}/100\`}</div><div>\${stock.strength?.label || "No strength label"}\${stock.strength?.rank ? \` | Rank #\${stock.strength.rank}\` : ""}</div></div>
-        <div class="stat-card"><div class="stat-k">Wyckoff Action</div><div class="stat-v">\${wyckoff.action?.label || "No action"}</div><div>\${wyckoff.action?.summary || wyckoff.entry?.summary || "No Wyckoff action summary."}</div></div>
-        <div class="stat-card"><div class="stat-k">Primary Entry</div><div>\${primaryPlanText}</div><div>\${primaryPlan ? \`T1 \${fNum(primaryPlan.target1)} | T2 \${fNum(primaryPlan.target2)}\` : invalidationText}</div></div>
-        <div class="stat-card"><div class="stat-k">Breakout Readiness</div><div class="stat-v">\${breakoutLabel(stock.breakout?.state)}</div><div>\${stock.breakout?.distancePct == null ? stock.breakout?.reason || "No trigger available." : \`\${stock.breakout.distancePct >= 0 ? "+" : ""}\${stock.breakout.distancePct}% vs \${fNum(stock.breakout.triggerPrice)} | \${stock.breakout.reason}\`}</div></div>
-        <div class="stat-card"><div class="stat-k">Sector Rotation</div><div class="stat-v">\${sectorRankState ? \`#\${sectorRankState.rank}\` : "n/a"}</div><div>\${sectorRankState ? \`\${sectorRankState.rotationScore}/100 | \${sectorRankState.prevRank == null ? "Drift unavailable" : \`Prev #\${sectorRankState.prevRank} | \${rankDeltaLabel(sectorRankState.rankDelta)}\`}\` : "No sector rotation read available."}</div></div>
-        <div class="stat-card"><div class="stat-k">Execution Risk</div><div class="stat-v">\${executionLabel(stock.executionRisk?.liquidityLabel)}</div><div>\${stock.executionRisk?.status === "ready" ? \`Pilot \${fNum(stock.executionRisk.pilotShares)} | Full \${fNum(stock.executionRisk.fullShares)} | Stop \${stock.executionRisk.stopDistancePct}%\` : stock.executionRisk?.reason || "No safe sizing available."}</div></div>
-        <div class="stat-card"><div class="stat-k">Delta</div><div>\${stock.delta}</div></div>
-      </div>
-    </div>
-
-    <div class="detail-grid">
-      <div class="section-card">
-        <div class="eyebrow">Context</div>
-        <div class="kv-grid">
-          <div class="kv"><div class="k">Market Pulse</div><div class="v">\${stock.market.pulse?.status || "unknown"}</div></div>
-          <div class="kv"><div class="k">Suggested Exposure</div><div class="v">\${stock.market.pulse?.exposure || "n/a"}</div></div>
-          <div class="kv"><div class="k">RS vs VNINDEX</div><div class="v mono">\${fPct(stock.relative.vsVNINDEX3m, 100)}</div></div>
-          <div class="kv"><div class="k">RS vs VN30</div><div class="v mono">\${fPct(stock.relative.vsVN303m, 100)}</div></div>
-          <div class="kv"><div class="k">Vol x Avg20</div><div class="v mono">\${stock.volRatio}x</div></div>
-          <div class="kv"><div class="k">RSI14</div><div class="v mono">\${stock.rsi14 ?? "n/a"}</div></div>
-          <div class="kv"><div class="k">PE / PB</div><div class="v mono">\${stock.pe ?? "n/a"} / \${stock.pb ?? "n/a"}</div></div>
-          <div class="kv"><div class="k">ROE</div><div class="v mono">\${stock.roe ?? "n/a"}</div></div>
-        </div>
-      </div>
-
-      <div class="section-card">
-        <div class="eyebrow">Wyckoff Map</div>
-        <div class="kv-grid">
-          <div class="kv"><div class="k">Phase</div><div class="v">\${wyckoff.label || stock.wyckoffPhase || "N/A"}</div></div>
-          <div class="kv"><div class="k">Bias</div><div class="v">\${wyckoff.bias || stock.wyckoffBias || "N/A"}</div></div>
-          <div class="kv"><div class="k">Support / Resistance</div><div class="v mono">\${fNum(wyckoff.levels?.support)} / \${fNum(wyckoff.levels?.resistance)}</div></div>
-          <div class="kv"><div class="k">Range Position</div><div class="v">\${wyckoff.levels?.pricePositionPct == null ? "N/A" : \`\${wyckoff.levels.pricePositionPct}% | \${wyckoff.context?.rangeLocation || ""}\`}</div></div>
-          <div class="kv"><div class="k">Trend Bias</div><div class="v">\${wyckoff.context?.trendBias || "N/A"}</div></div>
-          <div class="kv"><div class="k">Invalidation</div><div class="v">\${invalidationText}</div></div>
-        </div>
-        <div class="chip-row" style="margin-top:12px">\${eventChips}</div>
-      </div>
-    </div>
-
-    <div class="detail-grid">
-      <div class="section-card">
-        <div class="eyebrow">Wyckoff Steps</div>
-        <div class="list" style="margin-top:12px">\${reasoning}</div>
-      </div>
-      <div class="section-card">
-        <div class="eyebrow">Action Plan</div>
-        <div class="list" style="margin-top:12px">\${actionSteps}</div>
-      </div>
-    </div>
-
-    <div class="section-card" style="margin-top:14px">
-      <div class="eyebrow">Wyckoff Tests</div>
-      <div class="list" style="margin-top:12px">\${testItems}</div>
-    </div>
-
-    <div class="section-card" style="margin-top:14px">
-      <div class="eyebrow">Avoid</div>
-      <div class="list" style="margin-top:12px">\${avoidSteps}</div>
-    </div>
-
-    <div class="section-card" style="margin-top:14px">
-      <div class="eyebrow">Wyckoff Entry Plans</div>
-      <div class="factor-grid" style="margin-top:12px">\${planCards}</div>
-    </div>
-
-    <div class="section-card" style="margin-top:14px">
-      <div class="eyebrow">Watch Triggers</div>
-      <div class="list" style="margin-top:12px">\${watchItems}</div>
-    </div>
-
-    <div class="section-card" style="margin-top:14px">
-      <div class="eyebrow">Execution Risk</div>
-      <div class="kv-grid" style="margin-top:12px">
-        <div class="kv"><div class="k">Status</div><div class="v">\${stock.executionRisk?.status || "unavailable"}</div></div>
-        <div class="kv"><div class="k">Liquidity</div><div class="v">\${executionLabel(stock.executionRisk?.liquidityLabel)}</div></div>
-        <div class="kv"><div class="k">Traded / Avg Value20</div><div class="v mono">\${fK(stock.executionRisk?.tradedValue)} / \${fK(stock.executionRisk?.avgValue20)}</div></div>
-        <div class="kv"><div class="k">Stop Distance</div><div class="v mono">\${stock.executionRisk?.stopDistancePct == null ? "N/A" : \`\${stock.executionRisk.stopDistancePct}% | \${stock.executionRisk.stopDistanceAtr ?? "N/A"} ATR\`}</div></div>
-        <div class="kv"><div class="k">Risk / Reward</div><div class="v mono">\${stock.executionRisk?.riskReward1 == null ? "N/A" : \`\${stock.executionRisk.riskReward1}R / \${stock.executionRisk.riskReward2 ?? "N/A"}R\`}</div></div>
-        <div class="kv"><div class="k">Pilot / Full Size</div><div class="v mono">\${fNum(stock.executionRisk?.pilotShares)} / \${fNum(stock.executionRisk?.fullShares)} shares</div></div>
-        <div class="kv"><div class="k">Pilot / Full Notional</div><div class="v mono">\${fK(stock.executionRisk?.pilotNotional)} / \${fK(stock.executionRisk?.fullNotional)}</div></div>
-        <div class="kv"><div class="k">Read</div><div class="v">\${stock.executionRisk?.reason || "No execution read available."}</div></div>
-      </div>
-    </div>
-
-    <div class="detail-grid" style="margin-top:14px">
-      <div class="section-card">
-        <div class="eyebrow">Positive Drivers</div>
-        <div class="list" style="margin-top:12px">\${positives}</div>
-      </div>
-      <div class="section-card">
-        <div class="eyebrow">Negative Drivers</div>
-        <div class="list" style="margin-top:12px">\${negatives}</div>
-      </div>
-    </div>
-
-    <div class="section-card" style="margin-top:14px">
-      <div class="eyebrow">Factor Breakdown</div>
-      <div class="factor-grid" style="margin-top:12px">\${factors}</div>
-    </div>
-
-    <div class="section-card" style="margin-top:14px">
-      <div class="eyebrow">Quality & Sources</div>
-      <div class="kv-grid" style="margin-top:12px">
-        <div class="kv"><div class="k">Freshness</div><div class="v">\${stock.quality.freshnessSec == null ? "N/A" : stock.quality.freshnessSec + " sec"}</div></div>
-        <div class="kv"><div class="k">Price Source</div><div class="v">\${stock.quality.sourceFlags.price}</div></div>
-        <div class="kv"><div class="k">Fundamentals</div><div class="v">\${stock.quality.sourceFlags.fundamentals}</div></div>
-        <div class="kv"><div class="k">Ownership</div><div class="v">\${stock.quality.sourceFlags.ownership}</div></div>
-      </div>
-    </div>
-
-    <div class="section-card" style="margin-top:14px">
-      <div class="eyebrow">Warnings</div>
-      <div class="list" style="margin-top:12px">\${warnings}</div>
-    </div>
-
-    <div class="section-card" style="margin-top:14px">
-      <div class="eyebrow">History Strip</div>
-      <div class="history-strip" style="margin-top:12px">\${history}</div>
-    </div>
-  \`;
-
-  document.querySelectorAll("[data-sheet-nav]").forEach((button) => {
-    button.addEventListener("click", () => {
-      state.selectedTicker = button.dataset.sheetNav;
-      renderBoard();
-      renderFocus();
-      renderPublishStats();
-    });
-  });
-}
-
-renderHeader();
-renderMarket();
-renderSectorPanel();
-renderPublishStats();
-renderBoard();
-renderFocus();
+window.__SAIGON_PUBLISH__ = ${safeJson({
+    snapshot,
+    workspace,
+    selectedTicker: options.selectedTicker || focusStock?.ticker || null,
+  })};
 </script>
 </body>
 </html>`;
@@ -889,6 +320,7 @@ function publishSnapshot(snapshot, options = {}) {
     publishedAt,
     selectedTicker: options.selectedTicker || snapshot?.stocks?.[0]?.ticker || null,
     snapshot,
+    workspace: options.workspace || null,
     prompt: options.prompt || "",
   }, null, 2), "utf8");
   fs.writeFileSync(noJekyllPath, "", "utf8");
@@ -903,5 +335,3 @@ function publishSnapshot(snapshot, options = {}) {
 }
 
 module.exports = { publishSnapshot };
-
-

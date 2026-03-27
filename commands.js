@@ -5,19 +5,19 @@
 
 const PRESETS = Object.freeze([
   { id: "leaders", label: "Leaders", description: "Strongest CAN SLIM names" },
-  { id: "repair", label: "Repair Watch", description: "Early base repair and reclaim setups" },
-  { id: "entry", label: "Entry Watch", description: "Names near a Wyckoff trigger" },
-  { id: "risk", label: "Risk Off", description: "Breakdown and markdown risk" },
-  { id: "longs", label: "Long Candidates", description: "Bullish or repair-ready names" },
-  { id: "shorts", label: "Short Candidates", description: "Weak or markdown names" },
+  { id: "repair_watch", label: "Repair Watch", description: "Early base repair and reclaim setups", aliases: ["repair"] },
+  { id: "near_entry", label: "Entry Watch", description: "Names near a Wyckoff trigger", aliases: ["entry"] },
+  { id: "breakdown_risk", label: "Risk Off", description: "Breakdown and markdown risk", aliases: ["risk"] },
+  { id: "quality_names", label: "Quality Names", description: "Highest-quality snapshots with clean coverage", aliases: ["quality", "longs"] },
+  { id: "short_candidates", label: "Short Candidates", description: "Weak or markdown names", aliases: ["shorts"] },
   { id: "all", label: "All Rows", description: "Current full terminal board" },
 ]);
 
 const COMMANDS = Object.freeze([
   {
     name: "scan",
-    usage: "scan",
-    description: "Run a full scan of the active watchlist.",
+    usage: "scan [vn30|ticker]",
+    description: "Run a watchlist scan, VN30 scan, or a single-ticker scan.",
   },
   {
     name: "batch",
@@ -30,9 +30,25 @@ const COMMANDS = Object.freeze([
     description: "Fetch VN30 constituents from VPS and scan top CAN SLIM names.",
   },
   {
-    name: "open",
-    usage: "open <ticker>",
-    description: "Focus a ticker in the board and detail panel.",
+    name: "focus",
+    usage: "focus <ticker>",
+    description: "Focus a ticker across board, research, and playbook views.",
+    aliases: ["open"],
+  },
+  {
+    name: "research",
+    usage: "research <ticker> [1d|7d|30d]",
+    description: "Open research view and refresh evidence for a ticker.",
+  },
+  {
+    name: "plan",
+    usage: "plan <ticker>",
+    description: "Open the playbook view for a ticker.",
+  },
+  {
+    name: "journal",
+    usage: "journal [today|YYYY-MM-DD]",
+    description: "Open the journal for today or a specific day.",
   },
   {
     name: "add",
@@ -75,6 +91,13 @@ const COMMAND_LOOKUP = new Map(
   COMMANDS.flatMap((command) => [
     [command.name, command],
     ...(command.aliases || []).map((alias) => [alias, command]),
+  ]),
+);
+
+const PRESET_LOOKUP = new Map(
+  PRESETS.flatMap((preset) => [
+    [preset.id, preset],
+    ...(preset.aliases || []).map((alias) => [alias, preset]),
   ]),
 );
 
@@ -314,8 +337,16 @@ function parseCommand(input, options = {}) {
 
   switch (commandDef.name) {
     case "scan":
-      result.action = { type: "scan" };
+      result.action = { type: "scan.watchlist" };
       if (tokens.length > 1) {
+        if (String(tokens[1]).toLowerCase() === "vn30") {
+          result.action = {
+            type: "scan.vn30",
+            topN: Number.isFinite(Number(options.topN)) && Number(options.topN) > 0 ? Math.min(20, Math.floor(Number(options.topN))) : 10,
+            delayMs: Number.isFinite(Number(options.delayMs)) && Number(options.delayMs) > 0 ? Math.max(250, Math.min(3000, Math.floor(Number(options.delayMs)))) : 450,
+          };
+          return result;
+        }
         const maybeTicker = normalizeTicker(tokens[1]);
         if (maybeTicker) {
           result.action = { type: "scan.one", ticker: maybeTicker };
@@ -352,27 +383,70 @@ function parseCommand(input, options = {}) {
       const topN = Number(options.topN || 10);
       const delayMs = Number(options.delayMs || 450);
       result.action = {
-        type: "vn30.scan",
+        type: "scan.vn30",
         topN: Number.isFinite(topN) && topN > 0 ? Math.min(20, Math.floor(topN)) : 10,
         delayMs: Number.isFinite(delayMs) && delayMs > 0 ? Math.max(250, Math.min(3000, Math.floor(delayMs))) : 450,
       };
       return result;
     }
 
-    case "open": {
+    case "focus": {
       const ticker = normalizeTicker(tokens[1]);
       if (!ticker) {
         return {
           ok: false,
           kind: "error",
-          command: "open",
+          command: "focus",
           action: null,
           help,
-          error: "Open requires a ticker",
+          error: "Focus requires a ticker",
         };
       }
 
-      result.action = { type: "open.ticker", ticker };
+      result.action = { type: "focus.ticker", ticker };
+      return result;
+    }
+
+    case "research": {
+      const ticker = normalizeTicker(tokens[1]);
+      if (!ticker) {
+        return {
+          ok: false,
+          kind: "error",
+          command: "research",
+          action: null,
+          help,
+          error: "Research requires a ticker",
+        };
+      }
+
+      const window = ["1d", "7d", "30d"].includes(String(tokens[2] || "").toLowerCase())
+        ? String(tokens[2]).toLowerCase()
+        : "7d";
+      result.action = { type: "research.open", ticker, window };
+      return result;
+    }
+
+    case "plan": {
+      const ticker = normalizeTicker(tokens[1]);
+      if (!ticker) {
+        return {
+          ok: false,
+          kind: "error",
+          command: "plan",
+          action: null,
+          help,
+          error: "Plan requires a ticker",
+        };
+      }
+      result.action = { type: "playbook.open", ticker };
+      return result;
+    }
+
+    case "journal": {
+      const rawDate = String(tokens[1] || "today");
+      const date = rawDate.toLowerCase() === "today" ? "today" : rawDate;
+      result.action = { type: "journal.open", date };
       return result;
     }
 
@@ -415,10 +489,10 @@ function parseCommand(input, options = {}) {
         };
       }
 
-      const preset = PRESETS.find((item) => item.id === presetId) || null;
+      const preset = PRESET_LOOKUP.get(presetId) || null;
       result.action = {
         type: "preset.load",
-        presetId,
+        presetId: preset?.id || presetId,
         preset,
       };
       if (!preset) result.warnings.push(`Unknown preset id: ${presetId}`);
@@ -473,16 +547,22 @@ function formatAction(action) {
   if (!action) return "No action";
 
   switch (action.type) {
-    case "scan":
+    case "scan.watchlist":
       return "Scan watchlist";
     case "scan.one":
       return `Scan ${action.ticker}`;
     case "batch.scan":
       return `Batch scan ${action.tickers.length} tickers`;
-    case "vn30.scan":
+    case "scan.vn30":
       return `Scan VN30 top ${action.topN}`;
-    case "open.ticker":
-      return `Open ${action.ticker}`;
+    case "focus.ticker":
+      return `Focus ${action.ticker}`;
+    case "research.open":
+      return `Research ${action.ticker} (${action.window})`;
+    case "playbook.open":
+      return `Open playbook ${action.ticker}`;
+    case "journal.open":
+      return `Open journal ${action.date}`;
     case "watchlist.add":
       return `Add ${action.stock.ticker}`;
     case "watchlist.update":

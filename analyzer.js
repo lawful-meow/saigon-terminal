@@ -581,7 +581,11 @@ function computeMetrics(rawOhlcv, rawOverview, rawForeign, rawMarket, rawMeta = 
       fundamentalsSource: rawMeta?.overview?.source || "unavailable",
       ownershipSource: rawMeta?.ownership?.source || rawMeta?.overview?.source || "unavailable",
       foreignSource: rawMeta?.foreign?.source || "unavailable",
+      priceTransport: rawMeta?.ohlcv?.historyTransport || "fetch",
+      snapshotTransport: rawMeta?.ohlcv?.snapshotTransport || null,
+      marketTransport: rawMeta?.market?.transport || null,
     }),
+    sourceHealth: rawMeta?.sourceHealth || [],
   };
 
   const sessionChangePct = pctChangeFromBase(latest.c, latest.o);

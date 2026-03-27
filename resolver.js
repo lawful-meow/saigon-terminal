@@ -67,6 +67,9 @@ function buildSourceFlags(meta = {}) {
     fundamentals: meta.fundamentalsSource || "unavailable",
     ownership: meta.ownershipSource || meta.fundamentalsSource || "unavailable",
     foreign: meta.foreignSource || "unavailable",
+    priceTransport: meta.priceTransport || "fetch",
+    snapshotTransport: meta.snapshotTransport || null,
+    marketTransport: meta.marketTransport || null,
     providerRoadmap: config.sources.roadmap,
   };
 }

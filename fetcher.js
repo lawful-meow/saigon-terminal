@@ -7,6 +7,7 @@
 
 const config = require("./config");
 const kbs = require("./providers/kbs");
+const { requestJson } = require("./adapters/http-client");
 
 const TIMEOUT = config.sources.timeout;
 const SNAPSHOT_BASE = config.sources.vpsSnapshot;
@@ -15,46 +16,23 @@ const MARKET_BENCHMARKS = config.sources.marketBenchmarks || ["VNINDEX", "VN30"]
 const MARKET_TZ = config.sources.marketTimeZone || "Asia/Ho_Chi_Minh";
 const DEFAULT_OHLCV_DAYS = Number(config.sources.ohlcvDays) || 90;
 
-if (typeof globalThis.fetch !== "function") {
-  console.error("Node 18+ required. Current:", process.version);
-  process.exit(1);
+function get(url, source) {
+  return requestJson(url, {
+    timeoutMs: TIMEOUT,
+    headers: { "User-Agent": "SaigonEngine/2.2" },
+    source,
+  });
 }
 
-async function get(url) {
-  let signal;
-  let timer;
-
-  try {
-    signal = AbortSignal.timeout(TIMEOUT);
-  } catch (_) {
-    const ac = new AbortController();
-    signal = ac.signal;
-    timer = setTimeout(() => ac.abort(), TIMEOUT);
-  }
-
-  let res;
-  try {
-    res = await fetch(url, {
-      headers: { "User-Agent": "SaigonEngine/2.0" },
-      signal,
-    });
-  } catch (e) {
-    if (timer) clearTimeout(timer);
-    throw new Error(`Fetch failed: ${e.message} [${url.split("?")[0]}]`);
-  }
-
-  if (timer) clearTimeout(timer);
-
-  if (!res.ok) {
-    const body = await res.text().catch(() => "");
-    throw new Error(`HTTP ${res.status} [${url.split("?")[0]}]: ${body.slice(0, 150)}`);
-  }
-
-  try {
-    return await res.json();
-  } catch (e) {
-    throw new Error(`Invalid JSON [${url.split("?")[0]}]: ${e.message}`);
-  }
+function sourceRow(id, name, critical, status, message) {
+  return {
+    id,
+    name,
+    critical,
+    status,
+    message,
+    updatedAt: new Date().toISOString(),
+  };
 }
 
 function num(value) {
@@ -120,7 +98,12 @@ function buildHistoryRequest(ticker, days = DEFAULT_OHLCV_DAYS) {
 
 async function fetchHistory(ticker, options = {}) {
   const request = buildHistoryRequest(ticker, options.days);
-  const data = await get(request.url);
+  const response = await get(request.url, {
+    id: "vps_history",
+    name: "VPS history",
+    critical: true,
+  });
+  const data = response.data;
   if (data.s === "no_data" || !Array.isArray(data.t) || data.t.length === 0) {
     throw new Error(`No OHLCV for ${ticker}`);
   }
@@ -143,31 +126,57 @@ async function fetchHistory(ticker, options = {}) {
       Number.isFinite(bar.close)
     );
 
-  return { bars, request };
+  return {
+    bars,
+    request,
+    meta: {
+      transport: response.meta.transport,
+      sourceStatus: response.meta.sourceStatus,
+    },
+  };
 }
 
 async function fetchSnapshot(ticker) {
   const url = `${SNAPSHOT_BASE}/getliststockdata/${encodeURIComponent(ticker)}`;
-  const data = await get(url);
+  const response = await get(url, {
+    id: "vps_snapshot",
+    name: "VPS snapshot",
+    critical: false,
+  });
+  const data = response.data;
   const row = Array.isArray(data) ? data[0] : null;
   const lastPrice = num(row?.lastPrice);
-  if (!Number.isFinite(lastPrice)) return null;
+  if (!Number.isFinite(lastPrice)) {
+    return {
+      snapshot: null,
+      meta: {
+        transport: response.meta.transport,
+        sourceStatus: sourceRow("vps_snapshot", "VPS snapshot", false, "degraded", "Snapshot payload did not include a last price"),
+      },
+    };
+  }
 
   const lot = num(row?.lot);
   const avgPrice = num(row?.avePrice);
   const volume = Number.isFinite(lot) ? Math.round(lot * 10) : null;
 
   return {
-    date: marketDate(),
-    open: num(row?.openPrice),
-    high: num(row?.highPrice),
-    low: num(row?.lowPrice),
-    close: lastPrice,
-    volume,
-    value: Number.isFinite(volume) && Number.isFinite(avgPrice)
-      ? Math.round(volume * avgPrice * 1000)
-      : 0,
-    pctChange: num(row?.changePc),
+    snapshot: {
+      date: marketDate(),
+      open: num(row?.openPrice),
+      high: num(row?.highPrice),
+      low: num(row?.lowPrice),
+      close: lastPrice,
+      volume,
+      value: Number.isFinite(volume) && Number.isFinite(avgPrice)
+        ? Math.round(volume * avgPrice * 1000)
+        : 0,
+      pctChange: num(row?.changePc),
+    },
+    meta: {
+      transport: response.meta.transport,
+      sourceStatus: response.meta.sourceStatus,
+    },
   };
 }
 
@@ -214,11 +223,21 @@ async function fetchOhlcvBundle(ticker, options = {}) {
 
   let snapshot = null;
   let snapshotError = null;
+  let snapshotMeta = {
+    transport: null,
+    sourceStatus: sourceRow("vps_snapshot", "VPS snapshot", false, "degraded", "Snapshot overlay not attempted"),
+  };
 
   try {
-    snapshot = await fetchSnapshot(ticker);
+    const response = await fetchSnapshot(ticker);
+    snapshot = response.snapshot;
+    snapshotMeta = response.meta;
   } catch (e) {
     snapshotError = e.message;
+    snapshotMeta = {
+      transport: null,
+      sourceStatus: e.sourceStatus || sourceRow("vps_snapshot", "VPS snapshot", false, "degraded", e.message),
+    };
   }
 
   const merged = overlaySnapshot(historyBars, snapshot);
@@ -237,6 +256,18 @@ async function fetchOhlcvBundle(ticker, options = {}) {
       snapshotFailed: merged.snapshotFailed,
       snapshotError,
       priceSource: merged.snapshotOverlayUsed ? "vps_snapshot_overlay" : "vps_history_only",
+      historyTransport: history.meta.transport,
+      snapshotTransport: snapshotMeta.transport,
+      sourceHealth: [
+        history.meta.sourceStatus,
+        merged.snapshotOverlayUsed
+          ? snapshotMeta.sourceStatus
+          : {
+            ...snapshotMeta.sourceStatus,
+            status: snapshotMeta.sourceStatus?.status === "down" ? "degraded" : snapshotMeta.sourceStatus?.status || "degraded",
+            message: snapshotMeta.sourceStatus?.message || "Snapshot overlay unavailable; using VPS history only",
+          },
+      ].filter(Boolean),
       priceAsOf: merged.bars[merged.bars.length - 1]?.date || null,
     },
   };
@@ -248,16 +279,21 @@ async function fetchMarketBundle() {
     MARKET_BENCHMARKS.map(async (symbol) => {
       try {
         const bundle = await fetchHistory(symbol);
-        return [symbol, bundle.bars];
-      } catch (_) {
-        return [symbol, null];
+        return { symbol, bars: bundle.bars, meta: bundle.meta, error: null };
+      } catch (error) {
+        return { symbol, bars: null, meta: null, error };
       }
     })
   );
 
   const data = Object.fromEntries(
-    rows.filter(([, bars]) => Array.isArray(bars) && bars.length > 0)
+    rows
+      .filter((row) => Array.isArray(row.bars) && row.bars.length > 0)
+      .map((row) => [row.symbol, row.bars])
   );
+  const failures = rows.filter((row) => row.error);
+  const hasData = Object.keys(data).length > 0;
+  const usedCurl = rows.some((row) => row.meta?.transport === "curl");
 
   return {
     data,
@@ -265,6 +301,11 @@ async function fetchMarketBundle() {
       fetchedAt,
       source: "vps_history",
       benchmarks: Object.keys(data),
+      warnings: failures.map((row) => `${row.symbol}: ${row.error.message}`),
+      transport: usedCurl ? "curl" : "fetch",
+      sourceStatus: hasData
+        ? sourceRow("vps_market", "VPS market benchmarks", true, failures.length ? "degraded" : (usedCurl ? "degraded" : "ok"), failures.length ? "Loaded with partial benchmark failures" : (usedCurl ? "Loaded through curl fallback" : "Benchmarks loaded"))
+        : sourceRow("vps_market", "VPS market benchmarks", true, "down", failures[0]?.error?.message || "Market benchmarks unavailable"),
     },
   };
 }
@@ -274,7 +315,12 @@ async function indexComponents(indexCode = "VN30") {
   if (!symbol) throw new Error("Index code is required");
 
   const url = `${SNAPSHOT_BASE}/getlistckindex/${encodeURIComponent(symbol)}`;
-  const data = await get(url);
+  const response = await get(url, {
+    id: "vps_universe",
+    name: "VPS universe",
+    critical: false,
+  });
+  const data = response.data;
 
   if (!Array.isArray(data)) {
     throw new Error(`Invalid index component payload for ${symbol}`);
@@ -332,8 +378,12 @@ async function overview(ticker) {
       _meta: {
         provider: "kbs",
         fundamentalsSource: "unavailable",
-        ownershipSource: "unavailable",
+        ownershipSource: "quarantined",
       },
+      _sourceHealth: [
+        sourceRow("kbs_finance", "KBS finance", false, "degraded", error.message),
+        sourceRow("kbs_profile", "KBS profile", false, "degraded", "KBS profile endpoint is quarantined"),
+      ],
     };
   }
 }
@@ -364,6 +414,7 @@ async function fetchAll(ticker, options = {}) {
       overview: {
         source: overviewData?._source || "unknown",
         warnings: overviewData?._warnings || [],
+        sourceHealth: overviewData?._sourceHealth || [],
         fetchedAt: ohlcvBundle.meta.fetchedAt,
       },
       ownership: {
@@ -376,6 +427,11 @@ async function fetchAll(ticker, options = {}) {
         fetchedAt: ohlcvBundle.meta.fetchedAt,
         records: foreignData?.data?.length || 0,
       },
+      sourceHealth: [
+        ...(ohlcvBundle.meta.sourceHealth || []),
+        marketBundle.meta.sourceStatus,
+        ...(overviewData?._sourceHealth || []),
+      ].filter(Boolean),
     },
   };
 }

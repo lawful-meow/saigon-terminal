@@ -5,12 +5,13 @@
 // ───────────────────────────────────────────────────────────────────────────────
 
 const config = require("../config");
+const { requestJson } = require("../adapters/http-client");
 
-const PROFILE_BASE = config.sources.kbsProfile;
 const FINANCE_BASE = config.sources.kbsFinance;
 const CACHE_TTL_MS = config.sources.kbsCacheTtlMs || 6 * 60 * 60 * 1000;
 const FAILURE_TTL_MS = config.sources.kbsFailureTtlMs || 2 * 60 * 1000;
 const TIMEOUT = config.sources.kbsTimeout || Math.min(config.sources.timeout || 15000, 6000);
+const QUARANTINED_PROFILE_WARNING = "KBS profile endpoint is quarantined; ownership/profile enrichment is disabled";
 
 const cache = new Map();
 
@@ -54,35 +55,17 @@ function sumWindow(series, start, size) {
   return values.reduce((sum, value) => sum + value, 0);
 }
 
-async function getJson(url) {
-  let signal;
-  let timer;
-
-  try {
-    signal = AbortSignal.timeout(TIMEOUT);
-  } catch (_) {
-    const ac = new AbortController();
-    signal = ac.signal;
-    timer = setTimeout(() => ac.abort(), TIMEOUT);
-  }
-
-  try {
-    const res = await fetch(url, {
-      headers: { "User-Agent": "SaigonEngine/2.0" },
-      signal,
-    });
-
-    if (!res.ok) {
-      const body = await res.text().catch(() => "");
-      throw new Error(`HTTP ${res.status}: ${body.slice(0, 150)}`);
-    }
-
-    return await res.json();
-  } catch (error) {
-    throw new Error(`KBS fetch failed: ${error.message}`);
-  } finally {
-    if (timer) clearTimeout(timer);
-  }
+async function getJson(url, sourceId, sourceName) {
+  const { data } = await requestJson(url, {
+    timeoutMs: TIMEOUT,
+    headers: { "User-Agent": "SaigonEngine/2.2" },
+    source: {
+      id: sourceId,
+      name: sourceName,
+      critical: false,
+    },
+  });
+  return data;
 }
 
 function cacheHit(key) {
@@ -239,10 +222,6 @@ function parseOverview({ profile, ratiosAnnual, quarterPages }) {
   };
 }
 
-async function fetchProfile(ticker) {
-  return getJson(`${PROFILE_BASE}/profile/${encodeURIComponent(ticker)}?l=1`);
-}
-
 async function fetchFinance(ticker, type, termType, page = 1) {
   const params = new URLSearchParams({
     page: String(page),
@@ -252,7 +231,11 @@ async function fetchFinance(ticker, type, termType, page = 1) {
     termtype: String(termType),
     languageid: "1",
   });
-  return getJson(`${FINANCE_BASE}/${encodeURIComponent(ticker)}?${params.toString()}`);
+  return getJson(
+    `${FINANCE_BASE}/${encodeURIComponent(ticker)}?${params.toString()}`,
+    "kbs_finance",
+    "KBS finance"
+  );
 }
 
 async function enrich(ticker) {
@@ -264,18 +247,17 @@ async function enrich(ticker) {
 
   try {
     const settled = await Promise.allSettled([
-      fetchProfile(key),
       fetchFinance(key, "CSTC", 1, 1),
       fetchFinance(key, "KQKD", 2, 1),
       fetchFinance(key, "KQKD", 2, 2),
     ]);
 
-    const [profileRes, ratiosRes, quarter1Res, quarter2Res] = settled;
-    const warnings = settled
+    const [ratiosRes, quarter1Res, quarter2Res] = settled;
+    const warnings = [QUARANTINED_PROFILE_WARNING, ...settled
       .filter((result) => result.status === "rejected")
-      .map((result) => result.reason?.message || "unknown_error");
+      .map((result) => result.reason?.message || "unknown_error")];
 
-    const profile = profileRes.status === "fulfilled" ? profileRes.value : null;
+    const profile = null;
     const ratiosAnnual = ratiosRes.status === "fulfilled" ? ratiosRes.value : null;
     const quarterPages = [quarter1Res, quarter2Res]
       .filter((result) => result.status === "fulfilled")
@@ -301,14 +283,36 @@ async function enrich(ticker) {
       institutionScore: overview.institutionScore,
       outstandingShares: overview.outstandingShares,
       employeeCount: overview.employeeCount,
-      _source: hasData ? "kbs_enrichment" : "kbs_unavailable",
+      _source: hasData ? "kbs_finance" : "kbs_unavailable",
       _warnings: warnings,
       _meta: {
         provider: "kbs",
         asOf: overview.asOf,
-        ownershipSource: profile ? "kbs_profile" : "unavailable",
-        fundamentalsSource: ratiosAnnual || quarterPages.length ? "kbs_enrichment" : "unavailable",
+        ownershipSource: "quarantined",
+        fundamentalsSource: ratiosAnnual || quarterPages.length ? "kbs_finance" : "unavailable",
+        profileStatus: "quarantined",
+        financeStatus: hasData ? "ok" : "degraded",
       },
+      _sourceHealth: [
+        {
+          id: "kbs_finance",
+          name: "KBS finance",
+          critical: false,
+          status: hasData ? (warnings.length > 1 ? "degraded" : "ok") : "degraded",
+          message: hasData
+            ? (warnings.length > 1 ? "Finance enrichment loaded with partial warnings" : "Finance enrichment available")
+            : (warnings.find((warning) => warning !== QUARANTINED_PROFILE_WARNING) || "Finance enrichment unavailable"),
+          updatedAt: new Date().toISOString(),
+        },
+        {
+          id: "kbs_profile",
+          name: "KBS profile",
+          critical: false,
+          status: "degraded",
+          message: QUARANTINED_PROFILE_WARNING,
+          updatedAt: new Date().toISOString(),
+        },
+      ],
     };
 
     cachePut(key, payload, hasData ? CACHE_TTL_MS : FAILURE_TTL_MS);

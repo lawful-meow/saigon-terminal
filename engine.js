@@ -155,7 +155,12 @@ async function scanAll(options = {}) {
         options.onProgress({ ticker: stock.ticker, status: "ok", snapshot });
       }
     } catch (e) {
-      errors.push({ ticker: stock.ticker, error: e.message });
+      errors.push({
+        ticker: stock.ticker,
+        error: e.message,
+        sourceStatus: e.sourceStatus || null,
+        warnings: Array.isArray(e.warnings) ? e.warnings : [],
+      });
       if (options.onProgress) {
         options.onProgress({ ticker: stock.ticker, status: "error", error: e.message });
       }

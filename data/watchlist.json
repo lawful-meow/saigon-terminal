@@ -23,5 +23,10 @@
     "ticker": "CTG",
     "name": "VietinBank",
     "sector": "BANK"
+  },
+  {
+    "ticker": "MBB",
+    "name": "MB Bank",
+    "sector": "USER"
   }
 ]

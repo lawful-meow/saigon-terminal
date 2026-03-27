@@ -1,18 +1,21 @@
 #!/usr/bin/env node
-// HTTP server. REST API + static files.
-// All heavy lifting delegated to engine.js.
 
 const http = require("http");
 const fs = require("fs");
 const path = require("path");
 const config = require("./config");
-const engine = require("./engine");
-const { claudePrompt } = require("./formatter");
-const publisher = require("./publisher");
 const store = require("./store");
 const watchlist = require("./watchlist");
 const fetcher = require("./fetcher");
+const { claudePrompt } = require("./formatter");
+const publisher = require("./publisher");
 const { parseCommand, PRESETS, buildHelpText } = require("./commands");
+const scanService = require("./services/scan-service");
+const researchService = require("./services/research-service");
+const playbookService = require("./services/playbook-service");
+const journalService = require("./services/journal-service");
+const taskService = require("./services/task-service");
+const workspaceService = require("./services/workspace-service");
 
 function json(res, status, data) {
   res.writeHead(status, { "Content-Type": "application/json; charset=utf-8" });
@@ -30,6 +33,12 @@ function readBody(req) {
   });
 }
 
+async function readJsonBody(req) {
+  const body = await readBody(req);
+  if (!body) return {};
+  return JSON.parse(body);
+}
+
 function serveFile(res, filePath) {
   const ext = path.extname(filePath);
   const mime = {
@@ -37,6 +46,7 @@ function serveFile(res, filePath) {
     ".js": "application/javascript",
     ".css": "text/css",
     ".json": "application/json",
+    ".svg": "image/svg+xml",
   }[ext] || "text/plain";
 
   fs.readFile(filePath, (err, data) => {
@@ -51,33 +61,24 @@ function serveFile(res, filePath) {
   });
 }
 
-function parseTickerList(input) {
-  const parts = Array.isArray(input)
-    ? input
-    : String(input || "").split(/[\s,;\n\r\t]+/);
-
-  const seen = new Set();
-  const tickers = [];
-
-  for (const part of parts) {
-    const ticker = watchlist.normalizeTicker(part);
-    if (!ticker) continue;
-    if (ticker.length < 2 || ticker.length > 12) continue;
-    if (seen.has(ticker)) continue;
-    seen.add(ticker);
-    tickers.push(ticker);
-  }
-
-  return tickers;
+function badJson(res, error) {
+  return json(res, 400, { error: `Invalid JSON body: ${error.message}` });
 }
 
-function buildStocksFromTickers(tickers, defaultSector = "BATCH") {
-  const existingMap = new Map(watchlist.getAll().map((stock) => [stock.ticker, stock]));
-  return tickers.map((ticker) => existingMap.get(ticker) || {
-    ticker,
-    name: ticker,
-    sector: defaultSector,
-  });
+function normalizeTaskPayload(payload = {}) {
+  return {
+    topN: Math.max(1, Math.min(20, Number(payload.topN) || 10)),
+    delayMs: Math.max(250, Math.min(3000, Number(payload.delayMs) || 450)),
+    tickers: scanService.parseTickerList(payload.tickers),
+  };
+}
+
+function safePrompt(snapshot, fallback = "") {
+  try {
+    return claudePrompt(snapshot);
+  } catch (_) {
+    return fallback;
+  }
 }
 
 function createServer(port = config.server.port) {
@@ -86,6 +87,7 @@ function createServer(port = config.server.port) {
     const pathname = url.pathname;
 
     res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
     if (req.method === "OPTIONS") {
       res.writeHead(204);
       res.end();
@@ -93,54 +95,308 @@ function createServer(port = config.server.port) {
     }
 
     try {
-      if (pathname === "/api/scan" && req.method === "POST") {
-        console.log("[scan] Starting full scan...");
-        const { snapshot, errors } = await engine.scanAll({
-          onProgress: ({ ticker, status, error }) => {
-            console.log(`  ${status === "ok" ? "OK" : "ERR"} ${ticker}${error ? `: ${error}` : ""}`);
-          },
+      if (pathname === "/api/workspace" && req.method === "GET") {
+        return json(res, 200, workspaceService.getWorkspace({
+          view: url.searchParams.get("view") || "home",
+          ticker: url.searchParams.get("ticker"),
+          window: url.searchParams.get("window") || "7d",
+          date: url.searchParams.get("date") || "today",
+        }));
+      }
+
+      if (pathname === "/api/tasks/scan" && req.method === "POST") {
+        let payload = {};
+        try {
+          payload = await readJsonBody(req);
+        } catch (error) {
+          return badJson(res, error);
+        }
+
+        const normalized = normalizeTaskPayload(payload);
+        const mode = String(payload.mode || "watchlist").toLowerCase();
+        const task = taskService.createTask("scan", async (ctx) => {
+          ctx.log("task.start", { type: "scan", mode });
+          ctx.progress(5, "preparing scan");
+
+          let result;
+          if (mode === "vn30") {
+            let processed = 0;
+            result = await scanService.scanVN30({
+              topN: normalized.topN,
+              delayMs: normalized.delayMs,
+              onProgress: () => {
+                processed += 1;
+                ctx.progress(10 + Math.round((processed / 30) * 75), `scanning VN30 (${processed})`);
+              },
+            });
+          } else if (mode === "batch") {
+            const total = normalized.tickers.length;
+            let processed = 0;
+            result = await scanService.scanBatch(normalized.tickers, {
+              topN: normalized.topN,
+              delayMs: normalized.delayMs,
+              onProgress: () => {
+                processed += 1;
+                ctx.progress(10 + Math.round((processed / Math.max(total, 1)) * 75), `batch scan ${processed}/${total}`);
+              },
+            });
+          } else {
+            const total = watchlist.getAll().length;
+            let processed = 0;
+            result = await scanService.scanWatchlist({
+              onProgress: () => {
+                processed += 1;
+                ctx.progress(10 + Math.round((processed / Math.max(total, 1)) * 75), `scan ${processed}/${total}`);
+              },
+            });
+          }
+
+          const warnings = [];
+          if (Array.isArray(result?.errors) && result.errors.length) {
+            const warning = `${result.errors.length} tickers failed during the last scan`;
+            ctx.warn(warning);
+            warnings.push(warning);
+          }
+          if (!result?.snapshot?.stocks?.length) {
+            throw new Error("Scan failed; no rows were loaded. The last successful workspace is still available if one exists.");
+          }
+
+          ctx.progress(95, "finalizing snapshot", {
+            warnings,
+            resultRef: { type: "snapshot", selectedTicker: payload.selectedTicker || result.snapshot?.stocks?.[0]?.ticker || null },
+          });
+          return {
+            warnings,
+            resultRef: { type: "snapshot", selectedTicker: payload.selectedTicker || result.snapshot?.stocks?.[0]?.ticker || null },
+          };
+        }, {
+          initialStep: "queued scan",
+          meta: { mode, payload },
         });
-        console.log(`[scan] Done: ${snapshot.count} stocks, ${errors.length} errors`);
-        return json(res, 200, { snapshot, errors });
+
+        return json(res, 202, task);
+      }
+
+      if (pathname === "/api/tasks/research-refresh" && req.method === "POST") {
+        let payload = {};
+        try {
+          payload = await readJsonBody(req);
+        } catch (error) {
+          return badJson(res, error);
+        }
+
+        const task = taskService.createTask("research-refresh", async (ctx) => {
+          const workspace = workspaceService.getWorkspace({
+            ticker: payload.ticker,
+            window: payload.window || "7d",
+            view: "research",
+          });
+          if (!workspace.focusTicker || !workspace.snapshotMeta?.generated) {
+            throw new Error("Research refresh requires a successful scan first");
+          }
+
+          ctx.progress(10, `refreshing research for ${workspace.focusTicker}`);
+          const result = await researchService.refreshResearch({
+            ticker: workspace.focusTicker,
+            window: payload.window || "7d",
+            snapshot: {
+              generated: workspace.snapshotMeta.generated,
+              market: workspace.market,
+              stocks: workspace.boardRows,
+              alerts: { items: workspace.alerts },
+              smartLists: workspace.smartLists,
+            },
+          });
+          const warnings = (result.errors || []).map((entry) => entry?.source ? `${entry.source}: ${entry.error}` : String(entry?.error || entry));
+          ctx.progress(95, "research refreshed", {
+            warnings,
+            resultRef: { type: "research", ticker: workspace.focusTicker },
+          });
+          return {
+            warnings,
+            resultRef: { type: "research", ticker: workspace.focusTicker },
+            result,
+          };
+        }, {
+          initialStep: "queued research refresh",
+          meta: { payload },
+        });
+
+        return json(res, 202, task);
+      }
+
+      if (pathname === "/api/tasks/publish" && req.method === "POST") {
+        let payload = {};
+        try {
+          payload = await readJsonBody(req);
+        } catch (error) {
+          return badJson(res, error);
+        }
+
+        const task = taskService.createTask("publish", async (ctx) => {
+          ctx.progress(10, "preparing publish payload");
+
+          const latestRecord = scanService.getLatestSnapshotRecord();
+          let snapshot = payload.snapshot || latestRecord?.snapshot || null;
+          let prompt = payload.prompt || "";
+
+          if (!snapshot) {
+            throw new Error("Publish requires a successful workspace snapshot; run scan first");
+          } else if (!prompt) {
+            prompt = safePrompt(snapshot, "");
+          }
+
+          scanService.persistLatestSnapshot(snapshot, {
+            source: "publish_task",
+            mode: snapshot.scanMode,
+            selectedTicker: payload.selectedTicker || snapshot?.stocks?.[0]?.ticker || null,
+          });
+
+          const workspace = workspaceService.buildWorkspaceSnapshotFromSnapshot(snapshot, {
+            view: "publish",
+            ticker: payload.selectedTicker,
+            selectedTicker: payload.selectedTicker || snapshot?.stocks?.[0]?.ticker || null,
+          });
+
+          ctx.progress(80, "writing static files");
+          const result = publisher.publishSnapshot(snapshot, {
+            prompt,
+            selectedTicker: payload.selectedTicker,
+            workspace,
+          });
+
+          ctx.progress(95, "publish completed", {
+            resultRef: { type: "publish", previewPath: result.previewPath },
+          });
+          return { resultRef: { type: "publish", previewPath: result.previewPath }, result };
+        }, {
+          initialStep: "queued publish",
+          meta: { payload },
+        });
+
+        return json(res, 202, task);
+      }
+
+      const taskEventsMatch = pathname.match(/^\/api\/tasks\/([^/]+)\/events$/);
+      if (taskEventsMatch && req.method === "GET") {
+        return taskService.subscribe(taskEventsMatch[1], req, res);
+      }
+
+      const taskMatch = pathname.match(/^\/api\/tasks\/([^/]+)$/);
+      if (taskMatch && req.method === "GET") {
+        const task = taskService.getTask(taskMatch[1]);
+        if (!task) return json(res, 404, { error: "Task not found" });
+        return json(res, 200, task);
+      }
+
+      if (pathname === "/api/research" && req.method === "GET") {
+        const workspace = workspaceService.getWorkspace({
+          ticker: url.searchParams.get("ticker"),
+          window: url.searchParams.get("window") || "7d",
+          view: "research",
+        });
+        return json(res, 200, workspace.research);
+      }
+
+      if (pathname === "/api/research/notes" && req.method === "POST") {
+        let payload = {};
+        try {
+          payload = await readJsonBody(req);
+        } catch (error) {
+          return badJson(res, error);
+        }
+        return json(res, 200, researchService.appendOperatorNote(payload));
+      }
+
+      const playbookMatch = pathname.match(/^\/api\/playbooks\/([A-Z0-9]{2,12})$/i);
+      if (playbookMatch && req.method === "GET") {
+        const workspace = workspaceService.getWorkspace({
+          ticker: playbookMatch[1],
+          view: "playbook",
+        });
+        return json(res, 200, workspace.playbook);
+      }
+
+      if (playbookMatch && req.method === "POST") {
+        let payload = {};
+        try {
+          payload = await readJsonBody(req);
+        } catch (error) {
+          return badJson(res, error);
+        }
+
+        const workspace = workspaceService.getWorkspace({
+          ticker: playbookMatch[1],
+          view: "playbook",
+        });
+        const snapshot = workspace.market ? {
+          generated: workspace.snapshotMeta.generated,
+          market: workspace.market,
+          stocks: workspace.boardRows,
+          alerts: { items: workspace.alerts },
+          smartLists: workspace.smartLists,
+        } : null;
+
+        return json(res, 200, playbookService.savePlaybook(playbookMatch[1], payload, { snapshot }));
+      }
+
+      if (pathname === "/api/journal" && req.method === "GET") {
+        const date = url.searchParams.get("date") || "today";
+        return json(res, 200, {
+          date: journalService.normalizeDate(date),
+          entries: journalService.getEntries(date),
+        });
+      }
+
+      if (pathname === "/api/journal" && req.method === "POST") {
+        let payload = {};
+        try {
+          payload = await readJsonBody(req);
+        } catch (error) {
+          return badJson(res, error);
+        }
+        return json(res, 200, journalService.addEntry(payload));
+      }
+
+      if (pathname === "/api/scan" && req.method === "POST") {
+        const result = await scanService.scanWatchlist();
+        const record = scanService.getLatestSnapshotRecord();
+        return json(res, 200, {
+          snapshot: record?.snapshot || result.snapshot,
+          errors: result.errors,
+          warnings: record?.lastAttemptDiagnostics?.warnings || [],
+          sourceHealth: record?.lastAttemptDiagnostics?.sourceHealth || [],
+          stale: !!record?.lastAttemptDiagnostics && (!record.lastAttemptDiagnostics.succeeded || record.lastAttemptDiagnostics.stale),
+        });
       }
 
       if (pathname === "/api/scan/batch" && req.method === "POST") {
-        const body = await readBody(req);
         let payload = {};
-        if (body) {
-          try {
-            payload = JSON.parse(body);
-          } catch (error) {
-            return json(res, 400, { error: `Invalid JSON body: ${error.message}` });
-          }
+        try {
+          payload = await readJsonBody(req);
+        } catch (error) {
+          return badJson(res, error);
         }
 
-        const tickers = parseTickerList(payload.tickers);
-        if (!tickers.length) return json(res, 400, { error: "Provide at least one ticker" });
-        if (tickers.length > 60) return json(res, 400, { error: "Batch scan is capped at 60 tickers per request" });
+        const normalized = normalizeTaskPayload(payload);
+        if (!normalized.tickers.length) return json(res, 400, { error: "Provide at least one ticker" });
+        if (normalized.tickers.length > 60) return json(res, 400, { error: "Batch scan is capped at 60 tickers per request" });
 
-        const topN = Math.max(1, Math.min(20, Number(payload.topN) || 10));
-        const delayMs = Math.max(250, Math.min(3000, Number(payload.delayMs) || 450));
-        const stocks = buildStocksFromTickers(tickers, "BATCH");
-
-        console.log(`[batch] Scanning ${stocks.length} tickers with ${delayMs}ms spacing, top ${topN}`);
-        const { snapshot, errors } = await engine.scanAll({
-          stocks,
-          delayMs,
-          persist: false,
-          topN,
-          scanMode: "batch_top_strength",
-          onProgress: ({ ticker, status, error }) => {
-            console.log(`  ${status === "ok" ? "OK" : "ERR"} ${ticker}${error ? `: ${error}` : ""}`);
-          },
+        const result = await scanService.scanBatch(normalized.tickers, {
+          topN: normalized.topN,
+          delayMs: normalized.delayMs,
         });
+        const record = scanService.getLatestSnapshotRecord();
 
         return json(res, 200, {
-          snapshot,
-          errors,
-          inputCount: tickers.length,
-          topN,
-          delayMs,
+          snapshot: record?.snapshot || result.snapshot,
+          errors: result.errors,
+          warnings: record?.lastAttemptDiagnostics?.warnings || [],
+          sourceHealth: record?.lastAttemptDiagnostics?.sourceHealth || [],
+          stale: !!record?.lastAttemptDiagnostics && (!record.lastAttemptDiagnostics.succeeded || record.lastAttemptDiagnostics.stale),
+          inputCount: normalized.tickers.length,
+          topN: normalized.topN,
+          delayMs: normalized.delayMs,
         });
       }
 
@@ -155,54 +411,41 @@ function createServer(port = config.server.port) {
       }
 
       if (pathname === "/api/scan/vn30" && req.method === "POST") {
-        const body = await readBody(req);
         let payload = {};
-        if (body) {
-          try {
-            payload = JSON.parse(body);
-          } catch (error) {
-            return json(res, 400, { error: `Invalid JSON body: ${error.message}` });
-          }
+        try {
+          payload = await readJsonBody(req);
+        } catch (error) {
+          return badJson(res, error);
         }
 
-        const tickers = await fetcher.indexComponents("VN30");
-        const topN = Math.max(1, Math.min(20, Number(payload.topN) || 10));
-        const delayMs = Math.max(250, Math.min(3000, Number(payload.delayMs) || 450));
-        const stocks = buildStocksFromTickers(tickers, "VN30");
-
-        console.log(`[vn30] Scanning ${stocks.length} VN30 tickers with ${delayMs}ms spacing, top ${topN}`);
-        const { snapshot, errors } = await engine.scanAll({
-          stocks,
-          delayMs,
-          persist: false,
-          topN,
-          scanMode: "vn30_top_strength",
-          onProgress: ({ ticker, status, error }) => {
-            console.log(`  ${status === "ok" ? "OK" : "ERR"} ${ticker}${error ? `: ${error}` : ""}`);
-          },
+        const normalized = normalizeTaskPayload(payload);
+        const result = await scanService.scanVN30({
+          topN: normalized.topN,
+          delayMs: normalized.delayMs,
         });
+        const record = scanService.getLatestSnapshotRecord();
 
         return json(res, 200, {
           index: "VN30",
           source: "vps_getlistckindex",
-          universeTickers: tickers,
-          universeCount: tickers.length,
-          snapshot,
-          errors,
-          topN,
-          delayMs,
+          universeTickers: result.universeTickers,
+          universeCount: result.universeCount,
+          snapshot: record?.snapshot || result.snapshot,
+          errors: result.errors,
+          warnings: record?.lastAttemptDiagnostics?.warnings || [],
+          sourceHealth: record?.lastAttemptDiagnostics?.sourceHealth || [],
+          stale: !!record?.lastAttemptDiagnostics && (!record.lastAttemptDiagnostics.succeeded || record.lastAttemptDiagnostics.stale),
+          topN: normalized.topN,
+          delayMs: normalized.delayMs,
         });
       }
 
       if (pathname === "/api/command/parse" && req.method === "POST") {
-        const body = await readBody(req);
         let payload = {};
-        if (body) {
-          try {
-            payload = JSON.parse(body);
-          } catch (error) {
-            return json(res, 400, { error: `Invalid JSON body: ${error.message}` });
-          }
+        try {
+          payload = await readJsonBody(req);
+        } catch (error) {
+          return badJson(res, error);
         }
 
         const result = parseCommand(payload.command, {
@@ -218,41 +461,54 @@ function createServer(port = config.server.port) {
       }
 
       if (pathname === "/api/prompt" && req.method === "GET") {
-        console.log("[prompt] Scanning + generating prompt...");
-        const { prompt, snapshot, errors } = await engine.getClaudePrompt();
-        console.log(`[prompt] Done: ${snapshot.count} stocks`);
-        return json(res, 200, { prompt, snapshot, errors });
+        const record = scanService.getLatestSnapshotRecord();
+        const snapshot = record?.snapshot || null;
+        if (!snapshot) {
+          return json(res, 409, { error: "Prompt generation requires a successful workspace snapshot; run scan first" });
+        }
+        return json(res, 200, {
+          prompt: claudePrompt(snapshot),
+          snapshot,
+          errors: record?.errors || [],
+        });
       }
 
       if (pathname === "/api/publish" && req.method === "POST") {
-        const body = await readBody(req);
         let payload = {};
-
-        if (body) {
-          try {
-            payload = JSON.parse(body);
-          } catch (error) {
-            return json(res, 400, { error: `Invalid JSON body: ${error.message}` });
-          }
+        try {
+          payload = await readJsonBody(req);
+        } catch (error) {
+          return badJson(res, error);
         }
 
-        let snapshot = payload.snapshot || null;
-        let prompt = payload.prompt || null;
+        const latestRecord = scanService.getLatestSnapshotRecord();
+        let snapshot = payload.snapshot || latestRecord?.snapshot || null;
+        let prompt = payload.prompt || "";
 
         if (!snapshot) {
-          const generated = await engine.getClaudePrompt();
-          snapshot = generated.snapshot;
-          prompt = generated.prompt;
+          return json(res, 409, { error: "Publish requires a successful workspace snapshot; run scan first" });
         } else if (!prompt) {
-          prompt = claudePrompt(snapshot);
+          prompt = safePrompt(snapshot, "");
         }
 
-        const result = publisher.publishSnapshot(snapshot, {
+        scanService.persistLatestSnapshot(snapshot, {
+          source: "publish_route",
+          mode: snapshot.scanMode,
+          selectedTicker: payload.selectedTicker || snapshot?.stocks?.[0]?.ticker || null,
           prompt,
-          selectedTicker: payload.selectedTicker,
         });
 
-        return json(res, 200, result);
+        const workspace = workspaceService.buildWorkspaceSnapshotFromSnapshot(snapshot, {
+          view: "publish",
+          ticker: payload.selectedTicker,
+          selectedTicker: payload.selectedTicker || snapshot?.stocks?.[0]?.ticker || null,
+        });
+
+        return json(res, 200, publisher.publishSnapshot(snapshot, {
+          prompt,
+          selectedTicker: payload.selectedTicker,
+          workspace,
+        }));
       }
 
       const singleMatch = pathname.match(/^\/api\/scan\/([A-Z0-9]{2,12})$/i);
@@ -260,9 +516,7 @@ function createServer(port = config.server.port) {
         const ticker = singleMatch[1];
         const stock = watchlist.getTicker(ticker);
         if (!stock) return json(res, 404, { error: `Ticker ${ticker} not in watchlist` });
-        console.log(`[scan] ${ticker}...`);
-        const snapshot = await engine.scanOne(stock);
-        return json(res, 200, snapshot);
+        return json(res, 200, await scanService.scanOneByTicker(ticker));
       }
 
       if (pathname === "/api/watchlist" && req.method === "GET") {
@@ -271,28 +525,24 @@ function createServer(port = config.server.port) {
       }
 
       if (pathname === "/api/watchlist" && req.method === "POST") {
-        const body = await readBody(req);
         let payload = {};
         try {
-          payload = JSON.parse(body || "{}");
+          payload = await readJsonBody(req);
         } catch (error) {
-          return json(res, 400, { error: `Invalid JSON body: ${error.message}` });
+          return badJson(res, error);
         }
-
         const stocks = watchlist.add(payload);
         return json(res, 200, { status: "ok", stocks, count: stocks.length });
       }
 
       const watchlistMatch = pathname.match(/^\/api\/watchlist\/([A-Z0-9]{2,12})$/i);
       if (watchlistMatch && req.method === "PUT") {
-        const body = await readBody(req);
         let payload = {};
         try {
-          payload = JSON.parse(body || "{}");
+          payload = await readJsonBody(req);
         } catch (error) {
-          return json(res, 400, { error: `Invalid JSON body: ${error.message}` });
+          return badJson(res, error);
         }
-
         const stocks = watchlist.update(watchlistMatch[1], payload);
         return json(res, 200, { status: "ok", stocks, count: stocks.length });
       }
@@ -303,7 +553,7 @@ function createServer(port = config.server.port) {
       }
 
       if (pathname === "/api/history" && req.method === "GET") {
-        return json(res, 200, engine.getAllHistory());
+        return json(res, 200, store.getAll());
       }
 
       if (pathname === "/api/history" && req.method === "DELETE") {
@@ -313,7 +563,7 @@ function createServer(port = config.server.port) {
 
       const historyMatch = pathname.match(/^\/api\/history\/([A-Z]{2,6})$/);
       if (historyMatch && req.method === "GET") {
-        const data = engine.getHistory(historyMatch[1]);
+        const data = store.getTicker(historyMatch[1]);
         return json(res, 200, data || { error: "No data" });
       }
 
@@ -321,7 +571,7 @@ function createServer(port = config.server.port) {
         const stocks = watchlist.getAll();
         return json(res, 200, {
           status: "ok",
-          engine: "Saigon Terminal v2.0",
+          engine: "Saigon Terminal vNext",
           node: process.version,
           stocks: stocks.map((stock) => stock.ticker),
           time: new Date().toISOString(),
@@ -329,7 +579,6 @@ function createServer(port = config.server.port) {
       }
 
       if (pathname === "/api/test" && req.method === "GET") {
-        console.log("[test] Testing VPS + KBS connectivity...");
         const results = {};
 
         try {
@@ -337,10 +586,8 @@ function createServer(port = config.server.port) {
           const last = bars[bars.length - 1];
           const lastClose = last ? Math.round(last.close > 1000 ? last.close : last.close * 1000) : null;
           results.ohlcv = { status: "ok", bars: bars.length, lastClose, lastDate: last?.date || last?.tradingDate };
-          console.log(`  OK OHLCV: ${bars.length} bars, close=${lastClose}`);
         } catch (error) {
           results.ohlcv = { status: "error", message: error.message };
-          console.log(`  ERR OHLCV: ${error.message}`);
         }
 
         try {
@@ -354,21 +601,16 @@ function createServer(port = config.server.port) {
             epsGrowth1Y: overview.epsGrowth1Y,
             institutionScore: overview.institutionScore,
             source: overview._source,
-            keys: Object.keys(overview).slice(0, 12),
           };
-          console.log(`  OK Overview: source=${overview._source}`);
         } catch (error) {
           results.overview = { status: "error", message: error.message };
-          console.log(`  ERR Overview: ${error.message}`);
         }
 
         try {
           const foreign = await fetcher.foreign("FPT");
           results.foreign = { status: "ok", records: foreign?.data?.length || 0 };
-          console.log(`  OK Foreign: ${foreign?.data?.length || 0} records`);
         } catch (error) {
           results.foreign = { status: "error", message: error.message };
-          console.log(`  ERR Foreign: ${error.message}`);
         }
 
         const allOk = Object.values(results).every((result) => result.status === "ok");
@@ -396,10 +638,10 @@ function createServer(port = config.server.port) {
       }
 
       const filePath = path.join(__dirname, "public", pathname === "/" ? "index.html" : pathname);
-      serveFile(res, filePath);
+      return serveFile(res, filePath);
     } catch (error) {
       console.error(`[ERROR] ${req.method} ${pathname}:`, error.message);
-      json(res, 500, { error: error.message });
+      return json(res, 500, { error: error.message });
     }
   });
 }
@@ -408,21 +650,22 @@ function logStartup(port) {
   const stocks = watchlist.getAll();
   console.log("");
   console.log("  ========================================");
-  console.log("  Saigon Terminal v2.0");
-  console.log("  Board-First Desk Monitor");
+  console.log("  Saigon Terminal vNext");
+  console.log("  AI-Free Trading War Hub");
   console.log("  ========================================");
   console.log(`  URL: http://localhost:${port}`);
   console.log(`  Universe: ${stocks.map((stock) => stock.ticker).join(", ")}`);
-  console.log("  Feed: VPS market + KBS enrich");
+  console.log("  Core: VPS market + KBS enrich + local research/playbooks/journal");
   console.log("  Endpoints:");
+  console.log("    GET  /api/workspace");
+  console.log("    POST /api/tasks/scan");
+  console.log("    POST /api/tasks/research-refresh");
+  console.log("    POST /api/tasks/publish");
+  console.log("    GET  /api/research?ticker=FPT");
+  console.log("    GET  /api/playbooks/FPT");
+  console.log("    GET  /api/journal");
   console.log("    POST /api/scan");
-  console.log("    POST /api/scan/batch");
-  console.log("    POST /api/scan/vn30");
-  console.log("    GET  /api/universe/vn30");
-  console.log("    GET  /api/prompt");
-  console.log("    GET  /api/scan/FPT");
-  console.log("    GET  /api/watchlist");
-  console.log("    GET  /api/history");
+  console.log("    POST /api/publish");
   console.log("");
 }
 
@@ -434,5 +677,5 @@ if (require.main === module) {
 
 module.exports = {
   createServer,
-  parseTickerList,
+  parseTickerList: scanService.parseTickerList,
 };

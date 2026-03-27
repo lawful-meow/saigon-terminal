@@ -183,5 +183,46 @@
         "window": "30d"
       }
     }
+  },
+  "task:2d4af7cb-21b8-4503-9933-e6ba26c4f54f": {
+    "id": "task:2d4af7cb-21b8-4503-9933-e6ba26c4f54f",
+    "type": "scan",
+    "status": "completed",
+    "startedAt": "2026-03-27T06:42:33.514Z",
+    "updatedAt": "2026-03-27T06:43:09.660Z",
+    "progressPct": 100,
+    "currentStep": "completed",
+    "warnings": [],
+    "resultRef": {
+      "type": "snapshot",
+      "selectedTicker": "SSI"
+    },
+    "error": null,
+    "meta": {
+      "mode": "vn30",
+      "payload": {
+        "mode": "vn30"
+      }
+    }
+  },
+  "task:f2bb301f-1718-4576-906e-e8e0c9ad1af1": {
+    "id": "task:f2bb301f-1718-4576-906e-e8e0c9ad1af1",
+    "type": "publish",
+    "status": "completed",
+    "startedAt": "2026-03-27T06:42:41.113Z",
+    "updatedAt": "2026-03-27T06:42:41.146Z",
+    "progressPct": 100,
+    "currentStep": "completed",
+    "warnings": [],
+    "resultRef": {
+      "type": "publish",
+      "previewPath": "/docs/"
+    },
+    "error": null,
+    "meta": {
+      "payload": {
+        "selectedTicker": "HDB"
+      }
+    }
   }
 }
